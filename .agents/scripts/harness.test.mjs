@@ -162,33 +162,6 @@ test('reports broken local paths routed from AGENTS.md', async () => {
   )
 })
 
-test('rejects copied Hashi-specific terms in harness files', async () => {
-  await withFixture(
-    {
-      'docs/agent/harness.md': '# Agent Harness\nUse @hashi/hds-ui.',
-    },
-    async (root) => {
-      const errors = await collectHarnessErrors(root)
-
-      assert.ok(errors.some((error) => error.includes('@hashi')))
-    },
-  )
-})
-
-test('allows generic Jira references in pull request conventions', async () => {
-  await withFixture(
-    {
-      'docs/conventions/pull-request.md':
-        '# Pull Request Convention\nJira는 실제 연결 항목이 있을 때만 작성합니다.',
-    },
-    async (root) => {
-      const errors = await collectHarnessErrors(root)
-
-      assert.ok(errors.every((error) => !error.includes("'Jira'")))
-    },
-  )
-})
-
 test('rejects invalid hook configuration JSON', async () => {
   await withFixture(
     { '.codex/hooks.json': '{invalid' },

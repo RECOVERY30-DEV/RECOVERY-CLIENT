@@ -66,6 +66,14 @@ User Request
 - 처음 받았거나 `.codex/hooks.json`이 변경된 뒤에는 Codex에서 hook 정의를 검토하고 신뢰해야 합니다. CLI에서는 `/hooks`로 상태를 확인합니다.
 - 신뢰하기 전에는 hook이 건너뛰어질 수 있으므로, hook만을 유일한 보안 경계로 간주하지 않습니다.
 
+## 검증 실행 범위
+
+- 일반 애플리케이션 작업에서는 하네스 검증을 기본 실행하지 않습니다.
+- 문서 라우팅과 하네스 구조가 바뀌면 `pnpm check:harness`를 실행합니다.
+- 하네스 검사기 자체가 바뀌면 `pnpm test:harness`와 `pnpm check:harness`를 실행합니다.
+- Codex hook script나 test가 바뀌면 `pnpm test:hooks`를 실행합니다.
+- 세부 선택 기준은 `docs/workflows/verification.md`를 source of truth로 사용합니다.
+
 ## 이후 추가 시점
 
 - CSS와 품질 도구 도입 시 lint, format, test 규칙과 검증을 추가합니다.

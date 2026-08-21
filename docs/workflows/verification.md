@@ -2,14 +2,26 @@
 
 변경 범위에 맞는 검증만 선택하고, 실행하지 못한 검증은 최종 보고에 이유를 남깁니다.
 
-## 문서와 하네스
+## 선택 원칙
 
-```bash
-pnpm check:harness
-pnpm test:harness
-pnpm test:hooks
-git diff --check
-```
+- 일반 애플리케이션 작업에서는 하네스 검증을 기본 실행하지 않습니다.
+- 하네스 구조가 바뀌면 `pnpm check:harness`를 실행합니다.
+- 하네스 검사기 자체가 바뀌면 `pnpm test:harness`도 실행합니다.
+- Codex hook script나 test가 바뀌면 `pnpm test:hooks`를 실행합니다.
+- 변경 종류와 관계없이 `git diff --check`를 실행합니다.
+
+## 하네스 변경
+
+| 변경 대상 | 실행 명령 |
+| --- | --- |
+| `AGENTS.md`, 하네스가 라우팅하는 `docs/` | `pnpm check:harness` |
+| `.agents/checklists/`, `.agents/recipes/` | `pnpm check:harness` |
+| `.agents/scripts/check-harness.mjs`, `.agents/scripts/harness.test.mjs` | `pnpm test:harness`, `pnpm check:harness` |
+| `.codex/hooks.json` | `pnpm check:harness`, `pnpm test:hooks` |
+| `.codex/hooks/` script와 test | `pnpm test:hooks` |
+| `package.json`의 하네스 script | `pnpm check:harness`와 영향받는 test |
+
+`pnpm check:harness`는 현재 저장소 구조를 확인하고, `pnpm test:harness`는 검사기 자체를 변경했을 때만 검사기의 실패 조건을 확인합니다.
 
 ## TypeScript와 애플리케이션 코드
 
@@ -18,7 +30,7 @@ pnpm typecheck
 pnpm build
 ```
 
-테스트 도구가 도입된 뒤에는 변경 영역에 맞는 단위·통합 테스트를 추가합니다. 아직 존재하지 않는 `lint`, `format`, 애플리케이션 `test` 명령을 실행한 것처럼 보고하지 않습니다.
+`src/` 아래 일반 component, page, route, utility만 변경했다면 하네스 명령은 실행하지 않습니다. 테스트 도구가 도입된 뒤에는 변경 영역에 맞는 단위·통합 테스트를 추가합니다. 아직 존재하지 않는 `lint`, `format`, 애플리케이션 `test` 명령을 실행한 것처럼 보고하지 않습니다.
 
 ## 의존성과 설정
 
@@ -28,7 +40,7 @@ pnpm typecheck
 pnpm build
 ```
 
-package script, hook, 하네스 설정이 바뀌면 관련 하네스 테스트도 실행합니다.
+package script, hook, 하네스 설정이 바뀌면 위 표에서 직접 영향받는 하네스 검증만 추가합니다.
 
 ## UI와 브라우저 동작
 

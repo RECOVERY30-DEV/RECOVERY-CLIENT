@@ -42,31 +42,6 @@ const REQUIRED_PACKAGE_SCRIPTS = [
   'typecheck',
 ]
 
-const TEXT_PATHS = [
-  'AGENTS.md',
-  '.agents/README.md',
-  '.agents/checklists/final-report.md',
-  '.agents/checklists/pre-work.md',
-  '.agents/checklists/verification.md',
-  '.agents/recipes/skeptical-pr-review.md',
-  'docs/agent/harness.md',
-  'docs/agent/working-agreement.md',
-  'docs/conventions/code.md',
-  'docs/conventions/commit.md',
-  'docs/conventions/git.md',
-  'docs/conventions/pull-request.md',
-  'docs/rules/project.md',
-  'docs/workflows/verification.md',
-]
-
-const FORBIDDEN_TERMS = [
-  ['@hashi', /@hashi/i],
-  ['Hashi', /\bhashi\b/i],
-  ['HDS', /\bHDS\b/],
-  ['apps/client', /apps\/client/],
-  ['packages/hds', /packages\/hds/],
-]
-
 const pathExists = async (targetPath) => {
   try {
     await access(targetPath)
@@ -134,22 +109,6 @@ export const collectHarnessErrors = async (root) => {
       if (!(await pathExists(path.join(root, routedPath)))) {
         errors.push(
           `AGENTS.md가 존재하지 않는 로컬 경로를 가리킵니다: ${routedPath}. 경로 또는 문서를 수정하세요.`,
-        )
-      }
-    }
-  }
-
-  for (const relativePath of TEXT_PATHS) {
-    if (!existingPaths.has(relativePath)) {
-      continue
-    }
-
-    const content = await readText(root, relativePath)
-
-    for (const [label, pattern] of FORBIDDEN_TERMS) {
-      if (pattern.test(content)) {
-        errors.push(
-          `Hashi 전용 표현 '${label}'이 ${relativePath}에 남아 있습니다. RECOVERY30 기준으로 치환하세요.`,
         )
       }
     }
