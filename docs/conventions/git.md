@@ -38,21 +38,10 @@ fix/profile-navigation
 - `main` 대상 PR은 `develop -> main` 배포 승격 흐름에서만 사용합니다.
 - 관련 없는 변경을 같은 PR에 섞지 않습니다.
 
-## Commit
+## 상세 컨벤션
 
-커밋 메시지는 다음 형식을 사용합니다.
-
-```text
-type: 한글 작업 내용
-```
-
-예시:
-
-```text
-chore: Next.js 초기 설정
-init: 에이전트 하네스 구성
-fix: 프로필 이동 오류 수정
-```
+- commit 형식과 책임 단위: `docs/conventions/commit.md`
+- PR 제목, 본문, 상태, Stacked PR: `docs/conventions/pull-request.md`
 
 ## 원격 작업 승인
 

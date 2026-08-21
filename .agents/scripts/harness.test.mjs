@@ -4,7 +4,10 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import { collectHarnessErrors } from './check-harness.mjs'
+import {
+  REQUIRED_PATHS,
+  collectHarnessErrors,
+} from './check-harness.mjs'
 
 const requiredFiles = {
   'AGENTS.md': [
@@ -12,6 +15,9 @@ const requiredFiles = {
     '`docs/agent/working-agreement.md`',
     '`docs/rules/project.md`',
     '`.agents/checklists/pre-work.md`',
+    '`docs/conventions/code.md`',
+    '`docs/conventions/commit.md`',
+    '`docs/conventions/pull-request.md`',
   ].join('\n'),
   '.agents/README.md': '# Agent Harness',
   '.agents/checklists/final-report.md': '# Final Report Checklist',
@@ -26,7 +32,10 @@ const requiredFiles = {
   '.codex/hooks/shell-guard.mjs': '// shell guard\n',
   'docs/agent/harness.md': '# Agent Harness',
   'docs/agent/working-agreement.md': '# Working Agreement',
+  'docs/conventions/code.md': '# Code Convention',
+  'docs/conventions/commit.md': '# Commit Convention',
   'docs/conventions/git.md': '# Git Convention',
+  'docs/conventions/pull-request.md': '# Pull Request Convention',
   'docs/rules/project.md': '# Project Rules',
   'docs/workflows/verification.md': '# Verification',
   'package.json': JSON.stringify({
@@ -72,6 +81,46 @@ test('accepts a complete minimal harness', async () => {
   await withFixture({}, async (root) => {
     assert.deepEqual(await collectHarnessErrors(root), [])
   })
+})
+
+test('requires code, commit, and pull request convention documents', () => {
+  for (const relativePath of [
+    'docs/conventions/code.md',
+    'docs/conventions/commit.md',
+    'docs/conventions/pull-request.md',
+  ]) {
+    assert.ok(
+      REQUIRED_PATHS.includes(relativePath),
+      `expected required path: ${relativePath}`,
+    )
+  }
+})
+
+test('reports missing required convention routes from AGENTS.md', async () => {
+  await withFixture(
+    {
+      'AGENTS.md': [
+        '# AGENTS',
+        '`docs/agent/working-agreement.md`',
+        '`docs/rules/project.md`',
+        '`.agents/checklists/pre-work.md`',
+      ].join('\n'),
+    },
+    async (root) => {
+      const errors = await collectHarnessErrors(root)
+
+      for (const relativePath of [
+        'docs/conventions/code.md',
+        'docs/conventions/commit.md',
+        'docs/conventions/pull-request.md',
+      ]) {
+        assert.ok(
+          errors.some((error) => error.includes(relativePath)),
+          `expected missing route error: ${relativePath}`,
+        )
+      }
+    },
+  )
 })
 
 test('rejects AGENTS.md files longer than 100 lines', async () => {
@@ -122,6 +171,20 @@ test('rejects copied Hashi-specific terms in harness files', async () => {
       const errors = await collectHarnessErrors(root)
 
       assert.ok(errors.some((error) => error.includes('@hashi')))
+    },
+  )
+})
+
+test('allows generic Jira references in pull request conventions', async () => {
+  await withFixture(
+    {
+      'docs/conventions/pull-request.md':
+        '# Pull Request Convention\nJira는 실제 연결 항목이 있을 때만 작성합니다.',
+    },
+    async (root) => {
+      const errors = await collectHarnessErrors(root)
+
+      assert.ok(errors.every((error) => !error.includes("'Jira'")))
     },
   )
 })

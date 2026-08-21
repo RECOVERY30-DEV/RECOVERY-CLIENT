@@ -19,7 +19,10 @@
 
 - 에이전트 협업 방식: `docs/agent/working-agreement.md`
 - 프로젝트 불변 규칙: `docs/rules/project.md`
+- 코드 작성 규칙: `docs/conventions/code.md`
 - Git과 브랜치 규칙: `docs/conventions/git.md`
+- commit 작성 규칙: `docs/conventions/commit.md`
+- PR 작성 규칙: `docs/conventions/pull-request.md`
 - 검증 선택 기준: `docs/workflows/verification.md`
 - 하네스 구조와 성장 기준: `docs/agent/harness.md`
 - 에이전트 실행 절차: `.agents/`
@@ -31,9 +34,12 @@
 
 | 작업 유형 | 추가로 읽을 문서 |
 | --- | --- |
-| branch, commit, push, PR, merge | `docs/conventions/git.md` |
+| code, component, hook, utility | `docs/conventions/code.md` |
+| branch, push, merge | `docs/conventions/git.md` |
+| commit | `docs/conventions/commit.md` |
+| PR | `docs/conventions/pull-request.md`, `docs/conventions/git.md` |
 | dependency, build, config | `docs/rules/project.md`, `docs/workflows/verification.md` |
-| page, route, UI | 기존 `src/app` 코드, `docs/workflows/verification.md` |
+| page, route, UI | 기존 `src/app` 코드, `docs/conventions/code.md`, `docs/workflows/verification.md` |
 | agent harness | `docs/agent/harness.md`, `.agents/README.md` |
 | PR review | `.agents/recipes/skeptical-pr-review.md` |
 

@@ -17,7 +17,10 @@ export const REQUIRED_PATHS = [
   '.codex/hooks/shell-guard.mjs',
   'docs/agent/harness.md',
   'docs/agent/working-agreement.md',
+  'docs/conventions/code.md',
+  'docs/conventions/commit.md',
   'docs/conventions/git.md',
+  'docs/conventions/pull-request.md',
   'docs/rules/project.md',
   'docs/workflows/verification.md',
   'package.json',
@@ -27,6 +30,9 @@ const REQUIRED_AGENT_ROUTES = [
   'docs/agent/working-agreement.md',
   'docs/rules/project.md',
   '.agents/checklists/pre-work.md',
+  'docs/conventions/code.md',
+  'docs/conventions/commit.md',
+  'docs/conventions/pull-request.md',
 ]
 
 const REQUIRED_PACKAGE_SCRIPTS = [
@@ -45,7 +51,10 @@ const TEXT_PATHS = [
   '.agents/recipes/skeptical-pr-review.md',
   'docs/agent/harness.md',
   'docs/agent/working-agreement.md',
+  'docs/conventions/code.md',
+  'docs/conventions/commit.md',
   'docs/conventions/git.md',
+  'docs/conventions/pull-request.md',
   'docs/rules/project.md',
   'docs/workflows/verification.md',
 ]
@@ -54,7 +63,6 @@ const FORBIDDEN_TERMS = [
   ['@hashi', /@hashi/i],
   ['Hashi', /\bhashi\b/i],
   ['HDS', /\bHDS\b/],
-  ['Jira', /\bJira\b/i],
   ['apps/client', /apps\/client/],
   ['packages/hds', /packages\/hds/],
 ]
@@ -117,7 +125,7 @@ export const collectHarnessErrors = async (root) => {
     for (const requiredRoute of REQUIRED_AGENT_ROUTES) {
       if (!agents.includes(`\`${requiredRoute}\``)) {
         errors.push(
-          `AGENTS.md에 필수 시작 경로가 없습니다: ${requiredRoute}. 모든 작업에서 읽도록 라우팅하세요.`,
+          `AGENTS.md에 필수 라우팅 경로가 없습니다: ${requiredRoute}. 작업 유형에 맞게 라우팅하세요.`,
         )
       }
     }
