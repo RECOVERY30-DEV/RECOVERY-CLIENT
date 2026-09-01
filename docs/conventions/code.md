@@ -33,15 +33,15 @@ RECOVERY-CLIENT의 TypeScript, React, Next.js 코드 작성 기준입니다. 현
 
 ## Naming
 
-| 대상 | 기준 | 예시 |
-| --- | --- | --- |
-| component, type | `PascalCase` | `RecoverySummary`, `RecoverySummaryProps` |
-| 함수, 변수 | `camelCase` | `getRecoverySummary`, `recoveryCount` |
-| boolean | `is`, `has`, `can`, `should` 접두사 | `isLoading`, `hasNextPage` |
-| event handler | `handle` 접두사 | `handleSubmit` |
-| hook | `use` 접두사 | `useRecoveryForm` |
-| module 상수 | `UPPER_SNAKE_CASE` | `DEFAULT_PAGE_SIZE` |
-| 일반 파일과 디렉터리 | `kebab-case` | `recovery-summary.tsx` |
+| 대상                 | 기준                                | 예시                                      |
+| -------------------- | ----------------------------------- | ----------------------------------------- |
+| component, type      | `PascalCase`                        | `RecoverySummary`, `RecoverySummaryProps` |
+| 함수, 변수           | `camelCase`                         | `getRecoverySummary`, `recoveryCount`     |
+| boolean              | `is`, `has`, `can`, `should` 접두사 | `isLoading`, `hasNextPage`                |
+| event handler        | `handle` 접두사                     | `handleSubmit`                            |
+| hook                 | `use` 접두사                        | `useRecoveryForm`                         |
+| module 상수          | `UPPER_SNAKE_CASE`                  | `DEFAULT_PAGE_SIZE`                       |
+| 일반 파일과 디렉터리 | `kebab-case`                        | `recovery-summary.tsx`                    |
 
 Next.js가 이름을 정하는 `page.tsx`, `layout.tsx`, `route.ts` 등의 특수 파일은 framework 규칙을 우선합니다.
 

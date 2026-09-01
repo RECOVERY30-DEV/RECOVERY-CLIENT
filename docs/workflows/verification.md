@@ -12,14 +12,14 @@
 
 ## 하네스 변경
 
-| 변경 대상 | 실행 명령 |
-| --- | --- |
-| `AGENTS.md`, 하네스가 라우팅하는 `docs/` | `pnpm check:harness` |
-| `.agents/checklists/`, `.agents/recipes/` | `pnpm check:harness` |
+| 변경 대상                                                               | 실행 명령                                 |
+| ----------------------------------------------------------------------- | ----------------------------------------- |
+| `AGENTS.md`, 하네스가 라우팅하는 `docs/`                                | `pnpm check:harness`                      |
+| `.agents/checklists/`, `.agents/recipes/`                               | `pnpm check:harness`                      |
 | `.agents/scripts/check-harness.mjs`, `.agents/scripts/harness.test.mjs` | `pnpm test:harness`, `pnpm check:harness` |
-| `.codex/hooks.json` | `pnpm check:harness`, `pnpm test:hooks` |
-| `.codex/hooks/` script와 test | `pnpm test:hooks` |
-| `package.json`의 하네스 script | `pnpm check:harness`와 영향받는 test |
+| `.codex/hooks.json`                                                     | `pnpm check:harness`, `pnpm test:hooks`   |
+| `.codex/hooks/` script와 test                                           | `pnpm test:hooks`                         |
+| `package.json`의 하네스 script                                          | `pnpm check:harness`와 영향받는 test      |
 
 `pnpm check:harness`는 현재 저장소 구조를 확인하고, `pnpm test:harness`는 검사기 자체를 변경했을 때만 검사기의 실패 조건을 확인합니다.
 

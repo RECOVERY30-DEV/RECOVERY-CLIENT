@@ -16,18 +16,18 @@ type: 한글 작업 내용
 
 ## Type
 
-| type | 사용 시점 |
-| --- | --- |
-| `feat` | 사용자에게 보이는 기능 추가 |
-| `fix` | 잘못된 동작이나 회귀 수정 |
+| type       | 사용 시점                     |
+| ---------- | ----------------------------- |
+| `feat`     | 사용자에게 보이는 기능 추가   |
+| `fix`      | 잘못된 동작이나 회귀 수정     |
 | `refactor` | 동작 변경 없는 코드 구조 개선 |
-| `style` | UI와 CSS 변경 |
-| `test` | 테스트 추가와 수정 |
-| `docs` | 문서만 변경 |
-| `chore` | 일반 설정과 유지보수 |
-| `build` | dependency와 build 설정 변경 |
-| `ci` | CI/CD workflow 변경 |
-| `revert` | 이전 commit 되돌리기 |
+| `style`    | UI와 CSS 변경                 |
+| `test`     | 테스트 추가와 수정            |
+| `docs`     | 문서만 변경                   |
+| `chore`    | 일반 설정과 유지보수          |
+| `build`    | dependency와 build 설정 변경  |
+| `ci`       | CI/CD workflow 변경           |
+| `revert`   | 이전 commit 되돌리기          |
 
 ## Commit 단위
 

@@ -35,12 +35,7 @@ const REQUIRED_AGENT_ROUTES = [
   'docs/conventions/pull-request.md',
 ]
 
-const REQUIRED_PACKAGE_SCRIPTS = [
-  'check:harness',
-  'test:harness',
-  'test:hooks',
-  'typecheck',
-]
+const REQUIRED_PACKAGE_SCRIPTS = ['check:harness', 'test:harness', 'test:hooks', 'typecheck']
 
 const pathExists = async (targetPath) => {
   try {
@@ -51,8 +46,7 @@ const pathExists = async (targetPath) => {
   }
 }
 
-const readText = (root, relativePath) =>
-  readFile(path.join(root, relativePath), 'utf8')
+const readText = (root, relativePath) => readFile(path.join(root, relativePath), 'utf8')
 
 const extractRoutedPaths = (markdown) => {
   const matches = markdown.matchAll(/`([^`\n]+)`/g)
@@ -145,8 +139,7 @@ export const collectHarnessErrors = async (root) => {
 }
 
 const isDirectRun =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 
 if (isDirectRun) {
   const errors = await collectHarnessErrors(process.cwd())
