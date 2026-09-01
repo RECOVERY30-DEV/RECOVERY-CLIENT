@@ -4,11 +4,23 @@
 
 ## 선택 원칙
 
+- 저장소 전체 품질 기준은 frontprep가 생성한 `pnpm check`로 검증합니다.
 - 일반 애플리케이션 작업에서는 하네스 검증을 기본 실행하지 않습니다.
 - 하네스 구조가 바뀌면 `pnpm check:harness`를 실행합니다.
 - 하네스 검사기 자체가 바뀌면 `pnpm test:harness`도 실행합니다.
 - Codex hook script나 test가 바뀌면 `pnpm test:hooks`를 실행합니다.
 - 변경 종류와 관계없이 `git diff --check`를 실행합니다.
+
+## Frontprep 기준선
+
+```bash
+pnpm exec frontprep check --cwd .
+pnpm check
+```
+
+- `frontprep check`는 관리 중인 설정과 manifest의 drift를 읽기 전용으로 확인한 뒤 프로젝트 검증을 실행합니다.
+- `pnpm check`는 lint, formatting, typecheck, Vitest, production build를 순서대로 실행하는 저장소 공통 검증입니다.
+- 특정 실패를 조사할 때는 `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test:run`, `pnpm build`를 개별 실행합니다.
 
 ## 하네스 변경
 
@@ -27,17 +39,17 @@
 
 ```bash
 pnpm typecheck
+pnpm test:run
 pnpm build
 ```
 
-`src/` 아래 일반 component, page, route, utility만 변경했다면 하네스 명령은 실행하지 않습니다. 테스트 도구가 도입된 뒤에는 변경 영역에 맞는 단위·통합 테스트를 추가합니다. 아직 존재하지 않는 `lint`, `format`, 애플리케이션 `test` 명령을 실행한 것처럼 보고하지 않습니다.
+`src/` 아래 일반 component, page, route, utility만 변경했다면 하네스 명령은 실행하지 않습니다. 동작이 바뀌면 변경 영역에 맞는 Vitest 단위·통합 테스트를 추가하고, 최종적으로 `pnpm check`를 실행합니다.
 
 ## 의존성과 설정
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm typecheck
-pnpm build
+pnpm check
 ```
 
 package script, hook, 하네스 설정이 바뀌면 위 표에서 직접 영향받는 하네스 검증만 추가합니다.

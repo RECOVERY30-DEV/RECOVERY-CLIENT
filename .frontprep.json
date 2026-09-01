@@ -1,0 +1,118 @@
+{
+  "$schema": "https://unpkg.com/@mingyeongbin/frontprep/schema/manifest-v1.json",
+  "schemaVersion": 1,
+  "frontprepVersion": "0.1.0-beta.0",
+  "adapter": "next-app",
+  "packageManager": "pnpm@10.22.0",
+  "paths": {
+    "app": "src/app",
+    "stylesheet": "src/app/globals.css"
+  },
+  "modules": {
+    "ci": "1.0.0",
+    "git-hooks": "1.0.0",
+    "quality": "1.0.0",
+    "tailwind": "1.0.0",
+    "test": "1.0.0"
+  },
+  "files": {
+    ".editorconfig": {
+      "hash": "sha256:a6b98ea7cb6d61ed8d430dd0dffa46c87012b5cf859d4ce7207898954951fdcd",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    ".github/workflows/ci.yml": {
+      "hash": "sha256:ee782259422ab1e9497e413ab9551261af490853cdac238456d40889c1613d16",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    ".husky/commit-msg": {
+      "hash": "sha256:fcfc227fe0e950deadcef148e6b460d3570b2d722ed523786a63ab00e73155c9",
+      "mode": "0755",
+      "ownership": "managed"
+    },
+    ".husky/pre-commit": {
+      "hash": "sha256:aad3507759b5b03c40f17cb27ca0e2203edebcd8820c48addadc16104b1e011c",
+      "mode": "0755",
+      "ownership": "managed"
+    },
+    ".prettierignore": {
+      "hash": "sha256:e3f62b751ec34f8341f16b4470b3958565e19905bc83927b7b3523c3fcc989b5",
+      "mode": "0644",
+      "ownership": "patched"
+    },
+    "commitlint.config.mjs": {
+      "hash": "sha256:6b8bc066d999586e05d2dc991596f81ab4a8e4090c636453b61d76cb545f6fd6",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "eslint.config.mjs": {
+      "hash": "sha256:f0ffb53bba9cd14a302f6b06e32f8225086d4173b3c2f48bbd2854c6f1b67dea",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "lint-staged.config.mjs": {
+      "hash": "sha256:e09856892528b3c0e324d046d6c9c3b20722a9065f7eaeced5ca0ec9877c7f88",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "package.json": {
+      "hash": "sha256:b4ef4d5ab2f1e0f88ec7ff5238be5578014764c3e2d5e7b9e7dfa11ca4208ae6",
+      "mode": "0644",
+      "ownership": "patched"
+    },
+    "pnpm-lock.yaml": {
+      "hash": "sha256:b37f9a161a1840b18e013ac5b1ed6844446d2941b38149d6e7cd734fd97ba638",
+      "mode": "0644",
+      "ownership": "patched"
+    },
+    "postcss.config.mjs": {
+      "hash": "sha256:6993a1b3cdf21cec2260d0d8ecaaf746f1e79893f0a5e622d3f1b9366469c973",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "prettier.config.mjs": {
+      "hash": "sha256:7a331c88f855425440dd304b61e90a9bf5c7087fda13512917e754cc0f048a5d",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "src/app/globals.css": {
+      "hash": "sha256:11c422a6f84608f169646eaf5f9ca4c9b59e5ff9a67b045468c52a941bbc005e",
+      "mode": "0644",
+      "ownership": "patched"
+    },
+    "src/shared/utils/cn.ts": {
+      "hash": "sha256:b31f5f709ed7d2c32daa516aca38d706852efc09dc400a457c1f0d59535937ed",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "src/shared/utils/index.ts": {
+      "hash": "sha256:f0dd50987bb9b0608b9852ae1049809be2476e63a89789e256fff471862b4849",
+      "mode": "0644",
+      "ownership": "patched"
+    },
+    "src/test/setup.ts": {
+      "hash": "sha256:4f64f1e107d3d51e0280ac9e49413199f9b39fe59395eaa049084710d2c88177",
+      "mode": "0644",
+      "ownership": "managed"
+    },
+    "vitest.config.mts": {
+      "hash": "sha256:2feb056cf2f5f7fcff4e2d48911d43e48c08e46ab70af8357a49249c02cb93e8",
+      "mode": "0644",
+      "ownership": "managed"
+    }
+  },
+  "managedScripts": {
+    "frontprep:build": "next build",
+    "frontprep:check": "pnpm run frontprep:quality && pnpm run frontprep:test && pnpm run frontprep:build",
+    "frontprep:format": "prettier --write .",
+    "frontprep:format:check": "prettier --check .",
+    "frontprep:lint": "eslint .",
+    "frontprep:lint:fix": "eslint . --fix",
+    "frontprep:prepare": "husky",
+    "frontprep:quality": "pnpm run frontprep:lint && pnpm run frontprep:format:check && pnpm run frontprep:typecheck",
+    "frontprep:test": "vitest run",
+    "frontprep:typecheck": "tsc --noEmit",
+    "prepare": "pnpm run frontprep:prepare"
+  }
+}
