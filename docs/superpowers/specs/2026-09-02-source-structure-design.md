@@ -37,7 +37,7 @@ src/
 │  ├─ types/                     # 여러 기능이 공유하는 타입
 │  └─ ui/                        # 여러 기능이 공유하는 표현 컴포넌트
 ├─ styles/                       # 애플리케이션 전역 스타일
-│  ├─ globals.css                # Tailwind와 전역 스타일 진입점
+│  ├─ global.css                 # Tailwind와 전역 스타일 진입점
 │  ├─ reset.css                  # 브라우저 기본 스타일 정리
 │  └─ tokens.css                 # 실제 디자인 토큰이 생길 때 생성
 └─ test/                         # 공통 테스트 기반
@@ -72,7 +72,7 @@ src/
 
 ### 스타일과 테스트
 
-- `src/styles/globals.css`는 Tailwind와 다른 전역 스타일 파일을 연결하는 진입점으로 사용합니다.
+- `src/styles/global.css`는 Tailwind와 다른 전역 스타일 파일을 연결하는 진입점으로 사용합니다.
 - reset은 `src/styles/reset.css`로 분리합니다.
 - 색상, 간격, 글꼴 같은 실제 공통 값이 정해질 때만 `tokens.css`를 생성합니다.
 - 애플리케이션 테스트는 대상 코드 옆에 `*.test.ts` 또는 `*.test.tsx`로 둡니다.
@@ -93,7 +93,7 @@ app → features → shared
 ## 이번 변경 범위
 
 ```text
-src/app/globals.css          → src/styles/globals.css
+src/app/globals.css          → src/styles/global.css
 src/shared/utils/cn.ts       → src/shared/lib/cn.ts
 src/shared/utils/index.ts    → src/shared/lib/index.ts
 ```
