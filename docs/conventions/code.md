@@ -10,6 +10,30 @@ RECOVERY-CLIENT의 TypeScript, React, Next.js 코드 작성 기준입니다. 현
 - 플랫폼과 현재 저장소 기능으로 해결할 수 있으면 새 dependency를 추가하지 않습니다.
 - 주석은 코드가 하는 일을 반복하지 않고 결정 이유와 제약을 설명할 때만 사용합니다.
 
+## 소스 구조
+
+```text
+src/
+├─ app/       # Next.js 라우팅과 화면 조합
+├─ features/  # 사용자 기능 단위
+├─ shared/    # 기능에 종속되지 않는 공용 코드
+│  ├─ api/    # 공통 서버 통신 기반
+│  ├─ config/ # 애플리케이션 공통 설정
+│  ├─ lib/    # 순수 함수와 범용 유틸리티
+│  ├─ types/  # 여러 기능이 공유하는 타입
+│  └─ ui/     # 여러 기능이 공유하는 표현 컴포넌트
+├─ styles/    # 애플리케이션 전역 스타일
+└─ test/      # 공통 테스트 기반
+```
+
+- 의존 방향은 `app → features → shared`로 유지합니다.
+- `app`은 라우팅 진입점과 화면 조합을 담당하며, 한 라우트에서만 사용하는 UI는 해당 라우트의 `_components`에 둡니다.
+- 기능별 API, component, hook, 상태, type은 `features/<feature-name>` 안에서 함께 관리합니다.
+- 기능에 종속되지 않고 실제로 여러 곳에서 사용하는 코드만 `shared`에 둡니다.
+- 전역 `components`, `hooks`, `utils`, `constants` 디렉터리를 만들지 않습니다.
+- 기능과 공용 하위 디렉터리는 실제 코드가 생길 때 생성하고 빈 구조를 미리 추가하지 않습니다.
+- 한 기능이 다른 기능의 내부 파일을 직접 가져오지 않으며, `shared`는 `app`이나 `features`에 의존하지 않습니다.
+
 ## TypeScript
 
 - `strict` 설정을 유지하고 오류를 회피하기 위해 설정을 완화하지 않습니다.
@@ -70,9 +94,10 @@ Next.js가 이름을 정하는 `page.tsx`, `layout.tsx`, `route.ts` 등의 특�
 
 ## CSS 범위
 
-- `globals.css`에는 reset, 전역 token, 공통 document 기본값만 둡니다.
-- component style 방식과 naming은 CSS 도구를 선택하는 초기 설정 작업에서 확정합니다.
-- 도구가 도입되기 전까지 존재하지 않는 CSS module, utility class, design token 규칙을 가정하지 않습니다.
+- `src/styles/global.css`는 Tailwind와 전역 스타일 파일을 연결하는 진입점으로 사용합니다.
+- 브라우저 기본 스타일 정리는 `src/styles/reset.css`에 둡니다.
+- 실제 공통 색상, 간격, 글꼴이 정해지면 `src/styles/tokens.css`를 생성합니다.
+- component style은 Tailwind utility class를 기본으로 하며 조건부 조합에는 `cn` 또는 `cva`를 사용합니다.
 
 ## 현재 강제 수준
 
