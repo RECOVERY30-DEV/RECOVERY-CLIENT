@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.22.0",
   "paths": {
     "app": "src/app",
-    "stylesheet": "src/app/globals.css"
+    "stylesheet": "src/styles/global.css"
   },
   "modules": {
     "ci": "1.0.0",
@@ -76,8 +76,8 @@
       "mode": "0644",
       "ownership": "managed"
     },
-    "src/app/globals.css": {
-      "hash": "sha256:11c422a6f84608f169646eaf5f9ca4c9b59e5ff9a67b045468c52a941bbc005e",
+    "src/styles/global.css": {
+      "hash": "sha256:f14058389824f7fe0895dce7f199edd8feee1b27133cde924cde467ce6b23b4d",
       "mode": "0644",
       "ownership": "patched"
     },

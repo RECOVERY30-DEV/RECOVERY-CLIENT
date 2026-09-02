@@ -11,7 +11,7 @@ const config = {
   singleQuote: true,
   tabWidth: 2,
   tailwindFunctions: ['clsx', 'cn', 'cva'],
-  tailwindStylesheet: './src/app/globals.css',
+  tailwindStylesheet: './src/styles/global.css',
   trailingComma: 'all',
   useTabs: false,
 }
