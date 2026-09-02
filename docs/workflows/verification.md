@@ -11,14 +11,12 @@
 - Codex hook script나 test가 바뀌면 `pnpm test:hooks`를 실행합니다.
 - 변경 종류와 관계없이 `git diff --check`를 실행합니다.
 
-## Frontprep 기준선
+## 저장소 검증 기준선
 
 ```bash
-pnpm exec frontprep check --cwd .
 pnpm check
 ```
 
-- `frontprep check`는 관리 중인 설정과 manifest의 drift를 읽기 전용으로 확인한 뒤 프로젝트 검증을 실행합니다.
 - `pnpm check`는 lint, formatting, typecheck, Vitest, production build를 순서대로 실행하는 저장소 공통 검증입니다.
 - 특정 실패를 조사할 때는 `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test:run`, `pnpm build`를 개별 실행합니다.
 
