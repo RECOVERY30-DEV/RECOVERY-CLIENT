@@ -81,12 +81,12 @@
       "mode": "0644",
       "ownership": "patched"
     },
-    "src/shared/utils/cn.ts": {
+    "src/shared/lib/cn.ts": {
       "hash": "sha256:b31f5f709ed7d2c32daa516aca38d706852efc09dc400a457c1f0d59535937ed",
       "mode": "0644",
       "ownership": "managed"
     },
-    "src/shared/utils/index.ts": {
+    "src/shared/lib/index.ts": {
       "hash": "sha256:f0dd50987bb9b0608b9852ae1049809be2476e63a89789e256fff471862b4849",
       "mode": "0644",
       "ownership": "patched"
