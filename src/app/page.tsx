@@ -1,7 +1,5 @@
+import { SplashScreen } from '@/features/auth/ui/splash-screen'
+
 export default function Home() {
-  return (
-    <main>
-      <h1>RECOVERY-CLIENT</h1>
-    </main>
-  )
+  return <SplashScreen />
 }
