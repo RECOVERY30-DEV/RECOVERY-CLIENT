@@ -29,6 +29,10 @@ describe('현금흐름 대시보드 화면', () => {
     render(<CashflowDashboardScreen />)
 
     expect(screen.getByText('유입 +320만 원 (카드정산)')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '11 / 10 (일) 상세 보기' })).toHaveAttribute(
+      'href',
+      '/cashflow/daily/2024-11-10',
+    )
     expect(screen.getByText('유출 −185만 원 (임차료)')).toBeInTheDocument()
     expect(screen.getByText('월말 원리금 임차료 집중')).toBeInTheDocument()
     expect(screen.getByText('최근 4주 매출 감소')).toBeInTheDocument()
