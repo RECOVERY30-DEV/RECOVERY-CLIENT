@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
 import { QueryProvider } from '@/app/providers'
+import { pretendard } from '@/shared/config'
 
 import '@/styles/global.css'
 
@@ -16,8 +17,8 @@ type RootLayoutProps = Readonly<{
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="ko">
-      <body>
+    <html className={pretendard.variable} lang="ko">
+      <body className={pretendard.className}>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
