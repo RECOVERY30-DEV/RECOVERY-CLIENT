@@ -29,12 +29,14 @@
   --color-neutral-100: #fbfbfb;
   --color-neutral-200: #f9f9f9;
   --color-neutral-300: #f8f8f8;
+  --color-neutral-400: #f7f7f7;
   --color-neutral-600: #aeb2c1;
   --color-neutral-700: #858ca2;
   --color-neutral-900: #1f2937;
 
   --color-disabled-50: #e0e0e0;
   --color-disabled-200: #a6a6a6;
+  --color-field: #d1d5db;
 
   --color-success-500: #3fdf9a;
   --color-warning-500: #f6514f;

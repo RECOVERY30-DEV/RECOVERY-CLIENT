@@ -28,11 +28,13 @@ const colorTokens = {
   '--color-neutral-100': '#fbfbfb',
   '--color-neutral-200': '#f9f9f9',
   '--color-neutral-300': '#f8f8f8',
+  '--color-neutral-400': '#f7f7f7',
   '--color-neutral-600': '#aeb2c1',
   '--color-neutral-700': '#858ca2',
   '--color-neutral-900': '#1f2937',
   '--color-disabled-50': '#e0e0e0',
   '--color-disabled-200': '#a6a6a6',
+  '--color-field': '#d1d5db',
   '--color-success-500': '#3fdf9a',
   '--color-warning-500': '#f6514f',
   '--color-error-500': '#de3835',
@@ -70,7 +72,7 @@ let compiledCss: Root
 
 beforeAll(async () => {
   const result = await postcss([tailwindcss()]).process(
-    `@import './global.css';\n@source inline("${utilityClasses} bg-primary-blue-500 text-neutral-900 border-disabled-50 bg-danger-gradient font-sans bg-red-500 bg-neutral-400 text-content-primary");`,
+    `@import './global.css';\n@source inline("${utilityClasses} bg-primary-blue-500 text-neutral-900 border-disabled-50 border-field bg-danger-gradient font-sans bg-red-500 bg-neutral-400 bg-neutral-500 text-content-primary");`,
     { from: path.resolve(process.cwd(), 'src/styles/design-foundations.contract.css') },
   )
 
@@ -109,7 +111,9 @@ describe('디자인 색상 토큰', () => {
       'var(--color-primary-blue-500)',
     )
     expect(findDeclarations('.text-neutral-900').color).toBe('var(--color-neutral-900)')
+    expect(findDeclarations('.bg-neutral-400')['background-color']).toBe('var(--color-neutral-400)')
     expect(findDeclarations('.border-disabled-50')['border-color']).toBe('var(--color-disabled-50)')
+    expect(findDeclarations('.border-field')['border-color']).toBe('var(--color-field)')
     expect(findDeclarations('.bg-danger-gradient')['background-image']).toBe(
       'var(--background-image-danger-gradient)',
     )
@@ -117,7 +121,7 @@ describe('디자인 색상 토큰', () => {
 
   it('Figma에 없는 Tailwind 기본 색상은 제공하지 않는다', () => {
     expect(findDeclarations('.bg-red-500')).toEqual({})
-    expect(findDeclarations('.bg-neutral-400')).toEqual({})
+    expect(findDeclarations('.bg-neutral-500')).toEqual({})
     expect(findDeclarations('.text-content-primary')).toEqual({})
   })
 
