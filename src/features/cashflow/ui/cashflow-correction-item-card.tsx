@@ -16,7 +16,7 @@ export function CashflowCorrectionItemCard({ item }: CashflowCorrectionItemCardP
       >
         <div className="flex items-center justify-between gap-3">
           <h3 className="text-[16px] leading-6 font-semibold text-neutral-900">{item.title}</h3>
-          <span className="shrink-0 text-[12px] leading-[14px] font-semibold text-error-500">
+          <span className="shrink-0 text-[12px] leading-[14px] font-semibold text-secondary-500">
             {item.status}
           </span>
         </div>

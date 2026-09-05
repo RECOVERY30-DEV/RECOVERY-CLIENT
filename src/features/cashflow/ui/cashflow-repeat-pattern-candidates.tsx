@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/shared/ui'
 
@@ -8,10 +8,23 @@ import { CASHFLOW_REPEAT_PATTERN_CANDIDATES } from '../model/cashflow-correction
 
 type CandidateDecision = 'confirmed' | 'not-applicable' | null
 
+const DECISION_LABELS = {
+  confirmed: '확인됨',
+  'not-applicable': '해당 없음',
+} as const
+
 export function CashflowRepeatPatternCandidates() {
   const [decisions, setDecisions] = useState<readonly CandidateDecision[]>(
     CASHFLOW_REPEAT_PATTERN_CANDIDATES.map(() => null),
   )
+  const [lastUpdatedIndex, setLastUpdatedIndex] = useState<number | null>(null)
+  const statusRefs = useRef<Array<HTMLParagraphElement | null>>([])
+
+  useEffect(() => {
+    if (lastUpdatedIndex !== null) {
+      statusRefs.current[lastUpdatedIndex]?.focus()
+    }
+  }, [lastUpdatedIndex])
 
   function setDecision(index: number, decision: Exclude<CandidateDecision, null>) {
     setDecisions((currentDecisions) =>
@@ -19,6 +32,7 @@ export function CashflowRepeatPatternCandidates() {
         currentIndex === index ? decision : currentDecision,
       ),
     )
+    setLastUpdatedIndex(index)
   }
 
   return (
@@ -47,12 +61,22 @@ export function CashflowRepeatPatternCandidates() {
             >
               <p className="text-[12px] leading-[15px] font-medium text-primary-100">{candidate}</p>
               {decision ? (
-                <p className="mt-3 text-[12px] leading-[14px] font-semibold text-info-500">
-                  {decision === 'confirmed' ? '확인됨' : '해당 없음'}
+                <p
+                  aria-label={`${candidate} ${DECISION_LABELS[decision]}`}
+                  aria-live="polite"
+                  className="mt-3 text-[12px] leading-[14px] font-semibold text-secondary-500"
+                  ref={(element) => {
+                    statusRefs.current[index] = element
+                  }}
+                  role="status"
+                  tabIndex={-1}
+                >
+                  {DECISION_LABELS[decision]}
                 </p>
               ) : (
                 <div className="mt-3 flex gap-2">
                   <Button
+                    aria-label={`${candidate} 확인`}
                     onClick={() => setDecision(index, 'confirmed')}
                     size="sm"
                     variant="secondary"
@@ -60,6 +84,7 @@ export function CashflowRepeatPatternCandidates() {
                     확인
                   </Button>
                   <Button
+                    aria-label={`${candidate} 해당 없음`}
                     onClick={() => setDecision(index, 'not-applicable')}
                     size="sm"
                     variant="outline"

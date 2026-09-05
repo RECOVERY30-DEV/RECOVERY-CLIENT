@@ -19,7 +19,7 @@ export function CashflowCoverageCard() {
             <dt className="text-[12px] leading-[14px] font-medium text-primary-100">
               {item.label}
             </dt>
-            <dd className="text-[12px] leading-[14px] font-semibold text-error-500">
+            <dd className="text-[12px] leading-[14px] font-semibold text-secondary-500">
               {item.value}
             </dd>
           </div>

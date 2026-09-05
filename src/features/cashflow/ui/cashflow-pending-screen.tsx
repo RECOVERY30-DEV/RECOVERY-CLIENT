@@ -50,7 +50,7 @@ export function CashflowPendingScreen(): React.JSX.Element {
                   <dt className="shrink-0 text-[12px] leading-[14px] font-medium text-primary-100">
                     {metric.label}
                   </dt>
-                  <dd className="text-right text-[12px] leading-[14px] font-semibold text-error-500">
+                  <dd className="text-right text-[12px] leading-[14px] font-semibold text-secondary-500">
                     {metric.value}
                   </dd>
                 </div>

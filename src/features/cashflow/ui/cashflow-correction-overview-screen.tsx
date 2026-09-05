@@ -38,7 +38,9 @@ export function CashflowCorrectionOverviewScreen(): React.JSX.Element {
           >
             보정 진행 상태
           </h2>
-          <p className="mt-5 text-[16px] leading-6 font-semibold text-error-500">62% · 판단보류</p>
+          <p className="mt-5 text-[16px] leading-6 font-semibold text-secondary-500">
+            62% · 판단보류
+          </p>
           <dl className="mt-5">
             <div className="flex items-center justify-between gap-3">
               <dt className="text-[12px] leading-[14px] font-medium text-primary-100">
