@@ -1,7 +1,4 @@
-import {
-  CASHFLOW_CAUSE_DETAILS,
-  CASHFLOW_RISK_SUMMARY,
-} from '@/features/cashflow/model/cashflow-cause-detail-data'
+import { RECOVERY_RISK_CAUSES, RECOVERY_RISK_SUMMARY } from '@/shared/lib/recovery-risk-data'
 
 export type RecoveryOptionId =
   'repayment-adjustment' | 'fixed-cost-reschedule' | 'refinancing-review'
@@ -51,11 +48,30 @@ export const DEFAULT_RECOVERY_OPTION_IDS: readonly RecoveryOptionId[] = [
   'fixed-cost-reschedule',
 ]
 
-export const RECOVERY_RISK_SUMMARY = CASHFLOW_RISK_SUMMARY
-export const RECOVERY_TOP_CAUSES = CASHFLOW_CAUSE_DETAILS
+export { RECOVERY_RISK_SUMMARY }
+export const RECOVERY_TOP_CAUSES = RECOVERY_RISK_CAUSES
 
 export function isRecoveryOptionId(value: string): value is RecoveryOptionId {
   return RECOVERY_OPTION_CATALOG.some((option) => option.id === value)
+}
+
+export function normalizeRecoveryOptionIds(
+  plans: string | readonly string[] | undefined,
+): readonly RecoveryOptionId[] {
+  const planValues = typeof plans === 'string' ? [plans] : (plans ?? [])
+  const selectedIds: RecoveryOptionId[] = []
+
+  for (const plan of planValues) {
+    if (isRecoveryOptionId(plan) && !selectedIds.includes(plan)) {
+      selectedIds.push(plan)
+    }
+
+    if (selectedIds.length === 2) {
+      break
+    }
+  }
+
+  return selectedIds.length > 0 ? selectedIds : DEFAULT_RECOVERY_OPTION_IDS
 }
 
 export function getRecoveryOptions(ids: readonly RecoveryOptionId[]): readonly RecoveryOption[] {

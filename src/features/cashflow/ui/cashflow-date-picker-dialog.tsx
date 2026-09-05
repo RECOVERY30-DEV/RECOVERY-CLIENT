@@ -1,6 +1,6 @@
 'use client'
 
-import { useDialogFocusTrap } from './use-dialog-focus-trap'
+import { useDialogFocusTrap } from '@/shared/ui/use-dialog-focus-trap'
 
 type CashflowDatePickerDialogProps = Readonly<{
   onClose: () => void

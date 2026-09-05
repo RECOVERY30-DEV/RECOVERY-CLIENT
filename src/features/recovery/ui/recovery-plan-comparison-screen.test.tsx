@@ -24,6 +24,8 @@ describe('회복안 비교 화면', () => {
     const refinancing = screen.getByRole('button', { name: '대환 검토' })
 
     expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
+    expect(screen.getByText('총 2건')).toHaveClass('text-primary-blue-800')
+    expect(repayment).toHaveClass('border-primary-blue-700')
     fireEvent.click(refinancing)
     expect(refinancing).toHaveAttribute('aria-pressed', 'false')
 
@@ -32,6 +34,20 @@ describe('회복안 비교 화면', () => {
     expect(fixedCost).toHaveAttribute('aria-pressed', 'true')
     expect(refinancing).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
+  })
+
+  it('회복안 card가 제목과 비교 정보를 접근 가능한 이름과 설명으로 제공한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    const repayment = screen.getByRole('button', { name: '상환조건 조정 상담' })
+
+    expect(repayment).toHaveAccessibleName('상환조건 조정 상담')
+    expect(repayment).toHaveAccessibleDescription(/예상 효과.*부족일 최대 16일 연장 가능/)
+    expect(repayment).toHaveAccessibleDescription(/월 부담 변화.*월 상환액 약 15만 원 감소 예상/)
+    expect(repayment).toHaveAccessibleDescription(/상환조건.*원리금 3회 이상 정상 납부 이력/)
+    expect(repayment).toHaveAccessibleDescription(
+      /금융기관과 상환 조건을 조정할 수 있는지 확인합니다/,
+    )
   })
 
   it('선택한 회복안 ID를 상담 예약 링크 query로 전달하고 미구현 실행은 비활성화한다', () => {

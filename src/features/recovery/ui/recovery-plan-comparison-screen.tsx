@@ -115,7 +115,7 @@ export function RecoveryPlanComparisonScreen(): React.JSX.Element {
             </h2>
             <p className="text-[12px] leading-[14px] text-secondary-300">
               선택{' '}
-              <strong className="font-medium text-primary-blue-500">
+              <strong className="font-medium text-primary-blue-800">
                 총 {selectedOptionIds.length}건
               </strong>
             </p>
