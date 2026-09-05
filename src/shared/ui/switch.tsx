@@ -36,14 +36,12 @@ function Switch({ className, disabled, id, label, ...props }: SwitchProps) {
           role="switch"
           type="checkbox"
         />
-        <SwitchOffIcon
-          aria-hidden="true"
-          className="pointer-events-none block h-[23px] w-10 peer-checked:hidden"
-        />
-        <SwitchOnIcon
-          aria-hidden="true"
-          className="pointer-events-none hidden h-[23px] w-10 peer-checked:block"
-        />
+        <span className="block h-[23px] w-10 peer-checked:hidden">
+          <SwitchOffIcon aria-hidden="true" className="pointer-events-none h-[23px] w-10" />
+        </span>
+        <span className="hidden h-[23px] w-10 peer-checked:block">
+          <SwitchOnIcon aria-hidden="true" className="pointer-events-none h-[23px] w-10" />
+        </span>
       </span>
     </span>
   )
