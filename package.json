@@ -32,8 +32,10 @@
     "frontprep:build": "next build"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.102.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "ky": "^2.1.0",
     "next": "16.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
@@ -66,7 +68,7 @@
     "vitest": "^4.0.0"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.22.1"
   },
   "packageManager": "pnpm@10.22.0"
 }
