@@ -2,13 +2,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const BLOCKED_PACKAGE_MANAGERS = new Set([
-  'npm',
-  'npx',
-  'yarn',
-  'bun',
-  'bunx',
-])
+const BLOCKED_PACKAGE_MANAGERS = new Set(['npm', 'npx', 'yarn', 'bun', 'bunx'])
 const COMMAND_SEPARATORS = new Set(['&&', '||', ';', '|', '&', '(', ')'])
 const SHELL_WRAPPERS = new Set(['bash', 'sh', 'zsh'])
 const GIT_OPTIONS_WITH_VALUE = new Set([
@@ -179,11 +173,7 @@ const gitCommand = (args) => {
       continue
     }
 
-    if (
-      [...GIT_OPTIONS_WITH_VALUE].some((option) =>
-        token.startsWith(`${option}=`),
-      )
-    ) {
+    if ([...GIT_OPTIONS_WITH_VALUE].some((option) => token.startsWith(`${option}=`))) {
       index += 1
       continue
     }
@@ -359,8 +349,7 @@ const readPayload = () => {
 }
 
 const isDirectRun =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 
 if (isDirectRun) {
   const output = createPreToolUseOutput(readPayload())

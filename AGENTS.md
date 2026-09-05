@@ -32,16 +32,16 @@
 
 ## 작업 유형별 라우팅
 
-| 작업 유형 | 추가로 읽을 문서 |
-| --- | --- |
-| code, component, hook, utility | `docs/conventions/code.md` |
-| branch, push, merge | `docs/conventions/git.md` |
-| commit | `docs/conventions/commit.md` |
-| PR | `docs/conventions/pull-request.md`, `docs/conventions/git.md` |
-| dependency, build, config | `docs/rules/project.md`, `docs/workflows/verification.md` |
-| page, route, UI | 기존 `src/app` 코드, `docs/conventions/code.md`, `docs/workflows/verification.md` |
-| agent harness | `docs/agent/harness.md`, `.agents/README.md` |
-| PR review | `.agents/recipes/skeptical-pr-review.md` |
+| 작업 유형                      | 추가로 읽을 문서                                                                  |
+| ------------------------------ | --------------------------------------------------------------------------------- |
+| code, component, hook, utility | `docs/conventions/code.md`                                                        |
+| branch, push, merge            | `docs/conventions/git.md`                                                         |
+| commit                         | `docs/conventions/commit.md`                                                      |
+| PR                             | `docs/conventions/pull-request.md`, `docs/conventions/git.md`                     |
+| dependency, build, config      | `docs/rules/project.md`, `docs/workflows/verification.md`                         |
+| page, route, UI                | 기존 `src/app` 코드, `docs/conventions/code.md`, `docs/workflows/verification.md` |
+| agent harness                  | `docs/agent/harness.md`, `.agents/README.md`                                      |
+| PR review                      | `.agents/recipes/skeptical-pr-review.md`                                          |
 
 작업별 문서가 아직 없다면 현재 코드와 설정을 먼저 확인합니다. 존재하지 않는 아키텍처나 라이브러리 규칙을 추측해 만들지 않습니다.
 

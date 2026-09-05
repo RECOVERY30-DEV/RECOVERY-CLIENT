@@ -17,9 +17,7 @@ const isInside = (candidate, parent) => {
 }
 
 export const createSessionStartOutput = (payload, repoRoot) => {
-  const cwd = path.resolve(
-    typeof payload?.cwd === 'string' ? payload.cwd : repoRoot,
-  )
+  const cwd = path.resolve(typeof payload?.cwd === 'string' ? payload.cwd : repoRoot)
   const resolvedRoot = path.resolve(repoRoot)
 
   if (!isInside(cwd, resolvedRoot)) {
@@ -49,14 +47,10 @@ const readPayload = () => {
 }
 
 const isDirectRun =
-  process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 
 if (isDirectRun) {
-  const repoRoot = path.resolve(
-    path.dirname(fileURLToPath(import.meta.url)),
-    '../..',
-  )
+  const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
   const output = createSessionStartOutput(readPayload(), repoRoot)
 
   if (output) {

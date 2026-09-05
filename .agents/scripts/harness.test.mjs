@@ -4,10 +4,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
 
-import {
-  REQUIRED_PATHS,
-  collectHarnessErrors,
-} from './check-harness.mjs'
+import { REQUIRED_PATHS, collectHarnessErrors } from './check-harness.mjs'
 
 const requiredFiles = {
   'AGENTS.md': [
@@ -89,10 +86,7 @@ test('requires code, commit, and pull request convention documents', () => {
     'docs/conventions/commit.md',
     'docs/conventions/pull-request.md',
   ]) {
-    assert.ok(
-      REQUIRED_PATHS.includes(relativePath),
-      `expected required path: ${relativePath}`,
-    )
+    assert.ok(REQUIRED_PATHS.includes(relativePath), `expected required path: ${relativePath}`)
   }
 })
 
@@ -139,14 +133,11 @@ test('rejects AGENTS.md files longer than 100 lines', async () => {
 })
 
 test('reports missing required harness files with the exact path', async () => {
-  await withFixture(
-    { 'docs/rules/project.md': null },
-    async (root) => {
-      const errors = await collectHarnessErrors(root)
+  await withFixture({ 'docs/rules/project.md': null }, async (root) => {
+    const errors = await collectHarnessErrors(root)
 
-      assert.ok(errors.some((error) => error.includes('docs/rules/project.md')))
-    },
-  )
+    assert.ok(errors.some((error) => error.includes('docs/rules/project.md')))
+  })
 })
 
 test('reports broken local paths routed from AGENTS.md', async () => {
@@ -163,23 +154,17 @@ test('reports broken local paths routed from AGENTS.md', async () => {
 })
 
 test('rejects invalid hook configuration JSON', async () => {
-  await withFixture(
-    { '.codex/hooks.json': '{invalid' },
-    async (root) => {
-      const errors = await collectHarnessErrors(root)
+  await withFixture({ '.codex/hooks.json': '{invalid' }, async (root) => {
+    const errors = await collectHarnessErrors(root)
 
-      assert.ok(errors.some((error) => error.includes('.codex/hooks.json')))
-    },
-  )
+    assert.ok(errors.some((error) => error.includes('.codex/hooks.json')))
+  })
 })
 
 test('reports missing harness package scripts', async () => {
-  await withFixture(
-    { 'package.json': JSON.stringify({ scripts: {} }) },
-    async (root) => {
-      const errors = await collectHarnessErrors(root)
+  await withFixture({ 'package.json': JSON.stringify({ scripts: {} }) }, async (root) => {
+    const errors = await collectHarnessErrors(root)
 
-      assert.ok(errors.some((error) => error.includes('check:harness')))
-    },
-  )
+    assert.ok(errors.some((error) => error.includes('check:harness')))
+  })
 })
