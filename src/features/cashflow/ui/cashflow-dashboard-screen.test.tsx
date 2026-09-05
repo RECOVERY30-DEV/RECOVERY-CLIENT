@@ -25,7 +25,7 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByRole('link', { name: '현금흐름' })).toHaveAttribute('aria-current', 'page')
   })
 
-  it('일자별 현금흐름과 부족 원인 상위 세 항목을 제공한다', () => {
+  it('일자별 현금흐름과 부족 원인 상위 세 항목 및 상세 경로를 제공한다', () => {
     render(<CashflowDashboardScreen />)
 
     expect(screen.getByText('유입 +320만 원 (카드정산)')).toBeInTheDocument()
@@ -37,6 +37,9 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByText('월말 원리금 임차료 집중')).toBeInTheDocument()
     expect(screen.getByText('최근 4주 매출 감소')).toBeInTheDocument()
     expect(screen.getByText('계절적 회복 지연 가능')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '원인 상세 보기' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveAttribute(
+      'href',
+      '/cashflow/causes',
+    )
   })
 })

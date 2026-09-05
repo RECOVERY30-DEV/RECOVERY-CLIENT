@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { cn } from '@/shared/lib'
 
 import { CASHFLOW_FACTORS } from '../model/cashflow-dashboard-data'
@@ -12,13 +14,12 @@ export function CashflowFactors() {
         >
           부족 원인 Top 3
         </h2>
-        <button
+        <Link
           className="border-b border-neutral-700 py-0.5 text-[12px] leading-[14px] font-medium text-neutral-700"
-          disabled
-          type="button"
+          href="/cashflow/causes"
         >
           원인 상세 보기
-        </button>
+        </Link>
       </div>
       <p className="mt-[6px] text-[13px] leading-[15px] text-secondary-300">
         과거 같은 시기 패턴과 비교한 추정 결과입니다.
