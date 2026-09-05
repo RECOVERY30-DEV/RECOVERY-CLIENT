@@ -28,6 +28,23 @@ pnpm dev
 - Pretendard 가변 폰트는 저장소에 포함해 로컬로 제공하며 라이선스는
   `src/shared/assets/fonts/OFL.txt`에서 확인할 수 있습니다.
 
+## 공통 사용자 인터페이스
+
+여러 화면에서 반복되는 표현 요소는 `src/shared/ui`에서 관리하고 아래처럼 가져옵니다.
+
+```tsx
+import { Button, Checkbox, IconButton, Input, Select, Switch, Textarea } from '@/shared/ui'
+```
+
+- `Button`: 주요, 보조, 외곽선, 텍스트 형태와 세 가지 크기를 제공합니다.
+- `IconButton`: 접근 가능한 이름을 필수로 받는 아이콘 전용 버튼입니다.
+- `Input`, `Textarea`: 한 줄과 여러 줄 입력 요소입니다.
+- `Checkbox`, `Switch`: 라벨이 연결된 네이티브 선택 요소입니다.
+- `Select`: 키보드 조작을 유지하는 네이티브 선택 목록입니다.
+
+업무 의미가 들어간 카드, 위험도 표시, 내비게이션과 화면 전용 모달은 각 기능 영역에서
+조합합니다.
+
 ## Scripts
 
 - `pnpm dev`: 개발 서버 실행
