@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 import { DAILY_CASHFLOW_ITEMS } from '../model/cashflow-dashboard-data'
 
 export function DailyCashflowCard() {
@@ -10,17 +12,20 @@ export function DailyCashflowCard() {
         일자별 현금흐름
       </h2>
 
-      <dl className="mt-5">
+      <ul className="mt-5">
         {DAILY_CASHFLOW_ITEMS.map((item) => (
-          <div
-            className="flex h-[30px] items-center justify-between px-0.5 text-[12px] leading-[14px]"
-            key={item.date}
-          >
-            <dt className="font-medium text-primary-100">{item.date}</dt>
-            <dd className="font-semibold text-primary-blue-700">{item.detail}</dd>
-          </div>
+          <li key={item.id}>
+            <Link
+              aria-label={`${item.date} 상세 보기`}
+              className="flex h-[30px] items-center justify-between rounded px-0.5 text-[12px] leading-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+              href={`/cashflow/daily/${item.id}`}
+            >
+              <span className="font-medium text-primary-100">{item.date}</span>
+              <span className="font-semibold text-primary-blue-700">{item.detail}</span>
+            </Link>
+          </li>
         ))}
-      </dl>
+      </ul>
     </section>
   )
 }

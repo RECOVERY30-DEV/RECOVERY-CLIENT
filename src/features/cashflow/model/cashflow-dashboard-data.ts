@@ -6,11 +6,11 @@ export const CASHFLOW_DATA_SOURCES = [
 ] as const
 
 export const DAILY_CASHFLOW_ITEMS = [
-  { date: '11 / 10 (일)', detail: '공휴일 — 이동 적용' },
-  { date: '11 / 14 (목)', detail: '유입 +320만 원 (카드정산)' },
-  { date: '11 / 20 (수)', detail: '유출 −185만 원 (임차료)' },
-  { date: '11 / 25 (월)', detail: '유출 −78만 원 (원리금)' },
-  { date: '11 / 28 (목)', detail: '유출 −78만 원 (원리금)' },
+  { date: '11 / 10 (일)', detail: '공휴일 — 이동 적용', id: '2024-11-10' },
+  { date: '11 / 14 (목)', detail: '유입 +320만 원 (카드정산)', id: '2024-11-14' },
+  { date: '11 / 20 (수)', detail: '유출 −185만 원 (임차료)', id: '2024-11-20' },
+  { date: '11 / 25 (월)', detail: '유출 −78만 원 (원리금)', id: '2024-11-25' },
+  { date: '11 / 28 (목)', detail: '유출 −78만 원 (원리금)', id: '2024-11-28' },
 ] as const
 
 export const CASHFLOW_FACTORS = [
