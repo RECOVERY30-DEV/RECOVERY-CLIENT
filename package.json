@@ -23,10 +23,11 @@
     "format": "pnpm run frontprep:format",
     "format:check": "pnpm run frontprep:format:check",
     "quality": "pnpm run frontprep:quality",
-    "check": "pnpm run frontprep:check",
+    "check": "pnpm run frontprep:check && pnpm run test:svgr",
     "frontprep:test": "vitest run",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:svgr": "vitest run --config vitest.svgr.config.mts",
     "frontprep:prepare": "husky",
     "prepare": "pnpm run frontprep:prepare",
     "frontprep:build": "next build"
@@ -45,6 +46,7 @@
     "@commitlint/cli": "^21.2.0",
     "@commitlint/config-conventional": "^21.2.0",
     "@mingyeongbin/frontprep": "0.1.0-beta.2",
+    "@svgr/webpack": "^8.1.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": ">=6.0.0 <6.10.0",
@@ -64,6 +66,7 @@
     "tailwindcss": "^4.0.0",
     "typescript": "^5",
     "vite": "^6.0.0",
+    "vite-plugin-svgr": "^5.2.0",
     "vite-tsconfig-paths": "^6.0.0",
     "vitest": "^4.0.0"
   },
