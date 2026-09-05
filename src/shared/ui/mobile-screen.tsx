@@ -9,6 +9,7 @@ type MobileScreenProps = Readonly<{
   'aria-label': string
   children: ReactNode
   className?: string
+  mode?: 'document' | 'viewport'
 }>
 
 function StatusBar() {
@@ -30,15 +31,26 @@ function StatusBar() {
   )
 }
 
-export function MobileScreen({ 'aria-label': ariaLabel, children, className }: MobileScreenProps) {
+export function MobileScreen({
+  'aria-label': ariaLabel,
+  children,
+  className,
+  mode = 'viewport',
+}: MobileScreenProps) {
+  const isDocument = mode === 'document'
+
   return (
     <main
       aria-label={ariaLabel}
-      className="min-h-dvh bg-primary-100 sm:flex sm:items-center sm:justify-center sm:p-3"
+      className={cn(
+        'min-h-dvh bg-primary-100 sm:flex sm:justify-center sm:p-3',
+        isDocument ? 'sm:items-start' : 'sm:items-center',
+      )}
     >
       <section
         className={cn(
-          'relative min-h-dvh w-full overflow-hidden bg-base-white sm:h-[844px] sm:!min-h-[844px] sm:max-w-[390px] sm:flex-none sm:rounded-[25px] sm:shadow-[0_4px_16px_rgba(0,0,0,0.08)]',
+          'relative min-h-dvh w-full bg-base-white sm:max-w-[390px] sm:flex-none sm:rounded-[25px] sm:shadow-[0_4px_16px_rgba(0,0,0,0.08)]',
+          isDocument ? 'overflow-x-hidden' : 'overflow-hidden sm:h-[844px] sm:!min-h-[844px]',
           className,
         )}
       >

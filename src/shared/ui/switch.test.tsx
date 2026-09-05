@@ -23,12 +23,14 @@ describe('Switch', () => {
     expect(switchControl).toHaveAttribute('name', 'email-notification')
   })
 
-  it('꺼짐과 켜짐 피그마 SVG를 상태 클래스에 올바르게 연결한다', () => {
+  it('SVG 인라인 표시 속성과 관계없이 꺼짐과 켜짐 아이콘을 상태별로 전환한다', () => {
     const { container } = render(<Switch label="앱 알림" />)
-    const [offIcon, onIcon] = container.querySelectorAll('svg')
+    const [offIconContainer, onIconContainer] = container.querySelectorAll(
+      'input[role="switch"] ~ span',
+    )
 
-    expect(offIcon).toHaveClass('block', 'peer-checked:hidden')
-    expect(onIcon).toHaveClass('hidden', 'peer-checked:block')
+    expect(offIconContainer).toHaveClass('block', 'peer-checked:hidden')
+    expect(onIconContainer).toHaveClass('hidden', 'peer-checked:block')
   })
 
   it('비활성 상태에서는 상태를 변경하지 않는다', () => {
