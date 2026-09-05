@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 
 import { Button, MobileScreen } from '@/shared/ui'
 
@@ -19,6 +19,7 @@ type CashflowCorrectionFormScreenProps = Readonly<{
 }>
 
 type ActiveDialog = 'date-picker' | 'draft-exit' | null
+type FocusRestoreTarget = 'back-link' | 'date-button'
 
 export function CashflowCorrectionFormScreen({
   kind,
@@ -27,6 +28,7 @@ export function CashflowCorrectionFormScreen({
   const router = useRouter()
   const backLinkRef = useRef<HTMLAnchorElement>(null)
   const dateButtonRef = useRef<HTMLButtonElement>(null)
+  const focusRestoreTargetRef = useRef<FocusRestoreTarget | null>(null)
   const [amount, setAmount] = useState('')
   const [date, setDate] = useState('')
   const [selection, setSelection] = useState('')
@@ -38,19 +40,35 @@ export function CashflowCorrectionFormScreen({
   const isDirty = Boolean(amount || date || selection || expenseItem || memo || isConfirmed)
   const canSave = Boolean(amount && date && selection && (!config.hasExpenseItem || expenseItem))
 
-  function restoreDateButtonFocus() {
-    dateButtonRef.current?.focus()
+  useLayoutEffect(() => {
+    if (activeDialog !== null) {
+      return
+    }
+
+    const focusRestoreTarget = focusRestoreTargetRef.current
+    focusRestoreTargetRef.current = null
+
+    if (focusRestoreTarget === 'date-button') {
+      dateButtonRef.current?.focus()
+    }
+
+    if (focusRestoreTarget === 'back-link') {
+      backLinkRef.current?.focus()
+    }
+  }, [activeDialog])
+
+  function closeDialogAndRestoreFocus(target: FocusRestoreTarget) {
+    focusRestoreTargetRef.current = target
+    setActiveDialog(null)
   }
 
   function handleDateSelect(nextDate: string) {
     setDate(nextDate)
-    setActiveDialog(null)
-    restoreDateButtonFocus()
+    closeDialogAndRestoreFocus('date-button')
   }
 
   function handleDatePickerClose() {
-    setActiveDialog(null)
-    restoreDateButtonFocus()
+    closeDialogAndRestoreFocus('date-button')
   }
 
   function handleBackClick(event: React.MouseEvent<HTMLAnchorElement>) {
@@ -68,11 +86,11 @@ export function CashflowCorrectionFormScreen({
   }
 
   function handleContinueWriting() {
-    setActiveDialog(null)
-    backLinkRef.current?.focus()
+    closeDialogAndRestoreFocus('back-link')
   }
 
   function handleDiscardDraft() {
+    focusRestoreTargetRef.current = null
     router.push('/cashflow/corrections')
   }
 
@@ -80,6 +98,7 @@ export function CashflowCorrectionFormScreen({
     event.preventDefault()
 
     if (canSave) {
+      focusRestoreTargetRef.current = null
       router.push('/cashflow/corrections')
     }
   }

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const { push } = vi.hoisted(() => ({ push: vi.fn() }))
 
@@ -8,6 +8,10 @@ vi.mock('next/navigation', () => ({
 }))
 
 import { CashflowCorrectionFormScreen } from './cashflow-correction-form-screen'
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('현금흐름 보정 입력 공통 화면', () => {
   it.each([
@@ -85,6 +89,20 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     expect(screen.queryByRole('dialog', { name: '예정일 선택' })).not.toBeInTheDocument()
     expect(dateButton).toHaveFocus()
     expect(dateButton).toHaveTextContent('2025년 7월 15일')
+  })
+
+  it('inert가 해제된 뒤 날짜 trigger에 focus를 복원하고 kind별 선택 날짜를 accessible name에 포함한다', () => {
+    preventFocusInsideInertContainer()
+    render(<CashflowCorrectionFormScreen kind="external-funds" />)
+
+    const dateButton = screen.getByRole('button', {
+      name: '입금 예정일 예정일을 선택해주세요.',
+    })
+    fireEvent.click(dateButton)
+    fireEvent.click(screen.getByRole('button', { name: '2025년 7월 15일' }))
+
+    expect(screen.getByTestId('cashflow-correction-form-background')).not.toHaveAttribute('inert')
+    expect(screen.getByRole('button', { name: '입금 예정일 2025년 7월 15일' })).toHaveFocus()
   })
 
   it('변경된 입력에서 돌아가기를 누르면 초안 이탈 dialog를 열고 계속 작성 시 focus를 복원한다', () => {
@@ -200,4 +218,29 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     expect(screen.queryByRole('dialog', { name: '작성 중인 초안' })).not.toBeInTheDocument()
     expect(backLink).toHaveFocus()
   })
+
+  it('inert가 해제된 뒤 초안 dialog의 back trigger에 focus를 복원한다', () => {
+    preventFocusInsideInertContainer()
+    render(<CashflowCorrectionFormScreen kind="cash-sales" />)
+
+    fireEvent.change(screen.getByLabelText('금액 (원)'), { target: { value: '1200000' } })
+    const backLink = screen.getByRole('link', { name: '정보 보정 화면으로 돌아가기' })
+    fireEvent.click(backLink)
+    fireEvent.click(screen.getByRole('button', { name: '계속 작성' }))
+
+    expect(screen.getByTestId('cashflow-correction-form-background')).not.toHaveAttribute('inert')
+    expect(backLink).toHaveFocus()
+  })
 })
+
+function preventFocusInsideInertContainer() {
+  const originalFocus = HTMLElement.prototype.focus
+
+  return vi.spyOn(HTMLElement.prototype, 'focus').mockImplementation(function focus(
+    this: HTMLElement,
+  ) {
+    if (!this.closest('[inert]')) {
+      originalFocus.call(this)
+    }
+  })
+}
