@@ -7,6 +7,13 @@ export type CashflowCauseDetail = Readonly<{
   title: string
 }>
 
+export const CASHFLOW_RISK_SUMMARY = {
+  firstShortageAfter: '14일 후',
+  minimumBalanceRange: '-230만 ~ -80만 원',
+  shortageDate: '6월 28일',
+  shortSummary: '14일 후 · 6월 28일',
+} as const
+
 export const CASHFLOW_CAUSE_DETAILS: readonly CashflowCauseDetail[] = [
   {
     actions: [{ href: '/cashflow/corrections/expected-income/new', label: '보정값 추가하기' }],

@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 import { BackLink, MobileScreen } from '@/shared/ui'
 
-import { CASHFLOW_CAUSE_DETAILS } from '../model/cashflow-cause-detail-data'
+import { CASHFLOW_CAUSE_DETAILS, CASHFLOW_RISK_SUMMARY } from '../model/cashflow-cause-detail-data'
 import { CashflowCauseCard } from './cashflow-cause-card'
 
 export function CashflowCauseDetailScreen(): React.JSX.Element {
@@ -36,9 +36,9 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
                 첫 부족일까지
               </dt>
               <dd className="mt-1 flex items-baseline gap-[7px] text-[12px] leading-[14px] font-medium text-neutral-900">
-                <span>14일 후</span>
+                <span>{CASHFLOW_RISK_SUMMARY.firstShortageAfter}</span>
                 <strong className="text-[18px] leading-[21px] font-bold text-primary-100">
-                  6월 28일
+                  {CASHFLOW_RISK_SUMMARY.shortageDate}
                 </strong>
               </dd>
             </div>
@@ -47,7 +47,7 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
                 예상 최저 잔액
               </dt>
               <dd className="mt-1 text-[18px] leading-[21px] font-bold text-primary-100">
-                -230만 ~ -80만 원
+                {CASHFLOW_RISK_SUMMARY.minimumBalanceRange}
               </dd>
             </div>
           </dl>

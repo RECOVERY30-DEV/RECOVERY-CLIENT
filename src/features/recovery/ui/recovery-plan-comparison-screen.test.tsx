@@ -1,0 +1,64 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
+
+import { RecoveryPlanComparisonScreen } from './recovery-plan-comparison-screen'
+
+describe('회복안 비교 화면', () => {
+  it('Task 3과 같은 위험 요약과 TOP 3 원인을 표시한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    expect(screen.getByRole('heading', { name: '회복안 비교' })).toBeInTheDocument()
+    expect(screen.getByText('14일 후 · 6월 28일')).toBeInTheDocument()
+    expect(screen.getByText('-230만 ~ -80만 원')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '주요 원인 TOP 3' })).toBeInTheDocument()
+    expect(screen.getByText('1. 최근 8주 매출 감소')).toBeInTheDocument()
+    expect(screen.getByText('2. 월말 임차료·원리금 집중')).toBeInTheDocument()
+    expect(screen.getByText('3. 계절적 매출 회복 지연')).toBeInTheDocument()
+  })
+
+  it('기본 두 회복안을 선택하고 최대 두 개까지만 선택한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    const repayment = screen.getByRole('button', { name: '상환조건 조정 상담' })
+    const fixedCost = screen.getByRole('button', { name: '고정비 납부일 재배치' })
+    const refinancing = screen.getByRole('button', { name: '대환 검토' })
+
+    expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
+    fireEvent.click(refinancing)
+    expect(refinancing).toHaveAttribute('aria-pressed', 'false')
+
+    fireEvent.click(repayment)
+    fireEvent.click(refinancing)
+    expect(fixedCost).toHaveAttribute('aria-pressed', 'true')
+    expect(refinancing).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
+  })
+
+  it('선택한 회복안 ID를 상담 예약 링크 query로 전달하고 미구현 실행은 비활성화한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    fireEvent.click(screen.getByRole('button', { name: '상환조건 조정 상담' }))
+    fireEvent.click(screen.getByRole('button', { name: '대환 검토' }))
+
+    expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveAttribute(
+      'href',
+      '/recovery/consultation?plans=fixed-cost-reschedule&plans=refinancing-review',
+    )
+    expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
+      'href',
+      '/recovery/support-programs',
+    )
+    expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
+  })
+
+  it('기준과 선택 회복안을 비교하고 상환조건으로 올바르게 표기한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    expect(screen.getByRole('heading', { name: '시나리오 비교' })).toBeInTheDocument()
+    expect(screen.getByText('기준')).toBeInTheDocument()
+    expect(screen.getAllByText('상환조건 조정 상담').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('고정비 납부일 재배치').length).toBeGreaterThan(0)
+    expect(screen.queryByText('상황조건')).not.toBeInTheDocument()
+  })
+})
