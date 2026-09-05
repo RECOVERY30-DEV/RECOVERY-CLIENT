@@ -1,0 +1,165 @@
+@theme static {
+  --color-*: initial;
+
+  --color-base-white: #ffffff;
+  --color-base-black: #000000;
+
+  --color-primary-100: #303030;
+  --color-primary-200: #111111;
+
+  --color-primary-blue-100: #bae7ff;
+  --color-primary-blue-200: #97dbff;
+  --color-primary-blue-300: #74ceff;
+  --color-primary-blue-400: #52c2ff;
+  --color-primary-blue-500: #2fb6ff;
+  --color-primary-blue-600: #2798d5;
+  --color-primary-blue-700: #1f79aa;
+  --color-primary-blue-800: #185b80;
+  --color-primary-blue-900: #103d55;
+
+  --color-secondary-300: #5c6583;
+  --color-secondary-400: #343f64;
+  --color-secondary-500: #0b1845;
+  --color-secondary-600: #09143a;
+  --color-secondary-700: #07102e;
+  --color-secondary-800: #060c23;
+  --color-secondary-900: #040817;
+
+  --color-neutral-50: #fcfcfc;
+  --color-neutral-100: #fbfbfb;
+  --color-neutral-200: #f9f9f9;
+  --color-neutral-300: #f8f8f8;
+  --color-neutral-600: #aeb2c1;
+  --color-neutral-700: #858ca2;
+  --color-neutral-900: #1f2937;
+
+  --color-disabled-50: #e0e0e0;
+  --color-disabled-200: #a6a6a6;
+
+  --color-success-500: #3fdf9a;
+  --color-warning-500: #f6514f;
+  --color-error-500: #de3835;
+  --color-danger-500: #ff8e71;
+  --color-info-500: #52a0ff;
+
+  --background-image-danger-gradient: linear-gradient(to left, #f6514f, #ff8e71);
+}
+
+@theme inline {
+  --font-sans:
+    var(--font-pretendard), Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+@utility typo-display-1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+}
+
+@utility typo-header-1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+}
+
+@utility typo-header-2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+}
+
+@utility typo-header-3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+}
+
+@utility typo-header-4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+}
+
+@utility typo-sub-header-1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+@utility typo-sub-header-2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.625rem;
+}
+
+@utility typo-sub-header-3 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+}
+
+@utility typo-body-1 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.625rem;
+}
+
+@utility typo-body-2 {
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.625rem;
+}
+
+@utility typo-body-3 {
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5rem;
+}
+
+@utility typo-body-4 {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5rem;
+}
+
+@utility typo-body-5 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+}
+
+@utility typo-body-6 {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+}
+
+@utility typo-body-7 {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.125rem;
+}
+
+@utility typo-body-8 {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.125rem;
+}
+
+@utility typo-caption-1 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1rem;
+}
+
+@utility typo-caption-2 {
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1rem;
+}
+
+@utility typo-caption-3 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1rem;
+}

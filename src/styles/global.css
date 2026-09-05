@@ -1,2 +1,10 @@
 @import 'tailwindcss';
+@import './tokens.css';
 @import './reset.css';
+
+@layer base {
+  body {
+    background-color: var(--color-base-white);
+    color: var(--color-base-black);
+  }
+}

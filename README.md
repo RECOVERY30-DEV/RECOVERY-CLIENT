@@ -19,6 +19,15 @@ pnpm dev
 브라우저와 같은 출처로 요청합니다. `NEXT_PUBLIC_` 환경 변수는 클라이언트에 공개되므로 비밀값이나
 인증 토큰을 넣지 않습니다.
 
+## 디자인 기반
+
+- 색상과 타이포그래피 토큰은 `src/styles/tokens.css`에서 관리합니다.
+- 색상은 Tailwind 클래스인 `bg-primary-blue-500`, `text-neutral-900`처럼 사용합니다.
+- Tailwind 기본 색상은 제거되어 있으므로 Figma에 정의된 색상 토큰만 사용합니다.
+- 타이포그래피는 크기, 행간, 굵기를 묶은 `typo-header-1`, `typo-body-4`처럼 사용합니다.
+- Pretendard 가변 폰트는 저장소에 포함해 로컬로 제공하며 라이선스는
+  `src/shared/assets/fonts/OFL.txt`에서 확인할 수 있습니다.
+
 ## Scripts
 
 - `pnpm dev`: 개발 서버 실행
