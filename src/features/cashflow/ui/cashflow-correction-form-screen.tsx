@@ -18,6 +18,8 @@ type CashflowCorrectionFormScreenProps = Readonly<{
   kind: CashflowCorrectionKind
 }>
 
+type ActiveDialog = 'date-picker' | 'draft-exit' | null
+
 export function CashflowCorrectionFormScreen({
   kind,
 }: CashflowCorrectionFormScreenProps): React.JSX.Element {
@@ -31,8 +33,7 @@ export function CashflowCorrectionFormScreen({
   const [expenseItem, setExpenseItem] = useState('')
   const [memo, setMemo] = useState('')
   const [isConfirmed, setIsConfirmed] = useState(false)
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
-  const [isDraftExitOpen, setIsDraftExitOpen] = useState(false)
+  const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null)
 
   const isDirty = Boolean(amount || date || selection || expenseItem || memo || isConfirmed)
   const canSave = Boolean(amount && date && selection && (!config.hasExpenseItem || expenseItem))
@@ -43,21 +44,31 @@ export function CashflowCorrectionFormScreen({
 
   function handleDateSelect(nextDate: string) {
     setDate(nextDate)
-    setIsDatePickerOpen(false)
+    setActiveDialog(null)
+    restoreDateButtonFocus()
+  }
+
+  function handleDatePickerClose() {
+    setActiveDialog(null)
     restoreDateButtonFocus()
   }
 
   function handleBackClick(event: React.MouseEvent<HTMLAnchorElement>) {
+    if (activeDialog) {
+      event.preventDefault()
+      return
+    }
+
     if (!isDirty) {
       return
     }
 
     event.preventDefault()
-    setIsDraftExitOpen(true)
+    setActiveDialog('draft-exit')
   }
 
   function handleContinueWriting() {
-    setIsDraftExitOpen(false)
+    setActiveDialog(null)
     backLinkRef.current?.focus()
   }
 
@@ -75,56 +86,60 @@ export function CashflowCorrectionFormScreen({
 
   return (
     <MobileScreen aria-label={`${config.title} 화면`} className="min-h-[1040px]" mode="document">
-      <Link
-        aria-label="정보 보정 화면으로 돌아가기"
-        className="absolute top-[61px] left-[11px] z-20 flex size-6 items-center justify-center text-primary-200 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
-        href="/cashflow/corrections"
-        onClick={handleBackClick}
-        ref={backLinkRef}
+      <div
+        aria-hidden={activeDialog ? true : undefined}
+        data-testid="cashflow-correction-form-background"
+        inert={activeDialog ? true : undefined}
       >
-        ←
-      </Link>
-      <form className="px-6 pt-[102px] pb-[62px]" onSubmit={handleSubmit}>
-        <header>
-          <h1 className="text-[18px] leading-[21px] font-bold text-primary-200">{config.title}</h1>
-          <p className="mt-[6px] text-[13px] leading-4 text-secondary-300">{config.description}</p>
-        </header>
-        <section className="mt-5">
-          <CashflowCorrectionFormFields
-            config={config}
-            date={date}
-            dateButtonRef={dateButtonRef}
-            expenseItem={expenseItem}
-            isConfirmed={isConfirmed}
-            memo={memo}
-            onConfirmedChange={setIsConfirmed}
-            onDateClick={() => setIsDatePickerOpen(true)}
-            onExpenseItemChange={setExpenseItem}
-            onMemoChange={setMemo}
-            onSelectionChange={setSelection}
-            onValueChange={setAmount}
-            selection={selection}
-            value={amount}
-          />
-        </section>
-        <aside className="mt-10 rounded-[10px] bg-neutral-100 px-[14px] py-[10px]">
-          <h2 className="typo-body-5 text-neutral-900">{config.helpTitle}</h2>
-          <p className="mt-[15px] typo-caption-3 text-neutral-700">{config.helpDescription}</p>
-        </aside>
-        <Button className="mt-10 w-full" disabled={!canSave} type="submit">
-          저장
-        </Button>
-      </form>
-      {isDatePickerOpen ? (
-        <CashflowDatePickerDialog
-          onClose={() => {
-            setIsDatePickerOpen(false)
-            restoreDateButtonFocus()
-          }}
-          onSelect={handleDateSelect}
-        />
+        <Link
+          aria-label="정보 보정 화면으로 돌아가기"
+          className="absolute top-[61px] left-[11px] z-20 flex size-6 items-center justify-center text-primary-200 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+          href="/cashflow/corrections"
+          onClick={handleBackClick}
+          ref={backLinkRef}
+        >
+          ←
+        </Link>
+        <form className="px-6 pt-[102px] pb-[62px]" onSubmit={handleSubmit}>
+          <header>
+            <h1 className="text-[18px] leading-[21px] font-bold text-primary-200">
+              {config.title}
+            </h1>
+            <p className="mt-[6px] text-[13px] leading-4 text-secondary-300">
+              {config.description}
+            </p>
+          </header>
+          <section className="mt-5">
+            <CashflowCorrectionFormFields
+              config={config}
+              date={date}
+              dateButtonRef={dateButtonRef}
+              expenseItem={expenseItem}
+              isConfirmed={isConfirmed}
+              memo={memo}
+              onConfirmedChange={setIsConfirmed}
+              onDateClick={() => setActiveDialog('date-picker')}
+              onExpenseItemChange={setExpenseItem}
+              onMemoChange={setMemo}
+              onSelectionChange={setSelection}
+              onValueChange={setAmount}
+              selection={selection}
+              value={amount}
+            />
+          </section>
+          <aside className="mt-10 rounded-[10px] bg-neutral-100 px-[14px] py-[10px]">
+            <h2 className="typo-body-5 text-neutral-900">{config.helpTitle}</h2>
+            <p className="mt-[15px] typo-caption-3 text-neutral-700">{config.helpDescription}</p>
+          </aside>
+          <Button className="mt-10 w-full" disabled={!canSave} type="submit">
+            저장
+          </Button>
+        </form>
+      </div>
+      {activeDialog === 'date-picker' ? (
+        <CashflowDatePickerDialog onClose={handleDatePickerClose} onSelect={handleDateSelect} />
       ) : null}
-      {isDraftExitOpen ? (
+      {activeDialog === 'draft-exit' ? (
         <CashflowDraftExitDialog
           onContinue={handleContinueWriting}
           onDiscard={handleDiscardDraft}

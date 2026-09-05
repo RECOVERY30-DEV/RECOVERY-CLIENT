@@ -11,17 +11,46 @@ import { CashflowCorrectionFormScreen } from './cashflow-correction-form-screen'
 
 describe('현금흐름 보정 입력 공통 화면', () => {
   it.each([
-    ['cash-sales', '현금매출 입력', '반복 여부', '반복 없음'],
-    ['external-funds', '타행·외부자금 입력', '자금 출처', '타행 계좌'],
-    ['expected-income', '예정수입 추가', '반복주기', '반복 없음'],
-    ['expected-expenses', '예정지출 입력', '반복주기', '반복 없음'],
+    [
+      'cash-sales',
+      '현금매출 입력',
+      '반복 여부',
+      '예정일 예정일을 선택해주세요.',
+      ['반복 여부를 선택해주세요.', '반복 없음', '매주', '매월'],
+    ],
+    [
+      'external-funds',
+      '타행·외부자금 입력',
+      '자금 출처',
+      '입금 예정일 예정일을 선택해주세요.',
+      ['자금 출처를 선택해주세요.', '타행 계좌', '사업 외부 자금', '기타'],
+    ],
+    [
+      'expected-income',
+      '예정수입 추가',
+      '반복주기',
+      '예정일 예정일을 선택해주세요.',
+      ['반복 주기를 선택해주세요.', '반복 없음', '매주', '매월'],
+    ],
+    [
+      'expected-expenses',
+      '예정지출 입력',
+      '반복주기',
+      '예정일 예정일을 선택해주세요.',
+      ['반복 주기를 선택해주세요.', '반복 없음', '매주', '매월'],
+    ],
   ] as const)(
     '%s kind에 맞는 문구와 선택 구성을 제공한다',
-    (kind, title, selectionLabel, option) => {
+    (kind, title, selectionLabel, dateButtonName, options) => {
       render(<CashflowCorrectionFormScreen kind={kind} />)
 
       expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
-      expect(screen.getByLabelText(selectionLabel)).toHaveTextContent(option)
+      expect(screen.getByRole('button', { name: dateButtonName })).toBeInTheDocument()
+      expect(
+        Array.from(screen.getByLabelText(selectionLabel).querySelectorAll('option')).map(
+          (option) => option.textContent,
+        ),
+      ).toEqual(options)
     },
   )
 
@@ -36,7 +65,7 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     fireEvent.change(screen.getByLabelText('반복주기'), { target: { value: 'monthly' } })
     expect(saveButton).toBeDisabled()
 
-    fireEvent.click(screen.getByRole('button', { name: '예정일을 선택해주세요.' }))
+    fireEvent.click(screen.getByRole('button', { name: '예정일 예정일을 선택해주세요.' }))
     fireEvent.click(screen.getByRole('button', { name: '2025년 7월 15일' }))
     expect(saveButton).toBeEnabled()
   })
@@ -44,7 +73,7 @@ describe('현금흐름 보정 입력 공통 화면', () => {
   it('2025년 7월 날짜 dialog에서 날짜를 선택하고 원래 버튼으로 focus를 복원한다', () => {
     render(<CashflowCorrectionFormScreen kind="cash-sales" />)
 
-    const dateButton = screen.getByRole('button', { name: '예정일을 선택해주세요.' })
+    const dateButton = screen.getByRole('button', { name: '예정일 예정일을 선택해주세요.' })
     fireEvent.click(dateButton)
 
     expect(screen.getByRole('dialog', { name: '예정일 선택' })).toBeInTheDocument()
@@ -81,7 +110,7 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     fireEvent.change(screen.getByLabelText('지출 항목'), { target: { value: '임대료' } })
     fireEvent.change(screen.getByLabelText('금액 (원)'), { target: { value: '1200000' } })
     fireEvent.change(screen.getByLabelText('반복주기'), { target: { value: 'monthly' } })
-    fireEvent.click(screen.getByRole('button', { name: '예정일을 선택해주세요.' }))
+    fireEvent.click(screen.getByRole('button', { name: '예정일 예정일을 선택해주세요.' }))
     fireEvent.click(screen.getByRole('button', { name: '2025년 7월 15일' }))
     fireEvent.click(screen.getByRole('button', { name: '저장' }))
 
@@ -97,5 +126,78 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     fireEvent.click(screen.getByRole('button', { name: '초안 삭제 후 나가기' }))
 
     expect(push).toHaveBeenCalledWith('/cashflow/corrections')
+  })
+
+  it('예정지출 지출 항목 placeholder와 외부자금 확정 문구를 보정한다', () => {
+    const { rerender } = render(<CashflowCorrectionFormScreen kind="expected-expenses" />)
+
+    expect(screen.getByLabelText('지출 항목')).toHaveAttribute(
+      'placeholder',
+      '지출 항목을 입력해주세요',
+    )
+
+    rerender(<CashflowCorrectionFormScreen kind="external-funds" />)
+
+    expect(
+      screen.getByText('확정 항목은 보수적·예상·낙관 시나리오에 반영됩니다.'),
+    ).toBeInTheDocument()
+  })
+
+  it('날짜 dialog가 Tab과 Shift+Tab 포커스를 가두고 Escape 후 trigger에 focus를 복원한다', () => {
+    render(<CashflowCorrectionFormScreen kind="cash-sales" />)
+
+    const dateButton = screen.getByRole('button', { name: '예정일 예정일을 선택해주세요.' })
+    fireEvent.click(dateButton)
+
+    const dialog = screen.getByRole('dialog', { name: '예정일 선택' })
+    const closeButton = screen.getByRole('button', { name: '닫기' })
+    const lastDayButton = screen.getByRole('button', { name: '2025년 7월 31일' })
+
+    lastDayButton.focus()
+    fireEvent.keyDown(lastDayButton, { key: 'Tab' })
+    expect(closeButton).toHaveFocus()
+
+    fireEvent.keyDown(closeButton, { key: 'Tab', shiftKey: true })
+    expect(lastDayButton).toHaveFocus()
+
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    expect(screen.queryByRole('dialog', { name: '예정일 선택' })).not.toBeInTheDocument()
+    expect(dateButton).toHaveFocus()
+  })
+
+  it('열린 dialog 외 배경을 inert 처리하고 두 dialog를 동시에 열지 않는다', () => {
+    render(<CashflowCorrectionFormScreen kind="cash-sales" />)
+
+    const backLink = screen.getByRole('link', { name: '정보 보정 화면으로 돌아가기' })
+    fireEvent.change(screen.getByLabelText('금액 (원)'), { target: { value: '1200000' } })
+    fireEvent.click(screen.getByRole('button', { name: '예정일 예정일을 선택해주세요.' }))
+
+    expect(screen.getByTestId('cashflow-correction-form-background')).toHaveAttribute('inert')
+    fireEvent.click(backLink)
+
+    expect(screen.getByRole('dialog', { name: '예정일 선택' })).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: '작성 중인 초안' })).not.toBeInTheDocument()
+  })
+
+  it('초안 dialog가 Tab과 Shift+Tab 포커스를 가두고 Escape 후 back trigger에 focus를 복원한다', () => {
+    render(<CashflowCorrectionFormScreen kind="cash-sales" />)
+
+    fireEvent.change(screen.getByLabelText('금액 (원)'), { target: { value: '1200000' } })
+    const backLink = screen.getByRole('link', { name: '정보 보정 화면으로 돌아가기' })
+    fireEvent.click(backLink)
+
+    const dialog = screen.getByRole('dialog', { name: '작성 중인 초안' })
+    const continueButton = screen.getByRole('button', { name: '계속 작성' })
+    const discardButton = screen.getByRole('button', { name: '초안 삭제 후 나가기' })
+
+    fireEvent.keyDown(continueButton, { key: 'Tab', shiftKey: true })
+    expect(discardButton).toHaveFocus()
+
+    fireEvent.keyDown(discardButton, { key: 'Tab' })
+    expect(continueButton).toHaveFocus()
+
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    expect(screen.queryByRole('dialog', { name: '작성 중인 초안' })).not.toBeInTheDocument()
+    expect(backLink).toHaveFocus()
   })
 })

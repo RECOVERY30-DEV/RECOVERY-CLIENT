@@ -1,6 +1,6 @@
 'use client'
 
-import type { RefObject } from 'react'
+import { useId, type RefObject } from 'react'
 
 import { Input, Select, Switch, Textarea } from '@/shared/ui'
 
@@ -39,6 +39,9 @@ export function CashflowCorrectionFormFields({
   selection,
   value,
 }: CashflowCorrectionFormFieldsProps) {
+  const dateLabelId = useId()
+  const dateValueId = useId()
+
   return (
     <div className="flex flex-col gap-5">
       {config.hasExpenseItem ? (
@@ -61,17 +64,18 @@ export function CashflowCorrectionFormFields({
         />
       </label>
       <div className="flex flex-col gap-[15px]">
-        <span className="text-[18px] leading-[21px] font-bold text-primary-200">
+        <span className="text-[18px] leading-[21px] font-bold text-primary-200" id={dateLabelId}>
           {config.dateLabel}
         </span>
         <button
           aria-haspopup="dialog"
+          aria-labelledby={`${dateLabelId} ${dateValueId}`}
           className="flex h-9 w-full items-center justify-between rounded border border-field bg-base-white px-3 typo-body-5 text-primary-100 transition-colors focus-visible:border-primary-blue-400 focus-visible:ring-2 focus-visible:ring-primary-blue-100 focus-visible:outline-none"
           onClick={onDateClick}
           ref={dateButtonRef}
           type="button"
         >
-          <span className={date ? 'text-primary-100' : 'text-neutral-600'}>
+          <span className={date ? 'text-primary-100' : 'text-neutral-600'} id={dateValueId}>
             {date || '예정일을 선택해주세요.'}
           </span>
           <span aria-hidden="true">⌄</span>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useDialogFocusTrap } from './use-dialog-focus-trap'
 
 type CashflowDatePickerDialogProps = Readonly<{
   onClose: () => void
@@ -10,11 +10,7 @@ type CashflowDatePickerDialogProps = Readonly<{
 const JULY_2025_DAYS = Array.from({ length: 31 }, (_, index) => index + 1)
 
 export function CashflowDatePickerDialog({ onClose, onSelect }: CashflowDatePickerDialogProps) {
-  const closeButtonRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    closeButtonRef.current?.focus()
-  }, [])
+  const { dialogRef, handleKeyDown } = useDialogFocusTrap({ onClose })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-200/50 px-6">
@@ -22,6 +18,8 @@ export function CashflowDatePickerDialog({ onClose, onSelect }: CashflowDatePick
         aria-labelledby="cashflow-date-picker-title"
         aria-modal="true"
         className="w-full max-w-[342px] rounded-[34px] bg-base-white px-[14px] py-8 shadow-[0_0_17px_rgba(0,0,0,0.1)]"
+        onKeyDown={handleKeyDown}
+        ref={dialogRef}
         role="dialog"
       >
         <div className="flex items-center justify-between">
@@ -34,7 +32,6 @@ export function CashflowDatePickerDialog({ onClose, onSelect }: CashflowDatePick
           <button
             className="h-[30px] border-b border-neutral-700 px-[10px] py-1 typo-body-8 text-neutral-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
             onClick={onClose}
-            ref={closeButtonRef}
             type="button"
           >
             닫기
