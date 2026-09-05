@@ -15,7 +15,7 @@ export function CashflowFactors() {
           부족 원인 Top 3
         </h2>
         <Link
-          className="border-b border-neutral-700 py-0.5 text-[12px] leading-[14px] font-medium text-neutral-700"
+          className="border-b border-primary-100 py-0.5 text-[12px] leading-[14px] font-medium text-primary-100 transition-colors hover:border-secondary-500 hover:text-secondary-500 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
           href="/cashflow/causes"
         >
           원인 상세 보기

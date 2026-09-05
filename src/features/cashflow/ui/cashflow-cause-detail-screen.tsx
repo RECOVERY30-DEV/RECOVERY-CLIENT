@@ -37,7 +37,7 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
               </dt>
               <dd className="mt-1 flex items-baseline gap-[7px] text-[12px] leading-[14px] font-medium text-neutral-900">
                 <span>14일 후</span>
-                <strong className="text-[18px] leading-[21px] font-bold text-primary-blue-400">
+                <strong className="text-[18px] leading-[21px] font-bold text-primary-100">
                   6월 28일
                 </strong>
               </dd>
@@ -46,13 +46,13 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
               <dt className="text-[12px] leading-[14px] font-semibold text-secondary-300">
                 예상 최저 잔액
               </dt>
-              <dd className="mt-1 text-[18px] leading-[21px] font-bold text-primary-blue-400">
+              <dd className="mt-1 text-[18px] leading-[21px] font-bold text-primary-100">
                 -230만 ~ -80만 원
               </dd>
             </div>
           </dl>
           <p className="mt-[15px] text-[11px] leading-[13px] text-secondary-300">
-            예상 부족액 기준 범위이며 확정 금액이 아닙니다.
+            예상 최저 잔액 기준 범위이며 확정 금액이 아닙니다.
           </p>
         </section>
 

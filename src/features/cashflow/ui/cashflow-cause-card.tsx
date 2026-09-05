@@ -31,20 +31,20 @@ export function CashflowCauseCard({ cause, rank }: CashflowCauseCardProps): Reac
         </p>
       </div>
 
-      <dl className="mt-5 space-y-1 text-[12px] leading-[14px] text-neutral-700">
+      <dl className="mt-5 space-y-1 text-[12px] leading-[14px] text-primary-100">
         <div className="flex items-start justify-between gap-3">
           <dt>근거 거래</dt>
-          <dd className="text-right font-medium">{cause.evidence}</dd>
+          <dd className="text-right font-medium text-primary-100">{cause.evidence}</dd>
         </div>
         <div className="flex items-start justify-between gap-3">
           <dt>예측 가정</dt>
-          <dd className="text-right font-medium">{cause.forecastAssumption}</dd>
+          <dd className="text-right font-medium text-primary-100">{cause.forecastAssumption}</dd>
         </div>
       </dl>
 
       {cause.actions.map((action) => (
         <Link
-          aria-label={`${cause.title} 보정하기`}
+          aria-label={`${cause.title}: ${action.label}`}
           className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
           href={action.href}
           key={action.href}

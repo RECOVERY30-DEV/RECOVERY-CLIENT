@@ -41,5 +41,6 @@ describe('현금흐름 대시보드 화면', () => {
       'href',
       '/cashflow/causes',
     )
+    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass('text-primary-100')
   })
 })
