@@ -1,4 +1,6 @@
-import { BackLink, Button, MobileScreen } from '@/shared/ui'
+import Link from 'next/link'
+
+import { BackLink, MobileScreen } from '@/shared/ui'
 
 import { CashflowStableChangeNotice } from './cashflow-stable-change-notice'
 import { CashflowStableReasons } from './cashflow-stable-reasons'
@@ -34,12 +36,12 @@ export function CashflowStableStatusScreen() {
           <CashflowStableChangeNotice />
         </div>
 
-        <Button
-          className="mt-[76px] w-full disabled:bg-primary-100 disabled:text-base-white"
-          disabled
+        <Link
+          className="mt-[76px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          href="/recovery/follow-up"
         >
           30·60·90일 사후점검 확인하기
-        </Button>
+        </Link>
       </div>
     </MobileScreen>
   )

@@ -168,9 +168,18 @@ export function RecoveryPlanComparisonScreen(): React.JSX.Element {
           >
             지원사업 확인
           </Link>
-          <Button className="w-full" disabled variant="secondary">
-            셀프 실행으로 저장
-          </Button>
+          {selectedOptionIds.includes('fixed-cost-reschedule') ? (
+            <Link
+              className="inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+              href="/recovery/actions/fixed-cost-reschedule/save"
+            >
+              셀프 실행으로 저장
+            </Link>
+          ) : (
+            <Button className="w-full" disabled variant="secondary">
+              셀프 실행으로 저장
+            </Button>
+          )}
           <Button className="w-full" disabled variant="outline">
             확인 필요
           </Button>

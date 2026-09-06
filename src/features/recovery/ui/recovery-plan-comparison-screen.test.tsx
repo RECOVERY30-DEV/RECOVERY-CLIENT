@@ -50,7 +50,7 @@ describe('회복안 비교 화면', () => {
     )
   })
 
-  it('선택한 회복안 ID를 상담 예약 링크 query로 전달하고 미구현 실행은 비활성화한다', () => {
+  it('선택한 회복안 ID를 상담 예약 링크 query로 전달하고 고정비 회복안은 자체 실행으로 저장한다', () => {
     render(<RecoveryPlanComparisonScreen />)
 
     fireEvent.click(screen.getByRole('button', { name: '상환조건 조정 상담' }))
@@ -64,8 +64,19 @@ describe('회복안 비교 화면', () => {
       'href',
       '/recovery/support-programs',
     )
-    expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveAttribute(
+      'href',
+      '/recovery/actions/fixed-cost-reschedule/save',
+    )
     expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
+  })
+
+  it('고정비 회복안을 선택하지 않으면 자체 실행 저장을 비활성화한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    fireEvent.click(screen.getByRole('button', { name: '고정비 납부일 재배치' }))
+
+    expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
   })
 
   it('기준과 선택 회복안을 비교하고 상환조건으로 올바르게 표기한다', () => {
