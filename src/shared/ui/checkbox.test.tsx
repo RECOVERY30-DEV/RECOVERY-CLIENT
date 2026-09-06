@@ -54,8 +54,8 @@ describe('Checkbox', () => {
     const { container } = render(<Checkbox label="재무 상태" />)
     const [uncheckedIcon, checkedIcon] = container.querySelectorAll('svg')
 
-    expect(uncheckedIcon).toHaveClass('block', 'peer-checked:hidden')
-    expect(checkedIcon).toHaveClass('hidden', 'peer-checked:block')
+    expect(uncheckedIcon).toHaveClass('absolute', 'inset-0', 'block', 'peer-checked:hidden')
+    expect(checkedIcon).toHaveClass('absolute', 'inset-0', 'hidden', 'peer-checked:block')
   })
 
   it('비활성 상태에서는 선택 상태를 변경하지 않는다', () => {

@@ -67,6 +67,7 @@ describe('API 지원사업 화면', () => {
   })
 
   it('실제 목록·추천 API 데이터를 병합해 표시한다', async () => {
+    const programRequestUrls: string[] = []
     vi.stubGlobal(
       'fetch',
       vi.fn<typeof fetch>(async (input) => {
@@ -74,6 +75,7 @@ describe('API 지원사업 화면', () => {
         const path = new URL(requestUrl, 'http://localhost').pathname
 
         if (path === '/api/support-programs') {
+          programRequestUrls.push(requestUrl)
           return apiResponse([summary])
         }
         if (path === '/api/businesses/1/forecasts/latest') {
@@ -106,6 +108,10 @@ describe('API 지원사업 화면', () => {
       'href',
       '/recovery/support-programs/SBIZ_STABLE_FUND',
     )
+    expect(screen.getByRole('switch', { name: '신청 가능만 보기' })).not.toBeChecked()
+    expect(
+      new URL(programRequestUrls[0], 'http://localhost').searchParams.get('applicableOnly'),
+    ).toBe('false')
   })
 
   it('상세·자격·서류 API 실패를 오류 상태로 표시한다', async () => {

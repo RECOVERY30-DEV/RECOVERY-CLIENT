@@ -364,7 +364,7 @@ describe('상담 예약 화면', () => {
       screen.getByText('상담사를 선택하면 예약 가능한 시간을 확인할 수 있습니다.'),
     ).toBeInTheDocument()
     expect(screen.getByRole('radio', { name: '채팅 상담' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: '원하는 시간이 없어요' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '원하는 시간이 없어요' })).not.toBeInTheDocument()
   })
 
   it('전송 범위 안내와 예약 내용 최종 확인을 한 화면에서 제공한다', () => {

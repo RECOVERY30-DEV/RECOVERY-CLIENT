@@ -57,11 +57,11 @@ function Checkbox({
         />
         <UncheckedIcon
           aria-hidden="true"
-          className="pointer-events-none block size-6 peer-checked:hidden"
+          className="pointer-events-none absolute inset-0 block size-6 peer-checked:hidden"
         />
         <CheckedIcon
           aria-hidden="true"
-          className="pointer-events-none hidden size-6 peer-checked:block"
+          className="pointer-events-none absolute inset-0 hidden size-6 peer-checked:block"
         />
       </span>
     </div>

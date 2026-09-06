@@ -19,7 +19,7 @@ export function SupportProgramListScreen({
   client,
 }: SupportProgramListScreenProps = {}): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('')
-  const [isApplicationOpenOnly, setIsApplicationOpenOnly] = useState(true)
+  const [isApplicationOpenOnly, setIsApplicationOpenOnly] = useState(false)
   const queries = useSupportProgramListQueries(DEMO_BUSINESS_ID, {
     applicableOnly: isApplicationOpenOnly,
     ...(client === undefined ? {} : { client }),

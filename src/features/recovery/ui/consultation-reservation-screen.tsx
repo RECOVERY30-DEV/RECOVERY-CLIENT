@@ -316,12 +316,6 @@ export function ConsultationReservationScreen({
                 ))
               )}
             </div>
-            <button
-              className="mt-3 border-b border-secondary-300 text-[12px] leading-[16px] text-secondary-300 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
-              type="button"
-            >
-              원하는 시간이 없어요
-            </button>
           </fieldset>
 
           <div className="mt-8">
