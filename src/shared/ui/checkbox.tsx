@@ -1,3 +1,5 @@
+'use client'
+
 import { useId, useState, type ComponentProps, type ReactNode } from 'react'
 
 import CheckedIcon from '@/shared/assets/icons/checkbox-checked.svg'
