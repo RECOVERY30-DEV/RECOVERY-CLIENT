@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import { BackLink, Button, MobileScreen } from '@/shared/ui'
 
+import { getSelfActionHref } from '../model/recovery-execution-data'
 import {
   DEFAULT_RECOVERY_OPTION_IDS,
   RECOVERY_OPTION_CATALOG,
@@ -24,6 +25,7 @@ export function RecoveryPlanComparisonScreen(): React.JSX.Element {
   const [selectedOptionIds, setSelectedOptionIds] = useState<readonly RecoveryOptionId[]>(
     DEFAULT_RECOVERY_OPTION_IDS,
   )
+  const selfActionHref = getSelfActionHref(selectedOptionIds)
 
   function handleOptionSelect(optionId: RecoveryOptionId) {
     setSelectedOptionIds((currentIds) => {
@@ -168,9 +170,18 @@ export function RecoveryPlanComparisonScreen(): React.JSX.Element {
           >
             지원사업 확인
           </Link>
-          <Button className="w-full" disabled variant="secondary">
-            셀프 실행으로 저장
-          </Button>
+          {selfActionHref ? (
+            <Link
+              className="inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+              href={selfActionHref}
+            >
+              셀프 실행으로 저장
+            </Link>
+          ) : (
+            <Button className="w-full" disabled variant="secondary">
+              셀프 실행으로 저장
+            </Button>
+          )}
           <Button className="w-full" disabled variant="outline">
             확인 필요
           </Button>
