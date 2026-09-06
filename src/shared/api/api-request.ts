@@ -75,3 +75,37 @@ export async function getApiData<T>(
     throw new ApiError('서버와 통신할 수 없습니다.', { cause: error })
   }
 }
+
+export async function postApiData<T>(
+  path: string,
+  body: unknown,
+  parseData: (data: unknown) => T,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const client = options.client ?? apiClient
+
+  try {
+    const payload = await client
+      .post(path, {
+        json: body,
+        ...(options.signal === undefined ? {} : { signal: options.signal }),
+      })
+      .json<unknown>()
+
+    return parseApiResponse(payload, parseData)
+  } catch (error) {
+    if (error instanceof ApiError || error instanceof ApiContractError) {
+      throw error
+    }
+
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error
+    }
+
+    if (error instanceof HTTPError) {
+      throw normalizeHttpError(error)
+    }
+
+    throw new ApiError('서버와 통신할 수 없습니다.', { cause: error })
+  }
+}
