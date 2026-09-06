@@ -6,7 +6,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import ConsultationPage from '@/app/recovery/consultation/page'
 import { createApiClient } from '@/shared/api/api-client'
 
-import { ConsultationReservationScreen } from './consultation-reservation-screen'
+import {
+  ConsultationReservationScreen,
+  formatConsultationSlot,
+} from './consultation-reservation-screen'
 
 const counselor = {
   counselorId: 1,
@@ -45,6 +48,29 @@ function renderWithQuery(ui: ReactElement) {
 describe('상담 예약 화면', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+  })
+
+  it('플랫폼이 AM을 반환해도 예약 시간을 한국어 오전으로 표시한다', () => {
+    const dateTimeFormat = vi
+      .spyOn(Intl, 'DateTimeFormat')
+      .mockImplementation(function DateTimeFormatMock() {
+        return {
+          formatToParts: (): Intl.DateTimeFormatPart[] => [
+            { type: 'year', value: '2025' },
+            { type: 'month', value: '7' },
+            { type: 'day', value: '14' },
+            { type: 'dayPeriod', value: 'AM' },
+            { type: 'hour', value: '10' },
+            { type: 'minute', value: '00' },
+          ],
+        } as Intl.DateTimeFormat
+      } as unknown as typeof Intl.DateTimeFormat)
+
+    try {
+      expect(formatConsultationSlot('2025-07-14T01:00:00Z')).toBe('2025년 7월 14일 오전 10시')
+    } finally {
+      dateTimeFormat.mockRestore()
+    }
   })
 
   it('상담사와 예약 가능 시간을 선택해 예약을 요청하고 상세 성공 상태를 표시한다', async () => {

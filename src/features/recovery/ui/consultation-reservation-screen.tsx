@@ -561,7 +561,7 @@ function formatCounselor(
     .join(' · ')
 }
 
-function formatConsultationSlot(value: string): string {
+export function formatConsultationSlot(value: string): string {
   const parts = new Intl.DateTimeFormat('ko-KR', {
     timeZone: 'Asia/Seoul',
     year: 'numeric',
@@ -574,6 +574,8 @@ function formatConsultationSlot(value: string): string {
   const part = (type: Intl.DateTimeFormatPartTypes) =>
     parts.find((datePart) => datePart.type === type)?.value ?? ''
   const minute = part('minute')
+  const dayPeriod = part('dayPeriod')
+  const koreanDayPeriod = dayPeriod === 'AM' ? '오전' : dayPeriod === 'PM' ? '오후' : dayPeriod
 
-  return `${part('year')}년 ${part('month')}월 ${part('day')}일 ${part('dayPeriod')} ${part('hour')}시${minute === '00' ? '' : ` ${minute}분`}`
+  return `${part('year')}년 ${part('month')}월 ${part('day')}일 ${koreanDayPeriod} ${part('hour')}시${minute === '00' ? '' : ` ${minute}분`}`
 }
