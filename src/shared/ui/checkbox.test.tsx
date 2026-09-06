@@ -50,12 +50,18 @@ describe('Checkbox', () => {
     expect(describedBy).toHaveLength(2)
   })
 
-  it('선택 전후 피그마 SVG를 상태 클래스에 올바르게 연결한다', () => {
-    const { container } = render(<Checkbox label="재무 상태" />)
-    const [uncheckedIcon, checkedIcon] = container.querySelectorAll('svg')
+  it('제어된 선택 상태에 맞는 아이콘 하나만 표시한다', () => {
+    const { container, rerender } = render(
+      <Checkbox checked={false} label="재무 상태" onChange={() => undefined} />,
+    )
 
-    expect(uncheckedIcon).toHaveClass('absolute', 'inset-0', 'block', 'peer-checked:hidden')
-    expect(checkedIcon).toHaveClass('absolute', 'inset-0', 'hidden', 'peer-checked:block')
+    expect(container.querySelectorAll('svg')).toHaveLength(1)
+    expect(container.querySelector('path')).toHaveAttribute('fill', '#E0E0E0')
+
+    rerender(<Checkbox checked label="재무 상태" onChange={() => undefined} />)
+
+    expect(container.querySelectorAll('svg')).toHaveLength(1)
+    expect(container.querySelector('path')).toHaveAttribute('fill', '#185B80')
   })
 
   it('비활성 상태에서는 선택 상태를 변경하지 않는다', () => {

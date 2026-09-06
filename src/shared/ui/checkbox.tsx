@@ -1,4 +1,4 @@
-import { useId, type ComponentProps, type ReactNode } from 'react'
+import { useId, useState, type ComponentProps, type ReactNode } from 'react'
 
 import CheckedIcon from '@/shared/assets/icons/checkbox-checked.svg'
 import UncheckedIcon from '@/shared/assets/icons/checkbox-unchecked.svg'
@@ -13,16 +13,29 @@ type CheckboxProps = Omit<ComponentProps<'input'>, 'className' | 'type'> & {
 function Checkbox({
   'aria-describedby': externalDescriptionId,
   className,
+  checked,
+  defaultChecked,
   description,
   disabled,
   id,
   label,
+  onChange,
   ...props
 }: CheckboxProps) {
   const generatedId = useId()
   const inputId = id ?? generatedId
   const descriptionId = description ? `${inputId}-description` : undefined
   const describedBy = [externalDescriptionId, descriptionId].filter(Boolean).join(' ') || undefined
+  const [uncontrolledChecked, setUncontrolledChecked] = useState(Boolean(defaultChecked))
+  const isControlled = checked !== undefined
+  const isChecked = checked ?? uncontrolledChecked
+
+  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    if (!isControlled) {
+      setUncontrolledChecked(event.currentTarget.checked)
+    }
+    onChange?.(event)
+  }
 
   return (
     <div
@@ -51,18 +64,21 @@ function Checkbox({
           {...props}
           aria-describedby={describedBy}
           className="peer absolute inset-0 z-10 size-full cursor-pointer appearance-none bg-transparent outline-none disabled:cursor-not-allowed"
+          checked={checked}
           disabled={disabled}
+          defaultChecked={isControlled ? undefined : defaultChecked}
           id={inputId}
+          onChange={handleChange}
           type="checkbox"
         />
-        <UncheckedIcon
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 block size-6 peer-checked:hidden"
-        />
-        <CheckedIcon
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 hidden size-6 peer-checked:block"
-        />
+        {isChecked ? (
+          <CheckedIcon aria-hidden="true" className="pointer-events-none absolute inset-0 size-6" />
+        ) : (
+          <UncheckedIcon
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 size-6"
+          />
+        )}
       </span>
     </div>
   )
