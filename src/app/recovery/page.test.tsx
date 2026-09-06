@@ -11,6 +11,15 @@ vi.mock('@/features/recovery/ui/recovery-follow-up-screen', () => ({
   ),
 }))
 
+vi.mock('@/features/recovery/ui/self-action-setup-screen', () => ({
+  SelfActionSetupScreen: ({ optionId }: Readonly<{ optionId?: string }>) => (
+    <section>
+      <h1>자체 실행 저장</h1>
+      <output data-testid="self-action-option-id">{optionId}</output>
+    </section>
+  ),
+}))
+
 import RecoveryFollowUpPage from './follow-up/page'
 import RecoveryPacketPage from './page'
 import CanonicalSelfActionPage from './actions/fixed-cost-reschedule/save/page'
@@ -49,8 +58,7 @@ describe('회복 실행·추적 route adapter', () => {
       }),
     )
 
-    expect(screen.getByRole('heading', { name: '고정비 납부일 재배치' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '실행 계획 저장하기' })).toBeDisabled()
+    expect(screen.getByTestId('self-action-option-id')).toHaveTextContent('fixed-cost-reschedule')
   })
 
   it('계획된 canonical 자체 실행 저장 route로 진입한다', async () => {
@@ -61,8 +69,7 @@ describe('회복 실행·추적 route adapter', () => {
     )
 
     expect(screen.getByRole('heading', { name: '자체 실행 저장' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '고정비 납부일 재배치' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '실행 계획 저장하기' })).toBeDisabled()
+    expect(screen.getByTestId('self-action-option-id')).toHaveTextContent('fixed-cost-reschedule')
   })
 
   it('사후점검 query의 회복안만 실행 상태로 전달한다', async () => {

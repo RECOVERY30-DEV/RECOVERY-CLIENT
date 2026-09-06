@@ -4,16 +4,24 @@ import { Switch } from '@/shared/ui'
 
 type ConsentOptionProps = Readonly<{
   checked: boolean
+  disabled?: boolean
   icon: ReactNode
   label: string
   onChange: NonNullable<ComponentProps<'input'>['onChange']>
 }>
 
-export function ConsentOption({ checked, icon, label, onChange }: ConsentOptionProps) {
+export function ConsentOption({
+  checked,
+  disabled = false,
+  icon,
+  label,
+  onChange,
+}: ConsentOptionProps) {
   return (
     <Switch
       checked={checked}
       className="w-full"
+      disabled={disabled}
       label={
         <span className="flex items-center gap-[6px] text-primary-200">
           <span aria-hidden="true" className="flex size-6 items-center justify-center">

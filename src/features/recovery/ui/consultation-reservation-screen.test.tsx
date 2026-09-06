@@ -11,6 +11,14 @@ import {
   formatConsultationSlot,
 } from './consultation-reservation-screen'
 
+const routerMocks = vi.hoisted(() => ({
+  push: vi.fn(),
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => routerMocks,
+}))
+
 const counselor = {
   counselorId: 1,
   name: '김상담',
@@ -48,6 +56,7 @@ function renderWithQuery(ui: ReactElement) {
 describe('상담 예약 화면', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    routerMocks.push.mockReset()
   })
 
   it('플랫폼이 AM을 반환해도 예약 시간을 한국어 오전으로 표시한다', () => {
@@ -73,7 +82,7 @@ describe('상담 예약 화면', () => {
     }
   })
 
-  it('상담사와 예약 가능 시간을 선택해 예약을 요청하고 상세 성공 상태를 표시한다', async () => {
+  it('선택한 숫자 회복안 ID를 예약 요청에 보내고 완료 화면으로 이동한다', async () => {
     const requestedPaths: string[] = []
     let requestBody: unknown
     vi.stubGlobal(
@@ -121,7 +130,10 @@ describe('상담 예약 화면', () => {
     )
 
     renderWithQuery(
-      <ConsultationReservationScreen client={createApiClient('https://api.example.com')} />,
+      <ConsultationReservationScreen
+        client={createApiClient('https://api.example.com')}
+        selectedOptionIds={[1, 3]}
+      />,
     )
 
     await waitFor(() => expect(requestedPaths).toEqual(['/api/counselors']))
@@ -129,19 +141,21 @@ describe('상담 예약 화면', () => {
     fireEvent.click(await screen.findByRole('radio', { name: /2025년 7월 14일 오전 10시/ }))
     fireEvent.click(screen.getByRole('button', { name: '예약 확정하기' }))
 
-    expect(await screen.findByText('상담 예약이 접수되었습니다.')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(routerMocks.push).toHaveBeenCalledWith('/recovery/consultation/8/complete'),
+    )
     expect(requestedPaths).toEqual([
       '/api/counselors',
       '/api/counselors/1/slots',
       '/api/businesses/1/consultations',
-      '/api/consultations/8',
     ])
     expect(requestBody).toEqual({
       channel: 'PHONE',
       counselorId: 1,
       slotId: 31,
-      purposeText: '상환조건 조정 상담, 고정비 납부일 재배치',
+      purposeText: '선택한 회복안 상담',
       transferConsentGranted: true,
+      recoveryOptionIds: [1, 3],
     })
   })
 
@@ -211,7 +225,9 @@ describe('상담 예약 화면', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '다시 시도' }))
 
-    expect(await screen.findByText('상담 예약이 접수되었습니다.')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(routerMocks.push).toHaveBeenCalledWith('/recovery/consultation/8/complete'),
+    )
     expect(bookingAttempts).toBe(2)
   })
 
@@ -275,7 +291,7 @@ describe('상담 예약 화면', () => {
       'href',
       '/recovery/compare',
     )
-    expect(screen.getByText('상환조건 조정 상담')).toBeInTheDocument()
+    expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
   })
 
@@ -283,10 +299,10 @@ describe('상담 예약 화면', () => {
     renderWithQuery(<ConsultationReservationScreen />)
 
     expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
-      '상환조건 조정 상담',
+      '선택한 회복안 1번',
     )
     expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
-      '고정비 납부일 재배치',
+      '선택한 회복안 3번',
     )
     expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
   })
@@ -296,7 +312,7 @@ describe('상담 예약 화면', () => {
 
     expect(
       screen.getByText(
-        '상담 목적, 상담 전 메모, 전송 동의 여부만 예약 요청에 포함합니다. 선택한 회복안·지원사업·전송 항목과 회복안 ID는 아직 전송하지 않습니다.',
+        '상담 목적, 상담 전 메모, 전송 동의 여부와 선택한 회복안 ID를 예약 요청에 포함합니다.',
       ),
     ).toBeInTheDocument()
   })
@@ -305,37 +321,38 @@ describe('상담 예약 화면', () => {
     renderWithQuery(
       await ConsultationPage({
         searchParams: Promise.resolve({
-          plans: ['repayment-adjustment', 'refinancing-review', 'invalid-option'],
+          plans: ['1', '3', 'invalid-option'],
         }),
       }),
     )
 
     expect(screen.getByRole('heading', { name: '상담 목적 및 회복안' })).toBeInTheDocument()
-    expect(screen.getByText('상환조건 조정 상담')).toBeInTheDocument()
-    expect(screen.getByText('대환 검토')).toBeInTheDocument()
+    expect(screen.getByText('선택한 회복안 1번')).toBeInTheDocument()
+    expect(screen.getByText('선택한 회복안 3번')).toBeInTheDocument()
     expect(screen.queryByText('텍스트')).not.toBeInTheDocument()
   })
 
   it.each([
-    ['query가 없을 때', undefined, ['상환조건 조정 상담', '고정비 납부일 재배치']],
-    ['빈 query일 때', '', ['상환조건 조정 상담', '고정비 납부일 재배치']],
-    ['유효하지 않은 query만 있을 때', 'unknown', ['상환조건 조정 상담', '고정비 납부일 재배치']],
-    [
-      '중복된 query일 때',
-      ['repayment-adjustment', 'repayment-adjustment', 'fixed-cost-reschedule'],
-      ['상환조건 조정 상담', '고정비 납부일 재배치'],
-    ],
+    ['query가 없을 때', undefined, []],
+    ['빈 query일 때', '', []],
+    ['유효하지 않은 query만 있을 때', 'unknown', []],
+    ['중복된 query일 때', ['1', '1', '3'], ['선택한 회복안 1번', '선택한 회복안 3번']],
     [
       '유효하지 않은 값이 섞인 query일 때',
-      ['unknown', 'refinancing-review', 'repayment-adjustment'],
-      ['상환조건 조정 상담', '대환 검토'],
+      ['unknown', '3', '1'],
+      ['선택한 회복안 3번', '선택한 회복안 1번'],
     ],
   ] as const)('%s 회복안을 정규화한다', async (_name, plans, expectedTitles) => {
     renderWithQuery(await ConsultationPage({ searchParams: Promise.resolve({ plans }) }))
 
+    if (expectedTitles.length === 0) {
+      expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
+      return
+    }
+
     const selectedOptions = screen.getByTestId('selected-recovery-options-summary')
-    expect(selectedOptions).toHaveTextContent(expectedTitles[0])
-    expect(selectedOptions).toHaveTextContent(expectedTitles[1])
+    expect(selectedOptions).toHaveTextContent(expectedTitles[0] ?? '')
+    expect(selectedOptions).toHaveTextContent(expectedTitles[1] ?? '')
     expect(selectedOptions.textContent).not.toContain('unknown')
   })
 
@@ -356,7 +373,7 @@ describe('상담 예약 화면', () => {
     expect(screen.getByRole('heading', { name: '상담원 전송 정보 범위' })).toBeInTheDocument()
     expect(
       screen.getByText(
-        '선택한 항목은 예약 요청에 포함되지 않으며, 전송 동의 여부만 예약에 반영됩니다.',
+        '선택한 항목은 예약 요청에 포함되지 않으며, 전송 동의 여부와 회복안 ID만 예약에 반영됩니다.',
       ),
     ).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '예약 내용 최종 확인' })).toBeInTheDocument()
@@ -387,7 +404,7 @@ describe('상담 예약 화면', () => {
     expect(dialog).toHaveAttribute('aria-modal', 'true')
     expect(
       screen.getByText(
-        '현재 예약 요청에는 상담 목적, 상담 전 메모, 전송 동의 여부만 포함합니다. 선택한 전송 항목과 회복안 ID는 아직 전달하지 않습니다.',
+        '예약 요청에는 상담 목적, 상담 전 메모, 전송 동의 여부가 포함됩니다. 회복안 상담은 선택한 회복안 ID도 함께 전달합니다.',
       ),
     ).toBeInTheDocument()
     expect(screen.getByTestId('consultation-reservation-background')).toHaveAttribute('inert')
