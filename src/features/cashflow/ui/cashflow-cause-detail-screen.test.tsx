@@ -27,9 +27,10 @@ describe('현금부족 원인 상세 화면', () => {
     const causes = screen.getAllByRole('article')
 
     expect(causes).toHaveLength(3)
-    expect(screen.getByRole('heading', { name: '1. 최근 8주 매출 감소' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '2. 월말 임차료·원리금 집중' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '3. 계절적 매출 회복 지연' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '최근 8주 매출 감소' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '월말 임차료·원리금 집중' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '계절적 매출 회복 지연' })).toBeInTheDocument()
+    expect(causes[0]).toHaveTextContent(/^1최근 8주 매출 감소/)
     expect(screen.getByText('–180만 원')).toBeInTheDocument()
     expect(screen.getByText('–320만 원')).toBeInTheDocument()
     expect(screen.getByText('추정 중')).toBeInTheDocument()

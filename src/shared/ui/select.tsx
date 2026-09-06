@@ -15,7 +15,7 @@ function Select({ children, className, placeholder, wrapperClassName, ...props }
         {...props}
         className={cn(
           'peer h-9 w-full appearance-none rounded border border-field bg-base-white px-3 pr-9 typo-body-5 text-primary-100 transition-colors outline-none',
-          'focus:border-primary-blue-400 focus:ring-2 focus:ring-primary-blue-100',
+          'focus:border-primary-blue-800 focus:ring-2 focus:ring-primary-blue-800',
           'disabled:cursor-not-allowed disabled:bg-neutral-400 disabled:text-disabled-200',
           'aria-invalid:border-error-500 aria-invalid:focus:ring-error-500/20',
           className,

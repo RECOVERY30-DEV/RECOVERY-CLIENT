@@ -24,6 +24,8 @@ describe('Input', () => {
       'h-[38px]',
       'border-disabled-50',
       'bg-base-white',
+      'placeholder:text-secondary-300',
+      'focus-visible:ring-primary-blue-800',
     )
   })
 })
@@ -46,6 +48,8 @@ describe('Textarea', () => {
     expect(screen.getByRole('textbox', { name: '설명' })).toHaveClass(
       'min-h-[82px]',
       'bg-neutral-100',
+      'placeholder:text-secondary-300',
+      'focus-visible:ring-primary-blue-800',
     )
   })
 })

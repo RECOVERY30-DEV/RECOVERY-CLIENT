@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { cn } from '@/shared/lib'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 font-sans whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed',
+  'inline-flex items-center justify-center gap-2 font-sans whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed',
   {
     variants: {
       variant: {

@@ -12,6 +12,7 @@ describe('현금흐름 안정 상태 안내 화면', () => {
     expect(screen.getByRole('heading', { name: '핵심 수치 요약' })).toBeInTheDocument()
     expect(screen.getByText('약 312만 원 ~ 448만 원')).toBeInTheDocument()
     expect(screen.getByText('30일 이내 없음')).toBeInTheDocument()
+    expect(screen.getByText('약 312만 원 ~ 448만 원')).toHaveClass('text-primary-blue-800')
   })
 
   it('판단 근거와 상태가 바뀌는 조건을 안내한다', () => {

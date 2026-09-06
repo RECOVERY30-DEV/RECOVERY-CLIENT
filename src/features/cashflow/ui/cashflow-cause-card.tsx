@@ -17,9 +17,7 @@ export function CashflowCauseCard({ cause, rank }: CashflowCauseCardProps): Reac
         >
           {rank}
         </span>
-        <h3 className="text-[12px] leading-[14px] font-medium text-secondary-800">
-          {rank}. {cause.title}
-        </h3>
+        <h3 className="text-[12px] leading-[14px] font-medium text-secondary-800">{cause.title}</h3>
       </div>
 
       <div className="mt-[10px]">
