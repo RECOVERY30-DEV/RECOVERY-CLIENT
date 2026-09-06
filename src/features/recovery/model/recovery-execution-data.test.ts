@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { RECOVERY_RISK_CAUSES } from '@/shared/lib/recovery-risk-data'
+import { RECOVERY_RISK_CAUSES, RECOVERY_RISK_SUMMARY } from '@/shared/lib/recovery-risk-data'
 
 import {
   FOLLOW_UP_BALANCE_STATUS,
@@ -109,7 +109,10 @@ describe('recovery execution data', () => {
       '자동이체 일정 확인',
       '원리금 납부일 은행 협의하기',
     ])
-    expect(RECOVERY_PACKET_CORRECTIONS).toHaveLength(2)
+    expect(RECOVERY_PACKET_CORRECTIONS).toEqual([
+      { amount: '+65만 원', date: '7월 20일', title: '현금매출 추가 입력' },
+      { amount: '-120만 원', date: '7월 22일', title: '예정 지출 (인테리어 대금)' },
+    ])
     expect(RECOVERY_PACKET_ANALYSIS_NOTE).toContain('보정값 반영분만 포함')
     expect(RECOVERY_PACKET_STATUS).toMatchObject({
       createdAt: '2025-07-14 09:32',
@@ -121,6 +124,12 @@ describe('recovery execution data', () => {
   })
 
   it('keeps the packet risk timeline separate from the shared June cashflow fixture', () => {
+    expect(RECOVERY_RISK_SUMMARY).toEqual({
+      firstShortageAfter: '14일 후',
+      minimumBalanceRange: '-230만 ~ -80만 원',
+      shortageDate: '6월 28일',
+      shortSummary: '14일 후 · 6월 28일',
+    })
     expect(RECOVERY_PACKET_RISK_SUMMARY).toEqual({
       minimumBalanceRange: '-240만 원 ~ -180만 원',
       shortSummary: '8일 후 · 7월 22일',
