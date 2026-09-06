@@ -3,32 +3,68 @@
 import { useState } from 'react'
 
 import { ServiceBottomNavigation } from '@/features/navigation/ui/service-bottom-navigation'
-import { BackLink, MobileScreen } from '@/shared/ui'
+import { DEMO_BUSINESS_ID } from '@/shared/config/business'
+import { BackLink, Button, MobileScreen } from '@/shared/ui'
 
+import { type ConsentTypeCode } from '../api/consent-contract'
 import { CONSENT_DATA_USAGE_ITEMS } from '../model/consent-data'
+import { useConsentQueries, useUpdateConsentMutation } from '../queries/consent-queries'
 import { ConsentControls } from './consent-controls'
 import { ConsentWithdrawalDialog } from './consent-withdrawal-dialog'
 
+function isGranted(
+  consents: ReadonlyArray<{ typeCode: ConsentTypeCode; status: 'GRANTED' | 'REVOKED' }>,
+  typeCode: ConsentTypeCode,
+) {
+  return consents.some((consent) => consent.typeCode === typeCode && consent.status === 'GRANTED')
+}
+
 export function ConsentManagementScreen() {
-  const [hasAnalysisConsent, setHasAnalysisConsent] = useState(true)
-  const [hasCounselorConsent, setHasCounselorConsent] = useState(false)
-  const [hasFollowUpConsent, setHasFollowUpConsent] = useState(true)
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false)
+  const consents = useConsentQueries(DEMO_BUSINESS_ID)
+  const updateConsent = useUpdateConsentMutation(DEMO_BUSINESS_ID)
+  const consentData = consents.data ?? []
+  const hasAnalysisConsent = isGranted(consentData, 'ANALYSIS')
+  const hasFollowUpConsent = isGranted(consentData, 'FOLLOWUP_TRACKING')
 
-  function handleAnalysisChange() {
-    if (hasAnalysisConsent) {
-      setIsWithdrawalOpen(true)
-      return
-    }
-
-    setHasAnalysisConsent(true)
+  function updateConsentStatus(typeCode: ConsentTypeCode, granted: boolean, closeDialog = false) {
+    updateConsent.mutate(
+      { typeCode, granted },
+      {
+        onSuccess: () => {
+          if (closeDialog) {
+            setIsWithdrawalOpen(false)
+          }
+        },
+      },
+    )
   }
 
-  function handleConfirmWithdrawal() {
-    setHasAnalysisConsent(false)
-    setHasCounselorConsent(false)
-    setHasFollowUpConsent(false)
-    setIsWithdrawalOpen(false)
+  if (consents.isPending) {
+    return (
+      <MobileScreen aria-label="동의 관리 화면" className="min-h-[1214px]" mode="document">
+        <BackLink href="/home" label="홈으로 돌아가기" />
+        <p className="px-6 pt-[102px] text-secondary-300" role="status">
+          동의 내역을 불러오는 중입니다.
+        </p>
+      </MobileScreen>
+    )
+  }
+
+  if (consents.isError) {
+    return (
+      <MobileScreen aria-label="동의 관리 화면" className="min-h-[1214px]" mode="document">
+        <BackLink href="/home" label="홈으로 돌아가기" />
+        <div className="px-6 pt-[102px]">
+          <p className="text-secondary-300" role="alert">
+            동의 내역을 불러오지 못했습니다.
+          </p>
+          <Button className="mt-4" onClick={() => void consents.refetch()} variant="secondary">
+            다시 시도
+          </Button>
+        </div>
+      </MobileScreen>
+    )
   }
 
   return (
@@ -44,18 +80,34 @@ export function ConsentManagementScreen() {
             필수 분석 동의를 철회하면 30일 현금흐름 분석을 포함한 모든 서비스 이용이 중단됩니다.
           </p>
           <p className="mt-2 text-[12px] leading-4 font-medium text-info-500">
-            최종 동의 변경일: 2025년 1월 15일
+            동의 상태는 변경 즉시 반영됩니다.
           </p>
         </header>
 
+        {updateConsent.isError ? (
+          <p className="mt-3 text-[12px] leading-4 text-warning-700" role="alert">
+            동의 변경에 실패했습니다. 다시 시도해 주세요.
+          </p>
+        ) : null}
+
         <div className="mt-5">
           <ConsentControls
+            analysisDisabled={updateConsent.isPending}
+            counselorDisabled
+            followUpDisabled={updateConsent.isPending}
             hasAnalysisConsent={hasAnalysisConsent}
-            hasCounselorConsent={hasCounselorConsent}
+            hasCounselorConsent={false}
             hasFollowUpConsent={hasFollowUpConsent}
-            onAnalysisChange={handleAnalysisChange}
-            onCounselorChange={() => setHasCounselorConsent((value) => !value)}
-            onFollowUpChange={() => setHasFollowUpConsent((value) => !value)}
+            onAnalysisChange={() => {
+              if (hasAnalysisConsent) {
+                setIsWithdrawalOpen(true)
+                return
+              }
+
+              updateConsentStatus('ANALYSIS', true)
+            }}
+            onCounselorChange={() => undefined}
+            onFollowUpChange={() => updateConsentStatus('FOLLOWUP_TRACKING', !hasFollowUpConsent)}
           />
         </div>
 
@@ -78,6 +130,7 @@ export function ConsentManagementScreen() {
         <div className="flex justify-center py-10">
           <button
             className="border-b border-warning-500 py-0.5 text-[12px] leading-4 font-medium text-warning-700"
+            disabled={!hasAnalysisConsent || updateConsent.isPending}
             onClick={() => setIsWithdrawalOpen(true)}
             type="button"
           >
@@ -90,8 +143,12 @@ export function ConsentManagementScreen() {
 
       {isWithdrawalOpen ? (
         <ConsentWithdrawalDialog
+          errorMessage={
+            updateConsent.isError ? '동의 철회에 실패했습니다. 다시 시도해 주세요.' : undefined
+          }
+          isPending={updateConsent.isPending}
           onCancel={() => setIsWithdrawalOpen(false)}
-          onConfirm={handleConfirmWithdrawal}
+          onConfirm={() => updateConsentStatus('ANALYSIS', false, true)}
         />
       ) : null}
     </MobileScreen>
