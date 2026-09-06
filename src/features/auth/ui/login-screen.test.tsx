@@ -26,11 +26,14 @@ describe('로그인 화면', () => {
 
     expect(emailInput).toHaveAttribute('type', 'email')
     expect(emailInput).toHaveAttribute('autocomplete', 'email')
-    expect(emailInput).toHaveClass('placeholder:text-secondary-300')
+    expect(emailInput).toHaveClass('placeholder:text-neutral-600')
     expect(passwordInput).toHaveAttribute('type', 'password')
     expect(passwordInput).toHaveAttribute('autocomplete', 'current-password')
-    expect(passwordInput).toHaveClass('placeholder:text-secondary-300')
+    expect(passwordInput).toHaveClass('placeholder:text-neutral-600')
     expect(submitButton).toHaveAttribute('type', 'submit')
+    expect(passwordInput.closest('label')).toHaveClass('mt-[13px]')
+    expect(submitButton).toHaveClass('mt-7')
+    expect(screen.getByRole('navigation', { name: '계정 도움말' })).toHaveClass('mt-1')
   })
 
   it('계정 생성과 계정 복구의 후속 경로를 안내한다', () => {
@@ -40,6 +43,9 @@ describe('로그인 화면', () => {
     expect(screen.getByRole('link', { name: '계정을 잃어버리셨나요?' })).toHaveAttribute(
       'href',
       '/account-recovery',
+    )
+    expect(screen.getByRole('link', { name: '계정을 잃어버리셨나요?' })).toHaveClass(
+      'text-neutral-700',
     )
   })
 
