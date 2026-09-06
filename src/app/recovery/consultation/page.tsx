@@ -1,4 +1,3 @@
-import { normalizeRecoveryOptionIds } from '@/features/recovery/model/recovery-plan-data'
 import { ConsultationReservationScreen } from '@/features/recovery/ui/consultation-reservation-screen'
 import { getSupportProgramConsultationContext } from '@/features/support-program'
 
@@ -19,7 +18,7 @@ export default async function ConsultationPage({
   const supportProgram = getSupportProgramConsultationContext(getSingleSearchParam(program))
   const isSupportProgramConsultation =
     Boolean(supportProgram) || getSingleSearchParam(source) === 'support-programs'
-  const selectedOptionIds = isSupportProgramConsultation ? [] : normalizeRecoveryOptionIds(plans)
+  const selectedOptionIds = isSupportProgramConsultation ? [] : getSelectedRecoveryOptionIds(plans)
   const backHref = supportProgram
     ? `/recovery/support-programs/${supportProgram.id}`
     : isSupportProgramConsultation
@@ -40,6 +39,32 @@ export default async function ConsultationPage({
       supportProgram={supportProgram}
     />
   )
+}
+
+function getSelectedRecoveryOptionIds(
+  plans: string | readonly string[] | undefined,
+): readonly number[] {
+  const planValues = typeof plans === 'string' ? [plans] : (plans ?? [])
+  const selectedIds: number[] = []
+
+  for (const plan of planValues) {
+    const optionId = Number(plan)
+
+    if (
+      Number.isSafeInteger(optionId) &&
+      optionId > 0 &&
+      String(optionId) === plan &&
+      !selectedIds.includes(optionId)
+    ) {
+      selectedIds.push(optionId)
+    }
+
+    if (selectedIds.length === 2) {
+      break
+    }
+  }
+
+  return selectedIds
 }
 
 function getSingleSearchParam(value: string | readonly string[] | undefined): string | undefined {

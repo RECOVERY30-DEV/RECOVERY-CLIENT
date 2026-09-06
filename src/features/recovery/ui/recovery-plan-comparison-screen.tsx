@@ -125,7 +125,7 @@ export function RecoveryPlanComparisonScreen(): React.JSX.Element {
               </div>
             ) : null}
             <ScenarioList options={recoveryOptions.data} scenarios={scenarios.data} />
-            <ActionLinks />
+            <ActionLinks selectedOptionIds={selectedOptionIds} />
           </>
         )}
       </div>
@@ -318,12 +318,20 @@ function RequestError({ onRetry }: Readonly<{ onRetry: () => void }>): React.JSX
   )
 }
 
-function ActionLinks(): React.JSX.Element {
+function ActionLinks({
+  selectedOptionIds,
+}: Readonly<{
+  selectedOptionIds: readonly number[]
+}>): React.JSX.Element {
+  const parameters = new URLSearchParams()
+  selectedOptionIds.forEach((optionId) => parameters.append('plans', String(optionId)))
+  const consultationHref = `/recovery/consultation?${parameters.toString()}`
+
   return (
     <div className="mt-8 grid gap-3">
       <Link
         className="inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
-        href="/recovery/consultation"
+        href={consultationHref}
       >
         상담 예약하기
       </Link>

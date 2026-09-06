@@ -7,6 +7,14 @@ import { createApiClient } from '@/shared/api/api-client'
 
 import { ConsultationReservationScreen } from './consultation-reservation-screen'
 
+const routerMocks = vi.hoisted(() => ({
+  push: vi.fn(),
+}))
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => routerMocks,
+}))
+
 const counselors = [
   {
     counselorId: 1,
@@ -79,6 +87,7 @@ function renderReservation(fetchMock: typeof fetch) {
 describe('상담 예약 API 사용자 흐름', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
+    routerMocks.push.mockReset()
   })
 
   it('상담사 조회 중과 빈 목록을 명확히 안내한다', async () => {
@@ -226,9 +235,10 @@ describe('상담 예약 API 사용자 흐름', () => {
         channel: 'PHONE',
         counselorId: 1,
         slotId: 31,
-        purposeText: '상환조건 조정 상담, 고정비 납부일 재배치',
+        purposeText: '선택한 회복안 상담',
         preQuestion: '준비할 서류가 있나요?',
         transferConsentGranted: true,
+        recoveryOptionIds: [1, 3],
       })
     })
 
@@ -243,7 +253,9 @@ describe('상담 예약 API 사용자 흐름', () => {
       )
     })
 
-    expect(await screen.findByText('상담 예약이 접수되었습니다.')).toBeInTheDocument()
+    await waitFor(() =>
+      expect(routerMocks.push).toHaveBeenCalledWith('/recovery/consultation/8/complete'),
+    )
     expect(screen.getByRole('button', { name: '예약 요청 완료' })).toBeDisabled()
   })
 
@@ -286,7 +298,7 @@ describe('상담 예약 API 사용자 흐름', () => {
     })
   })
 
-  it('상담사 변경 시 이전 예약 상세 성공 상태를 지운다', async () => {
+  it('예약 생성 성공 시 완료 화면으로 이동한다', async () => {
     renderReservation(
       vi.fn<typeof fetch>(async (input) => {
         if (!(input instanceof Request)) {
@@ -331,12 +343,9 @@ describe('상담 예약 API 사용자 흐름', () => {
     const submitButton = await screen.findByRole('button', { name: '예약 확정하기' })
     await waitFor(() => expect(submitButton).toBeEnabled())
     fireEvent.click(submitButton)
-    expect(await screen.findByText('상담 예약이 접수되었습니다.')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('radio', { name: '이회복' }))
-
-    expect(screen.queryByText('상담 예약이 접수되었습니다.')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '예약 확정하기' })).toBeDisabled()
+    await waitFor(() =>
+      expect(routerMocks.push).toHaveBeenCalledWith('/recovery/consultation/8/complete'),
+    )
   })
 
   it('예약 생성 오류를 안내하고 다시 제출할 수 있게 한다', async () => {
