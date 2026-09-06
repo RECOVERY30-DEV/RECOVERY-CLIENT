@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import Home from './page'
@@ -32,5 +32,18 @@ describe('스플래시 화면', () => {
     act(() => vi.advanceTimersByTime(1))
     expect(replaceMock).toHaveBeenCalledOnce()
     expect(replaceMock).toHaveBeenCalledWith('/login')
+  })
+
+  it('화면을 클릭하면 대기 없이 로그인 화면으로 이동한다', () => {
+    vi.useFakeTimers()
+    render(<Home />)
+
+    fireEvent.click(screen.getByRole('button', { name: '로그인 화면으로 이동' }))
+
+    expect(replaceMock).toHaveBeenCalledOnce()
+    expect(replaceMock).toHaveBeenCalledWith('/login')
+
+    act(() => vi.advanceTimersByTime(1500))
+    expect(replaceMock).toHaveBeenCalledOnce()
   })
 })
