@@ -29,9 +29,12 @@ export function ServiceBottomNavigation({ activeItem, className }: ServiceBottom
   return (
     <nav
       aria-label="주요 메뉴"
-      className={cn('h-[84px] w-full bg-base-white px-[35px] pt-[5px] pb-[10px]', className)}
+      className={cn(
+        'h-[84px] w-full bg-base-white px-4 pt-[5px] pb-[10px] sm:px-[35px]',
+        className,
+      )}
     >
-      <ul className="flex items-center justify-center gap-[45px]">
+      <ul className="flex items-center justify-between">
         {NAVIGATION_ITEMS.map((item) => {
           const isActive = item.id === activeItem
           const Icon = item.icon

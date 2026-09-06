@@ -97,4 +97,13 @@ describe('현금부족 원인 상세 화면', () => {
       '/cashflow',
     )
   })
+
+  it('계절 원인의 추가 근거와 예측 정확도 안내를 제공한다', () => {
+    render(<CashflowCauseDetailScreen />)
+
+    expect(
+      screen.getByRole('link', { name: '계절적 매출 회복 지연: 근거 더 보기' }),
+    ).toHaveAttribute('href', '#cashflow-forecast-accuracy')
+    expect(screen.getByRole('heading', { name: '예측 정확도 안내' })).toBeInTheDocument()
+  })
 })
