@@ -48,7 +48,7 @@ export type HomeForecastViewModel = Readonly<{
   dataStatuses: ReadonlyArray<HomeDataStatus>
 }>
 
-const KOREA_TIME_ZONE = 'Asia/Seoul'
+const KOREA_TIME_OFFSET_IN_MILLISECONDS = 9 * 60 * 60 * 1000
 
 function formatAmountUnit(amount: number): string {
   return new Intl.NumberFormat('ko-KR', { maximumFractionDigits: 1 }).format(
@@ -69,12 +69,13 @@ function formatBaseDate(baseDate: string): string {
 }
 
 function formatUpdatedTime(updatedAt: string): string {
-  return new Intl.DateTimeFormat('ko-KR', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: KOREA_TIME_ZONE,
-  }).format(new Date(updatedAt))
+  const koreaTime = new Date(Date.parse(updatedAt) + KOREA_TIME_OFFSET_IN_MILLISECONDS)
+  const hour = koreaTime.getUTCHours()
+  const minute = String(koreaTime.getUTCMinutes()).padStart(2, '0')
+  const period = hour < 12 ? '오전' : '오후'
+  const displayHour = hour % 12 || 12
+
+  return `${period} ${displayHour}:${minute}`
 }
 
 function roundPercentage(value: number): number {
