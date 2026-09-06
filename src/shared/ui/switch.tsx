@@ -27,7 +27,7 @@ function Switch({ className, disabled, id, label, ...props }: SwitchProps) {
       >
         {label}
       </label>
-      <span className="relative h-[23px] w-10 shrink-0 rounded-full has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-blue-400 has-[:focus-visible]:ring-offset-2">
+      <span className="relative h-[23px] w-10 shrink-0 rounded-full has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-blue-800 has-[:focus-visible]:ring-offset-2">
         <input
           {...props}
           className="peer absolute inset-0 z-10 size-full cursor-pointer appearance-none bg-transparent outline-none disabled:cursor-not-allowed"

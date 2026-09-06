@@ -6,6 +6,62 @@ import ConsultationPage from '@/app/recovery/consultation/page'
 import { ConsultationReservationScreen } from './consultation-reservation-screen'
 
 describe('상담 예약 화면', () => {
+  it('검증된 지원사업은 지원사업 상담 맥락과 안전한 상세 뒤로가기를 제공한다', async () => {
+    render(
+      await ConsultationPage({
+        searchParams: Promise.resolve({ program: 'credit-guarantee-sales-decline' }),
+      }),
+    )
+
+    expect(screen.getByRole('heading', { name: '지원사업 상담' })).toBeInTheDocument()
+    expect(screen.getByText('신용보증기금 매출감소특례보증')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '지원사업 상세로 돌아가기' })).toHaveAttribute(
+      'href',
+      '/recovery/support-programs/credit-guarantee-sales-decline',
+    )
+    expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
+  })
+
+  it('지원사업 목록의 generic 상담은 목록으로 안전하게 돌아간다', async () => {
+    render(
+      await ConsultationPage({ searchParams: Promise.resolve({ source: 'support-programs' }) }),
+    )
+
+    expect(screen.getByRole('heading', { name: '지원사업 상담' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '지원사업 목록으로 돌아가기' })).toHaveAttribute(
+      'href',
+      '/recovery/support-programs',
+    )
+  })
+
+  it('지원사업과 회복안이 함께 오면 지원사업을 우선 표시하고 명시된 회복안만 함께 표시한다', async () => {
+    render(
+      await ConsultationPage({
+        searchParams: Promise.resolve({
+          program: 'small-business-stability-fund',
+          plans: ['refinancing-review'],
+        }),
+      }),
+    )
+
+    expect(screen.getByRole('heading', { name: '지원사업 상담' })).toBeInTheDocument()
+    expect(screen.getByText('소상공인 경영안정자금')).toBeInTheDocument()
+    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent('대환 검토')
+    expect(screen.queryByText('상환조건 조정 상담')).not.toBeInTheDocument()
+  })
+
+  it('유효하지 않은 지원사업 ID는 기본 회복안 상담으로 안전하게 되돌린다', async () => {
+    render(
+      await ConsultationPage({ searchParams: Promise.resolve({ program: 'unknown-program' }) }),
+    )
+
+    expect(screen.getByRole('link', { name: '회복안 비교로 돌아가기' })).toHaveAttribute(
+      'href',
+      '/recovery/compare',
+    )
+    expect(screen.getByText('상환조건 조정 상담')).toBeInTheDocument()
+  })
+
   it('query에서 전달된 회복안을 목적과 요약에 반영한다', async () => {
     render(
       await ConsultationPage({

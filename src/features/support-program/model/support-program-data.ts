@@ -16,14 +16,13 @@ type RequiredDocument = Readonly<{
 }>
 
 export type SupportProgram = Readonly<{
-  applicationDeadline: string
+  applicationDeadline: `${number}-${number}-${number}`
   category: Exclude<SupportProgramCategory, '전체'>
   description: string
   eligibilityRequirements: readonly EligibilityRequirement[]
   id: string
   institution: string
   interestRate: string
-  isApplicationOpen: boolean
   matchReason: string
   matchStatus: SupportProgramMatchStatus
   officialAnnouncement: string
@@ -34,6 +33,8 @@ export type SupportProgram = Readonly<{
   title: string
 }>
 
+export const SUPPORT_PROGRAM_REFERENCE_DATE = '2025-06-18' as const
+
 export const SUPPORT_PROGRAMS: readonly SupportProgram[] = [
   {
     id: 'small-business-stability-fund',
@@ -41,8 +42,7 @@ export const SUPPORT_PROGRAMS: readonly SupportProgram[] = [
     category: '행정자금',
     institution: '소상공인시장진흥공단',
     regions: ['서울', '경기'],
-    isApplicationOpen: true,
-    applicationDeadline: '2025년 7월 31일',
+    applicationDeadline: '2025-07-31',
     supportSummary: '운전자금 최대 7,000만 원 / 연 3.4% 고정금리',
     description: '운전자금 최대 7,000만 원 융자',
     interestRate: '연 3.4% (고정, 상담자 확인 필요)',
@@ -74,8 +74,7 @@ export const SUPPORT_PROGRAMS: readonly SupportProgram[] = [
     category: '행정자금',
     institution: '신용보증기금',
     regions: ['부산'],
-    isApplicationOpen: false,
-    applicationDeadline: '2025년 8월 15일',
+    applicationDeadline: '2025-08-15',
     supportSummary: '보증 한도 최대 1억 원 / 보증료 연 0.9%',
     description: '매출 감소 사업자의 보증 한도 최대 1억 원',
     interestRate: '보증료 연 0.9% (상담자 확인 필요)',
@@ -102,8 +101,7 @@ export const SUPPORT_PROGRAMS: readonly SupportProgram[] = [
     category: '경영지원',
     institution: '소상공인시장진흥공단',
     regions: ['서울', '대전'],
-    isApplicationOpen: true,
-    applicationDeadline: '2025년 9월 1일',
+    applicationDeadline: '2025-09-30',
     supportSummary: '경영개선 컨설팅 및 최대 300만 원 지원',
     description: '경영진단과 개선 컨설팅을 지원',
     interestRate: '해당 없음',
@@ -126,4 +124,25 @@ export const SUPPORT_PROGRAM_REGIONS = ['전체', '서울', '경기', '부산', 
 
 export function getSupportProgram(programId: string): SupportProgram | undefined {
   return SUPPORT_PROGRAMS.find((program) => program.id === programId)
+}
+
+export function isSupportProgramApplicationOpen(
+  applicationDeadline: SupportProgram['applicationDeadline'],
+  referenceDate = SUPPORT_PROGRAM_REFERENCE_DATE,
+): boolean {
+  return applicationDeadline >= referenceDate
+}
+
+export function formatSupportProgramDeadline(
+  applicationDeadline: SupportProgram['applicationDeadline'],
+): string {
+  const [year, month, day] = applicationDeadline.split('-')
+
+  return `${year}년 ${Number(month)}월 ${Number(day)}일`
+}
+
+export function getSupportProgramApplicationLabel(
+  applicationDeadline: SupportProgram['applicationDeadline'],
+): '신청 가능' | '신청 마감' {
+  return isSupportProgramApplicationOpen(applicationDeadline) ? '신청 가능' : '신청 마감'
 }

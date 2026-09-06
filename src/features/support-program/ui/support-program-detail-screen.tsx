@@ -2,7 +2,12 @@ import Link from 'next/link'
 
 import { BackLink, Button, MobileScreen } from '@/shared/ui'
 
-import { getSupportProgram } from '../model/support-program-data'
+import {
+  formatSupportProgramDeadline,
+  getSupportProgramApplicationLabel,
+  getSupportProgram,
+} from '../model/support-program-data'
+import { SupportProgramMatchStatus } from './support-program-match-status'
 
 type SupportProgramDetailScreenProps = Readonly<{
   programId: string
@@ -24,12 +29,11 @@ export function SupportProgramDetailScreen({
         <header>
           <div className="flex items-start justify-between gap-3">
             <h1 className="typo-sub-header-2 text-primary-200">{program.title}</h1>
-            <span className="shrink-0 rounded-full bg-primary-blue-100 px-3 py-[6px] typo-body-8 text-primary-blue-900">
-              {program.matchStatus}
-            </span>
+            <SupportProgramMatchStatus status={program.matchStatus} />
           </div>
           <p className="mt-[6px] typo-body-6 text-secondary-300">
-            신청 마감 {program.applicationDeadline}
+            {getSupportProgramApplicationLabel(program.applicationDeadline)} · 신청 마감{' '}
+            {formatSupportProgramDeadline(program.applicationDeadline)}
           </p>
         </header>
 
@@ -42,7 +46,10 @@ export function SupportProgramDetailScreen({
             <OverviewItem label="지원 내용" value={program.description} />
             <OverviewItem label="금리" value={program.interestRate} />
             <OverviewItem label="지원 기간" value={program.repaymentPeriod} />
-            <OverviewItem label="신청 기한" value={`${program.applicationDeadline}까지`} />
+            <OverviewItem
+              label="신청 기한"
+              value={`${formatSupportProgramDeadline(program.applicationDeadline)}까지`}
+            />
           </dl>
         </section>
 
@@ -67,7 +74,7 @@ export function SupportProgramDetailScreen({
                     className={`shrink-0 typo-caption-1 ${
                       requirement.status === '충족 가능'
                         ? 'text-primary-blue-800'
-                        : 'text-warning-500'
+                        : 'text-secondary-500'
                     }`}
                   >
                     {requirement.status}
@@ -90,7 +97,7 @@ export function SupportProgramDetailScreen({
                 key={document.label}
               >
                 <span className="typo-body-5 text-primary-100">{document.label}</span>
-                <span className="shrink-0 typo-caption-3 text-secondary-300">
+                <span className="shrink-0 typo-caption-3 text-secondary-500">
                   {document.status}
                 </span>
               </li>
@@ -118,7 +125,7 @@ export function SupportProgramDetailScreen({
         </section>
 
         <Link
-          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
           href={`/recovery/consultation?program=${program.id}`}
         >
           상담 예약하기

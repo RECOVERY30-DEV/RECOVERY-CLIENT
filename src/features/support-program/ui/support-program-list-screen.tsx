@@ -5,7 +5,13 @@ import { useMemo, useState } from 'react'
 
 import { BackLink, MobileScreen } from '@/shared/ui'
 
-import { SUPPORT_PROGRAMS, type SupportProgramCategory } from '../model/support-program-data'
+import {
+  SUPPORT_PROGRAM_REFERENCE_DATE,
+  SUPPORT_PROGRAMS,
+  formatSupportProgramDeadline,
+  isSupportProgramApplicationOpen,
+  type SupportProgramCategory,
+} from '../model/support-program-data'
 import { SupportProgramCard } from './support-program-card'
 import { SupportProgramFilters } from './support-program-filters'
 
@@ -13,7 +19,7 @@ export function SupportProgramListScreen(): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<SupportProgramCategory>('전체')
   const [region, setRegion] = useState('전체')
-  const [isApplicationOpenOnly, setIsApplicationOpenOnly] = useState(false)
+  const [isApplicationOpenOnly, setIsApplicationOpenOnly] = useState(true)
 
   const filteredPrograms = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('ko-KR')
@@ -27,7 +33,8 @@ export function SupportProgramListScreen(): React.JSX.Element {
           .includes(normalizedSearchTerm)
       const matchesCategory = selectedCategory === '전체' || program.category === selectedCategory
       const matchesRegion = region === '전체' || program.regions.includes(region)
-      const matchesApplication = !isApplicationOpenOnly || program.isApplicationOpen
+      const matchesApplication =
+        !isApplicationOpenOnly || isSupportProgramApplicationOpen(program.applicationDeadline)
 
       return matchesSearch && matchesCategory && matchesRegion && matchesApplication
     })
@@ -62,7 +69,7 @@ export function SupportProgramListScreen(): React.JSX.Element {
             <h2 className="typo-body-6 text-secondary-300" id="support-program-results-title">
               검색 결과
             </h2>
-            <p aria-live="polite" className="typo-caption-1 text-primary-blue-500">
+            <p aria-live="polite" className="typo-caption-1 text-primary-blue-800">
               총 {filteredPrograms.length}건
             </p>
           </div>
@@ -87,14 +94,17 @@ export function SupportProgramListScreen(): React.JSX.Element {
           <h2 className="typo-body-5 text-primary-100" id="support-program-source-title">
             출처 안내
           </h2>
-          <p className="mt-1 typo-caption-3 text-secondary-300">
+          <p className="mt-1 typo-caption-3 text-secondary-500">
+            마지막 갱신 {formatSupportProgramDeadline(SUPPORT_PROGRAM_REFERENCE_DATE)} 기준입니다.
+          </p>
+          <p className="mt-1 typo-caption-3 text-secondary-500">
             지원 조건과 신청 일정은 공식 출처에서 최신 정보를 확인하세요.
           </p>
         </section>
 
         <Link
-          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-          href="/recovery/consultation?program=small-business-stability-fund"
+          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
+          href="/recovery/consultation?source=support-programs"
         >
           지원사업 상담 예약
         </Link>

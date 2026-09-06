@@ -58,6 +58,14 @@ export function isRecoveryOptionId(value: string): value is RecoveryOptionId {
 export function normalizeRecoveryOptionIds(
   plans: string | readonly string[] | undefined,
 ): readonly RecoveryOptionId[] {
+  const selectedIds = getRecoveryOptionIds(plans)
+
+  return selectedIds.length > 0 ? selectedIds : DEFAULT_RECOVERY_OPTION_IDS
+}
+
+export function getRecoveryOptionIds(
+  plans: string | readonly string[] | undefined,
+): readonly RecoveryOptionId[] {
   const planValues = typeof plans === 'string' ? [plans] : (plans ?? [])
   const selectedIds: RecoveryOptionId[] = []
 
@@ -71,7 +79,7 @@ export function normalizeRecoveryOptionIds(
     }
   }
 
-  return selectedIds.length > 0 ? selectedIds : DEFAULT_RECOVERY_OPTION_IDS
+  return selectedIds
 }
 
 export function getRecoveryOptions(ids: readonly RecoveryOptionId[]): readonly RecoveryOption[] {

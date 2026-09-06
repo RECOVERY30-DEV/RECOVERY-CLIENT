@@ -30,30 +30,41 @@ describe('지원사업 목록 화면', () => {
     })
     expect(screen.getByText('총 1건')).toBeInTheDocument()
 
+    fireEvent.click(screen.getByRole('switch', { name: '신청 가능만 보기' }))
+    expect(screen.getByRole('switch', { name: '신청 가능만 보기' })).not.toBeChecked()
+
     fireEvent.change(screen.getByRole('searchbox', { name: '지원사업 검색' }), {
       target: { value: '없는 사업' },
     })
     expect(screen.getByText('조건에 맞는 지원사업이 없습니다.')).toBeInTheDocument()
-
-    fireEvent.change(screen.getByRole('searchbox', { name: '지원사업 검색' }), {
-      target: { value: '' },
-    })
-    fireEvent.click(screen.getByRole('switch', { name: '신청 가능만 보기' }))
-    expect(screen.getByRole('switch', { name: '신청 가능만 보기' })).toBeChecked()
-    expect(screen.getByText('총 0건')).toBeInTheDocument()
   })
 
   it('카테고리 선택 상태가 명확하고 카드에서 상세와 상담으로 연결한다', () => {
     render(<SupportProgramListScreen />)
 
+    expect(screen.getByRole('group', { name: '지원사업 카테고리' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '전체' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('switch', { name: '신청 가능만 보기' })).toBeChecked()
     expect(screen.getByRole('link', { name: '소상공인 경영안정자금 상세 확인' })).toHaveAttribute(
       'href',
       '/recovery/support-programs/small-business-stability-fund',
     )
     expect(screen.getByRole('link', { name: '지원사업 상담 예약' })).toHaveAttribute(
       'href',
-      '/recovery/consultation?program=small-business-stability-fund',
+      '/recovery/consultation?source=support-programs',
+    )
+  })
+
+  it('목록 카드의 두 매칭 상태를 상세와 같은 대비 안전 색상으로 표시한다', () => {
+    render(<SupportProgramListScreen />)
+
+    expect(screen.getAllByTestId('support-program-match-status')[0]).toHaveClass(
+      'bg-primary-blue-100',
+      'text-primary-blue-800',
+    )
+    expect(screen.getAllByTestId('support-program-match-status')[1]).toHaveClass(
+      'bg-neutral-300',
+      'text-secondary-500',
     )
   })
 })
@@ -78,8 +89,7 @@ describe('지원사업 상세 화면', () => {
   it('실제 매칭 상태와 상담 및 뒤로가기 링크를 제공한다', () => {
     render(<SupportProgramDetailScreen programId="small-business-stability-fund" />)
 
-    expect(screen.getByText('매칭 가능성 높음')).toBeInTheDocument()
-    expect(screen.queryByText('가능성')).not.toBeInTheDocument()
+    expect(screen.getByText('매칭 가능성 높음', { exact: true })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveAttribute(
       'href',
       '/recovery/consultation?program=small-business-stability-fund',
@@ -89,4 +99,38 @@ describe('지원사업 상세 화면', () => {
       '/recovery/support-programs',
     )
   })
+
+  it.each([
+    ['small-business-stability-fund', '소상공인 경영안정자금'],
+    ['credit-guarantee-sales-decline', '신용보증기금 매출감소특례보증'],
+    ['small-business-management-improvement', '소상공인 경영개선 지원사업'],
+  ] as const)('%s 상세는 해당 지원사업을 상담 query로 전달한다', (programId, title) => {
+    render(<SupportProgramDetailScreen programId={programId} />)
+
+    expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveAttribute(
+      'href',
+      `/recovery/consultation?program=${programId}`,
+    )
+  })
+
+  it.each([
+    [
+      'small-business-stability-fund',
+      '매칭 가능성 높음',
+      'bg-primary-blue-100',
+      'text-primary-blue-800',
+    ],
+    ['credit-guarantee-sales-decline', '조건 확인 필요', 'bg-neutral-300', 'text-secondary-500'],
+  ] as const)(
+    '상세의 %s 상태를 목록 카드와 같은 대비 안전 스타일로 표시한다',
+    (programId, status, backgroundClass, textClass) => {
+      const { container } = render(<SupportProgramDetailScreen programId={programId} />)
+
+      const statusElement = screen.getByText(status, { exact: true })
+      expect(statusElement).toHaveClass(backgroundClass)
+      expect(statusElement).toHaveClass(textClass)
+      expect(container.querySelectorAll('[class*="text-warning-500"]')).toHaveLength(0)
+    },
+  )
 })
