@@ -1,10 +1,20 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { LoginScreen } from './login-screen'
 
+const replaceMock = vi.hoisted(() => vi.fn())
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: replaceMock }),
+}))
+
 describe('로그인 화면', () => {
-  it('이메일과 비밀번호를 입력할 수 있는 필수 로그인 폼을 제공한다', () => {
+  afterEach(() => {
+    replaceMock.mockReset()
+  })
+
+  it('이메일과 비밀번호를 입력할 수 있는 로그인 폼을 제공한다', () => {
     render(<LoginScreen />)
 
     expect(screen.getByRole('heading', { name: 'Recovery30 로그인' })).toBeInTheDocument()
@@ -17,11 +27,9 @@ describe('로그인 화면', () => {
     expect(emailInput).toHaveAttribute('type', 'email')
     expect(emailInput).toHaveAttribute('autocomplete', 'email')
     expect(emailInput).toHaveClass('placeholder:text-secondary-300')
-    expect(emailInput).toBeRequired()
     expect(passwordInput).toHaveAttribute('type', 'password')
     expect(passwordInput).toHaveAttribute('autocomplete', 'current-password')
     expect(passwordInput).toHaveClass('placeholder:text-secondary-300')
-    expect(passwordInput).toBeRequired()
     expect(submitButton).toHaveAttribute('type', 'submit')
   })
 
@@ -35,11 +43,14 @@ describe('로그인 화면', () => {
     )
   })
 
-  it('API 연결 전에는 로그인 제출로 페이지 이동을 발생시키지 않는다', () => {
+  it('입력값이 없어도 로그인 버튼을 누르면 홈으로 이동한다', () => {
     render(<LoginScreen />)
 
-    const loginForm = screen.getByRole('form', { name: '로그인' })
+    const submitButton = screen.getByRole('button', { name: '로그인' })
 
-    expect(fireEvent.submit(loginForm)).toBe(false)
+    fireEvent.click(submitButton)
+
+    expect(replaceMock).toHaveBeenCalledOnce()
+    expect(replaceMock).toHaveBeenCalledWith('/home')
   })
 })
