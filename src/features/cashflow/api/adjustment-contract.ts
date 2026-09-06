@@ -1,10 +1,9 @@
 import { ApiContractError } from '@/shared/api/api-response'
 
-export type AdjustmentType =
-  'CASH_SALES' | 'EXTERNAL_FUNDS' | 'EXPECTED_INCOME' | 'EXPECTED_EXPENSE'
-export type AdjustmentCertainty = 'CONFIRMED' | 'EXPECTED'
-export type AdjustmentStatus = 'DRAFT' | 'SAVED' | 'APPLIED'
-export type AdjustmentSuggestionStatus = 'PROPOSED' | 'ACCEPTED' | 'DISMISSED'
+export type AdjustmentType = 'CASH_SALES' | 'EXTERNAL_FUND' | 'EXPECTED_INCOME' | 'EXPECTED_EXPENSE'
+export type AdjustmentCertainty = 'CONFIRMED' | 'ESTIMATED'
+export type AdjustmentStatus = 'DRAFT' | 'SAVED' | 'DISCARDED'
+export type AdjustmentSuggestionStatus = 'PROPOSED' | 'ACCEPTED' | 'REJECTED'
 
 export type Adjustment = Readonly<{
   adjustmentId: number
@@ -19,11 +18,12 @@ export type Adjustment = Readonly<{
 export type AdjustmentSuggestion = Readonly<{
   suggestionId: number
   adjustmentType: AdjustmentType
-  amount: number
-  certainty: AdjustmentCertainty
-  expectedDate: string
+  suggestedAmount: number | null
+  suggestedRule: string | null
+  evidenceText: string
+  confidence: number | null
   status: AdjustmentSuggestionStatus
-  title: string | null
+  acceptedAdjustmentId: number | null
 }>
 
 export type CreateAdjustmentCommand = Readonly<{
@@ -35,7 +35,6 @@ export type CreateAdjustmentCommand = Readonly<{
 }>
 
 export type UpdateAdjustmentCommand = Readonly<{
-  adjustmentType?: AdjustmentType
   amount?: number
   certainty?: AdjustmentCertainty
   expectedDate?: string
@@ -44,7 +43,7 @@ export type UpdateAdjustmentCommand = Readonly<{
 
 export type AppliedAdjustments = Readonly<{
   appliedCount: number
-  appliedRunId: number
+  appliedRunId: number | null
 }>
 
 type UnknownRecord = Record<string, unknown>
@@ -68,18 +67,24 @@ function readString(record: UnknownRecord, field: string, context: string): stri
   return record[field]
 }
 
-function readNullableString(record: UnknownRecord, field: string, context: string): string | null {
-  const value = record[field]
-  if (value !== null && typeof value !== 'string') throw contractError(context, field)
-  return value
-}
-
 function readPositiveInteger(record: UnknownRecord, field: string, context: string): number {
   const value = record[field]
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value <= 0) {
     throw contractError(context, field)
   }
   return value
+}
+
+function readPositiveIntegerFromFields(
+  record: UnknownRecord,
+  fields: readonly string[],
+  context: string,
+): number {
+  for (const field of fields) {
+    if (record[field] !== undefined) return readPositiveInteger(record, field, context)
+  }
+
+  throw contractError(context, fields[0])
 }
 
 function readPositiveNumber(record: UnknownRecord, field: string, context: string): number {
@@ -107,21 +112,60 @@ function readEnum<const T extends string>(
   return value as T
 }
 
+function readAdjustmentType(record: UnknownRecord, context: string): AdjustmentType {
+  return readEnum(
+    record,
+    'adjustmentType',
+    ['CASH_SALES', 'EXTERNAL_FUND', 'EXPECTED_INCOME', 'EXPECTED_EXPENSE'],
+    context,
+  )
+}
+
+function readAdjustmentCertainty(record: UnknownRecord, context: string): AdjustmentCertainty {
+  return readEnum(record, 'certainty', ['CONFIRMED', 'ESTIMATED'], context)
+}
+
+function readNullablePositiveInteger(
+  record: UnknownRecord,
+  field: string,
+  context: string,
+): number | null {
+  if (record[field] === null) return null
+  return readPositiveInteger(record, field, context)
+}
+
+function readNullablePositiveNumber(
+  record: UnknownRecord,
+  field: string,
+  context: string,
+): number | null {
+  if (record[field] === null) return null
+  return readPositiveNumber(record, field, context)
+}
+
+function readNullableString(record: UnknownRecord, field: string, context: string): string | null {
+  if (record[field] === null) return null
+  return readString(record, field, context)
+}
+
+function readConfidence(record: UnknownRecord, field: string, context: string): number {
+  const value = record[field]
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1) {
+    throw contractError(context, field)
+  }
+  return value
+}
+
 function parseAdjustmentRecord(value: unknown): Adjustment {
   const context = 'adjustment'
   const record = readRecord(value, context)
   return {
-    adjustmentId: readPositiveInteger(record, 'adjustmentId', context),
-    adjustmentType: readEnum(
-      record,
-      'adjustmentType',
-      ['CASH_SALES', 'EXTERNAL_FUNDS', 'EXPECTED_INCOME', 'EXPECTED_EXPENSE'],
-      context,
-    ),
+    adjustmentId: readPositiveIntegerFromFields(record, ['id', 'adjustmentId'], context),
+    adjustmentType: readAdjustmentType(record, context),
     amount: readPositiveNumber(record, 'amount', context),
-    certainty: readEnum(record, 'certainty', ['CONFIRMED', 'EXPECTED'], context),
+    certainty: readAdjustmentCertainty(record, context),
     expectedDate: readDate(record, 'expectedDate', context),
-    status: readEnum(record, 'status', ['DRAFT', 'SAVED', 'APPLIED'], context),
+    status: readEnum(record, 'status', ['DRAFT', 'SAVED', 'DISCARDED'], context),
     memo: readNullableString(record, 'memo', context),
   }
 }
@@ -141,18 +185,14 @@ export function parseAdjustmentSuggestions(value: unknown): readonly AdjustmentS
     const context = 'adjustmentSuggestion'
     const record = readRecord(item, context)
     return {
-      suggestionId: readPositiveInteger(record, 'suggestionId', context),
-      adjustmentType: readEnum(
-        record,
-        'adjustmentType',
-        ['CASH_SALES', 'EXTERNAL_FUNDS', 'EXPECTED_INCOME', 'EXPECTED_EXPENSE'],
-        context,
-      ),
-      amount: readPositiveNumber(record, 'amount', context),
-      certainty: readEnum(record, 'certainty', ['CONFIRMED', 'EXPECTED'], context),
-      expectedDate: readDate(record, 'expectedDate', context),
-      status: readEnum(record, 'status', ['PROPOSED', 'ACCEPTED', 'DISMISSED'], context),
-      title: 'title' in record ? readNullableString(record, 'title', context) : null,
+      suggestionId: readPositiveIntegerFromFields(record, ['id', 'suggestionId'], context),
+      adjustmentType: readAdjustmentType(record, context),
+      suggestedAmount: readNullablePositiveNumber(record, 'suggestedAmount', context),
+      suggestedRule: readNullableString(record, 'suggestedRule', context),
+      evidenceText: readString(record, 'evidenceText', context),
+      confidence: record.confidence === null ? null : readConfidence(record, 'confidence', context),
+      status: readEnum(record, 'status', ['PROPOSED', 'ACCEPTED', 'REJECTED'], context),
+      acceptedAdjustmentId: readNullablePositiveInteger(record, 'acceptedAdjustmentId', context),
     }
   })
 }
@@ -162,13 +202,6 @@ export function parseAppliedAdjustments(value: unknown): AppliedAdjustments {
   const record = readRecord(value, context)
   return {
     appliedCount: readPositiveInteger(record, 'appliedCount', context),
-    appliedRunId: readPositiveInteger(record, 'appliedRunId', context),
+    appliedRunId: readNullablePositiveInteger(record, 'appliedRunId', context),
   }
-}
-
-export function parseDeletedAdjustment(value: unknown): Readonly<{ deleted: boolean }> {
-  const context = 'deletedAdjustment'
-  const record = readRecord(value, context)
-  if (record.deleted !== true) throw contractError(context, 'deleted')
-  return { deleted: true }
 }

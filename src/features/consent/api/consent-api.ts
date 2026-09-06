@@ -16,7 +16,7 @@ function assertPositiveIdentifier(value: number, name: string): void {
 }
 
 function assertConsentTypeCode(value: string): asserts value is ConsentTypeCode {
-  if (value !== 'ANALYSIS' && value !== 'FOLLOWUP_TRACKING') {
+  if (value !== 'ANALYSIS' && value !== 'FOLLOWUP_TRACKING' && value !== 'PACKET_TRANSFER') {
     throw new RangeError('지원하지 않는 동의 유형입니다.')
   }
 }

@@ -68,9 +68,9 @@ const scenarios: readonly RecoveryScenario[] = [
     scenarioType: 'BASELINE',
     firstShortfallDate: '2025-05-14',
     minBalance: -1240000,
-    deltaDays: 0,
-    deltaMinBalance: 0,
-    monthlyPaymentDelta: 0,
+    deltaDays: null,
+    deltaMinBalance: null,
+    monthlyPaymentDelta: null,
     note: '현재 현금흐름 예측을 유지합니다.',
     appliedOptionIds: [],
   },
@@ -118,6 +118,8 @@ describe('회복안 비교 화면', () => {
     expect(repayment).toHaveAccessibleDescription(/월 부담 변화.*월 상환액 약 15만 원 감소 예상/)
     expect(repayment).toHaveAccessibleDescription(/사전 조건.*원리금 3회 이상 정상 납부 이력/)
     expect(screen.getByText('기준')).toBeInTheDocument()
+    expect(screen.getByText(/기준 시나리오 · 최저 잔액 -1,240,000원/)).toBeInTheDocument()
+    expect(screen.queryByText(/부족일 null일 지연/)).not.toBeInTheDocument()
     expect(screen.getAllByText('상환조건 조정 상담')).toHaveLength(2)
     expect(screen.getByText(/부족일 16일 지연/)).toBeInTheDocument()
   })

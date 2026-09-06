@@ -76,7 +76,13 @@ function SafetyBalanceCard({ amount, status }: HomeForecastViewModel['safety']) 
         <span className="block h-full w-[34.34%] rounded-full bg-primary-blue-400" />
       </div>
       <div className="mt-[6px] flex items-center text-[12px] leading-[14px] font-semibold text-secondary-300">
-        <SafetyIcon aria-hidden="true" className="size-6" />
+        <span
+          aria-hidden="true"
+          className="flex size-6 shrink-0 items-center justify-center overflow-hidden"
+          data-testid="safety-icon-frame"
+        >
+          <SafetyIcon className="h-[14px] w-3" />
+        </span>
         <span>{status}</span>
       </div>
       <p className="mt-[15px] text-[12px] leading-[14px] font-semibold text-secondary-300">

@@ -6,16 +6,13 @@ import { ServiceBottomNavigation } from '@/features/navigation/ui/service-bottom
 import { DEMO_BUSINESS_ID } from '@/shared/config/business'
 import { BackLink, Button, MobileScreen } from '@/shared/ui'
 
-import { type ConsentTypeCode } from '../api/consent-contract'
+import { type Consent, type ConsentTypeCode } from '../api/consent-contract'
 import { CONSENT_DATA_USAGE_ITEMS } from '../model/consent-data'
 import { useConsentQueries, useUpdateConsentMutation } from '../queries/consent-queries'
 import { ConsentControls } from './consent-controls'
 import { ConsentWithdrawalDialog } from './consent-withdrawal-dialog'
 
-function isGranted(
-  consents: ReadonlyArray<{ typeCode: ConsentTypeCode; status: 'GRANTED' | 'REVOKED' }>,
-  typeCode: ConsentTypeCode,
-) {
+function isGranted(consents: ReadonlyArray<Consent>, typeCode: ConsentTypeCode) {
   return consents.some((consent) => consent.typeCode === typeCode && consent.status === 'GRANTED')
 }
 
