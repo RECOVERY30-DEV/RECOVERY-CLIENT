@@ -82,7 +82,7 @@ export function CashflowPendingScreen(): React.JSX.Element {
 
         <div className="mt-[76px] flex flex-col gap-3">
           <Link
-            className="inline-flex h-[42px] items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="inline-flex h-[42px] items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href="/cashflow/corrections"
           >
             정보 보정하기

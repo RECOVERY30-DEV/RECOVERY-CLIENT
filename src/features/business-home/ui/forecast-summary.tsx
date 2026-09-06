@@ -11,7 +11,7 @@ function ForecastRangeCard() {
       </p>
 
       <div className="mt-[30px]">
-        <div className="flex justify-between text-[11px] leading-[13px] text-neutral-700">
+        <div className="flex justify-between text-[11px] leading-[13px] text-secondary-300">
           <span>보수적</span>
           <span>낙관적</span>
         </div>
@@ -21,10 +21,10 @@ function ForecastRangeCard() {
           <span className="absolute bottom-[-7px] left-[73.08%] -translate-x-1/2 border-x-[3px] border-b-[5px] border-x-transparent border-b-neutral-700" />
         </div>
         <div className="mt-[10px] flex justify-between text-[12px] leading-[14px] font-semibold">
-          <span className="text-warning-500">−128만</span>
+          <span className="text-warning-700">−128만</span>
           <span className="text-primary-blue-400">83만</span>
         </div>
-        <p className="mt-6 text-[11px] leading-[13px] text-neutral-700">
+        <p className="mt-6 text-[11px] leading-[13px] text-secondary-300">
           시나리오 기준 범위이며 확정 결과가 아닙니다.
         </p>
       </div>
@@ -40,11 +40,11 @@ function ExpectedShortageCard() {
       <div className="mt-[27px] h-1 rounded-full bg-disabled-50">
         <span className="block h-full w-[34.34%] rounded-full bg-danger-gradient" />
       </div>
-      <div className="mt-[10px] flex justify-between text-[12px] leading-[14px] font-semibold text-neutral-700">
+      <div className="mt-[10px] flex justify-between text-[12px] leading-[14px] font-semibold text-secondary-300">
         <span>오늘</span>
         <span>향후 30일</span>
       </div>
-      <p className="mt-6 text-[12px] leading-[14px] font-semibold text-neutral-700">
+      <p className="mt-6 text-[12px] leading-[14px] font-semibold text-secondary-300">
         7월 26일 예상
       </p>
     </section>
@@ -59,11 +59,11 @@ function SafetyBalanceCard() {
       <div className="mt-[27px] h-1 rounded-full bg-disabled-50">
         <span className="block h-full w-[34.34%] rounded-full bg-primary-blue-400" />
       </div>
-      <div className="mt-[6px] flex items-center text-[12px] leading-[14px] font-semibold text-neutral-700">
+      <div className="mt-[6px] flex items-center text-[12px] leading-[14px] font-semibold text-secondary-300">
         <SafetyIcon aria-hidden="true" className="size-6" />
         <span>안전상태</span>
       </div>
-      <p className="mt-[15px] text-[12px] leading-[14px] font-semibold text-neutral-700">
+      <p className="mt-[15px] text-[12px] leading-[14px] font-semibold text-secondary-300">
         현재 예상기준
       </p>
     </section>

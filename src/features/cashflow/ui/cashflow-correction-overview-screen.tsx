@@ -76,7 +76,7 @@ export function CashflowCorrectionOverviewScreen(): React.JSX.Element {
             재계산 실행
           </Button>
           <Link
-            className="inline-flex h-[42px] items-center justify-center rounded-[8px] border border-primary-blue-900 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-primary-blue-900 transition-colors hover:border-primary-blue-700 hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="inline-flex h-[42px] items-center justify-center rounded-[8px] border border-primary-blue-900 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-primary-blue-900 transition-colors hover:border-primary-blue-700 hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href="/cashflow/pending"
           >
             보정 중단

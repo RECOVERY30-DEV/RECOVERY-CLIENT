@@ -16,6 +16,7 @@ describe('서비스 하단 내비게이션', () => {
     )
     expect(screen.getByRole('link', { name: '관리' })).toHaveAttribute('href', '/consents')
     expect(screen.getByRole('link', { name: '관리' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: '관리' })).toHaveClass('text-primary-blue-800')
     expect(screen.getByRole('link', { name: '홈' })).not.toHaveAttribute('aria-current')
   })
 })

@@ -9,6 +9,9 @@ describe('Button', () => {
     render(<Button>확인</Button>)
 
     expect(screen.getByRole('button', { name: '확인' })).toHaveAttribute('type', 'button')
+    expect(screen.getByRole('button', { name: '확인' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
   })
 
   it('비활성 상태에서는 클릭 동작을 실행하지 않는다', () => {
@@ -51,6 +54,6 @@ describe('IconButton', () => {
     const button = screen.getByRole('button', { name: '뒤로가기' })
 
     expect(button).toHaveAttribute('type', 'button')
-    expect(button).toHaveClass('size-6')
+    expect(button).toHaveClass('size-6', 'focus-visible:ring-primary-blue-800')
   })
 })

@@ -43,7 +43,7 @@ export function CashflowStatusDetailScreen({ data }: CashflowStatusDetailScreenP
         </div>
 
         <Link
-          className="mt-[76px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="mt-[76px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
           href="/recovery/follow-up"
         >
           30·60·90일 사후점검 확인하기

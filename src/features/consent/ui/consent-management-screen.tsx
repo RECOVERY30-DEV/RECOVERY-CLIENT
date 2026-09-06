@@ -66,7 +66,7 @@ export function ConsentManagementScreen() {
           <ul className="mt-5 flex flex-col gap-1">
             {CONSENT_DATA_USAGE_ITEMS.map((item) => (
               <li
-                className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-[13px] leading-4 text-neutral-700"
+                className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-[13px] leading-4 text-secondary-300"
                 key={item}
               >
                 {item}
@@ -77,7 +77,7 @@ export function ConsentManagementScreen() {
 
         <div className="flex justify-center py-10">
           <button
-            className="border-b border-warning-500 py-0.5 text-[12px] leading-4 font-medium text-warning-500"
+            className="border-b border-warning-500 py-0.5 text-[12px] leading-4 font-medium text-warning-700"
             onClick={() => setIsWithdrawalOpen(true)}
             type="button"
           >

@@ -31,7 +31,7 @@ export function RecoveryOptionCard({
       aria-labelledby={titleId}
       aria-pressed={isSelected}
       className={cn(
-        'w-full rounded-[10px] border bg-neutral-100 p-[14px] text-left transition-colors focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none',
+        'w-full rounded-[10px] border bg-neutral-100 p-[14px] text-left transition-colors focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none',
         isSelected
           ? 'border-primary-blue-700 bg-base-white'
           : 'border-disabled-50 hover:border-primary-blue-300',

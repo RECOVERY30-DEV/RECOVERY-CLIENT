@@ -42,7 +42,7 @@ export function ServiceBottomNavigation({ activeItem, className }: ServiceBottom
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'flex size-12 flex-col items-center justify-center gap-[3px] text-[10px] leading-3 tracking-[-0.3px]',
-                  isActive ? 'text-primary-blue-500' : 'text-[#656f7b]',
+                  isActive ? 'text-primary-blue-800' : 'text-[#656f7b]',
                 )}
                 href={item.href}
               >

@@ -30,15 +30,14 @@ const REPEAT_OPTIONS = [
 export const CASHFLOW_CORRECTION_FORM_CONFIGS = {
   'cash-sales': {
     confirmationDescription:
-      '확정 매출: 이미 확정된 현금매출입니다. 예정 매출: 발생 가능성이 있는 매출로 보수적 범위 계산에만 반영됩니다.',
+      '확정 매출과 예정 매출을 구분하기 위한 항목입니다. 서버 연동 후 예측 범위 산정에 사용됩니다.',
     confirmationLabel: '확정 매출',
     dateLabel: '예정일',
-    description:
-      '은행 거래 내역에 잡히지 않는 현금매출을 입력하세요. 입력값은 Draft로 보관되며 재계산 시 예측에 반영됩니다.',
+    description: '은행 거래 내역에 잡히지 않는 현금매출을 입력하세요.',
     hasExpenseItem: false,
     helpDescription:
-      '확정 매출: 이미 확정된 현금매출입니다. 예정 매출: 발생 가능성이 있는 매출로 보수적 범위 계산에만 반영됩니다.',
-    helpTitle: '입력 안내',
+      '서버 저장 기능은 아직 연결되지 않았습니다. 저장하면 입력 내용은 현재 화면에만 유지됩니다.',
+    helpTitle: '저장 안내',
     kind: 'cash-sales',
     selectionLabel: '반복 여부',
     selectionOptions: REPEAT_OPTIONS,
@@ -46,14 +45,15 @@ export const CASHFLOW_CORRECTION_FORM_CONFIGS = {
     title: '현금매출 입력',
   },
   'external-funds': {
-    confirmationDescription: '확정 항목은 보수적·예상·낙관 시나리오에 반영됩니다.',
+    confirmationDescription:
+      '확정 항목과 예상 항목을 구분하기 위한 선택입니다. 서버 연동 후 예측 시나리오에 사용됩니다.',
     confirmationLabel: '확정 여부',
     dateLabel: '입금 예정일',
-    description: '은행 계좌에 잡히지 않는 입금 예정액을 추가하면 30일 예측 정확도가 높아집니다.',
+    description: '은행 계좌에 잡히지 않는 입금 예정액을 입력하세요.',
     hasExpenseItem: false,
     helpDescription:
-      '확정 항목은 보수적·예상·낙관 시나리오에 반영됩니다. 예상 항목은 낙관 시나리오에만 반영됩니다.',
-    helpTitle: '예측 반영 기준',
+      '서버 저장 기능은 아직 연결되지 않았습니다. 저장하면 입력 내용은 현재 화면에만 유지됩니다.',
+    helpTitle: '저장 안내',
     kind: 'external-funds',
     selectionLabel: '자금 출처',
     selectionOptions: [
@@ -65,14 +65,15 @@ export const CASHFLOW_CORRECTION_FORM_CONFIGS = {
     title: '타행·외부자금 입력',
   },
   'expected-income': {
-    confirmationDescription: '확정으로 표시하면 예측 범위 산정에 가중치가 높아집니다.',
+    confirmationDescription:
+      '확정 수입과 예정 수입을 구분하기 위한 선택입니다. 서버 연동 후 예측 범위 산정에 사용됩니다.',
     confirmationLabel: '확정 수입',
     dateLabel: '예정일',
-    description: '은행 거래 내역에 없는 수입을 직접 입력하면 예측에 반영됩니다.',
+    description: '은행 거래 내역에 없는 예정 수입을 입력하세요.',
     hasExpenseItem: false,
     helpDescription:
-      '저장 전까지 입력 내용은 임시 보관됩니다. 저장 후 재계산을 실행하면 예측에 반영됩니다.',
-    helpTitle: 'Draft 저장 안내',
+      '서버 저장 기능은 아직 연결되지 않았습니다. 저장하면 입력 내용은 현재 화면에만 유지됩니다.',
+    helpTitle: '저장 안내',
     kind: 'expected-income',
     selectionLabel: '반복주기',
     selectionOptions: REPEAT_OPTIONS,
@@ -83,10 +84,11 @@ export const CASHFLOW_CORRECTION_FORM_CONFIGS = {
     confirmationDescription: '확정되지 않은 지출도 입력할 수 있습니다.',
     confirmationLabel: '확정 지출',
     dateLabel: '예정일',
-    description: '향후 30일 예측에 반영됩니다. 확정되지 않은 지출도 입력할 수 있습니다.',
+    description: '향후 30일 내 예정 지출을 입력하세요. 확정되지 않은 지출도 입력할 수 있습니다.',
     hasExpenseItem: true,
-    helpDescription: '입력한 지출은 Draft로 저장되며, 저장 후 30일 예측에 즉시 반영됩니다.',
-    helpTitle: '예측 반영 안내',
+    helpDescription:
+      '서버 저장 기능은 아직 연결되지 않았습니다. 저장하면 입력 내용은 현재 화면에만 유지됩니다.',
+    helpTitle: '저장 안내',
     kind: 'expected-expenses',
     selectionLabel: '반복주기',
     selectionOptions: REPEAT_OPTIONS,

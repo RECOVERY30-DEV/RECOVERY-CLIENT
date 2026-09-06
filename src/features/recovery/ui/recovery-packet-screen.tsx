@@ -6,12 +6,12 @@ import {
   getRecoveryPacketActions,
   RECOVERY_PACKET_ANALYSIS_NOTE,
   RECOVERY_PACKET_CORRECTIONS,
+  RECOVERY_PACKET_RISK_SUMMARY,
   RECOVERY_PACKET_SCHEDULE,
   RECOVERY_PACKET_STATUS,
 } from '@/features/recovery/model/recovery-execution-data'
 import {
   DEFAULT_RECOVERY_OPTION_IDS,
-  RECOVERY_RISK_SUMMARY,
   RECOVERY_TOP_CAUSES,
   type RecoveryOptionId,
 } from '@/features/recovery/model/recovery-plan-data'
@@ -51,8 +51,11 @@ export function RecoveryPacketScreen({
             </span>
           </div>
           <dl className="mt-5 space-y-[10px] typo-caption-3">
-            <KeyValueRow label="첫 부족 예상일" value={RECOVERY_RISK_SUMMARY.shortSummary} />
-            <KeyValueRow label="예상 최저잔액" value={RECOVERY_RISK_SUMMARY.minimumBalanceRange} />
+            <KeyValueRow label="첫 부족 예상일" value={RECOVERY_PACKET_RISK_SUMMARY.shortSummary} />
+            <KeyValueRow
+              label="예상 최저잔액"
+              value={RECOVERY_PACKET_RISK_SUMMARY.minimumBalanceRange}
+            />
             <KeyValueRow label="예상 부족액" value="위험 — 부족 가능성 높음" />
           </dl>
           <p className="mt-3 typo-caption-2 text-secondary-300">
@@ -134,7 +137,7 @@ export function RecoveryPacketScreen({
           <div className="mt-3 rounded-[10px] border border-disabled-50 p-[14px]">
             <dl className="space-y-1 typo-caption-3">
               <KeyValueRow
-                label="현재버전"
+                label="현재 버전"
                 value={RECOVERY_PACKET_STATUS.version}
                 valueColor="default"
               />
@@ -155,7 +158,7 @@ export function RecoveryPacketScreen({
               />
             </dl>
             <p className="mt-4 typo-caption-2 text-secondary-300">
-              수정 시 기존 Packet을 덮어쓰지 않고 새 버전이 생성됩니다.
+              현재 화면의 버전과 전송 상태는 서버 연동 전 예시이며 저장되지 않습니다.
             </p>
             <Button className="mt-4 w-full" disabled variant="secondary">
               전송 기능 준비 중
@@ -182,7 +185,7 @@ export function RecoveryPacketScreen({
               추적 동의 범위 안에서 잔액 회복과 연체 발생 여부를 확인합니다.
             </p>
             <Link
-              className="mt-4 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-5 text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="mt-4 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-5 text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
               href={getRecoveryFollowUpHref(selectedOptionIds)}
             >
               최신 사후점검 확인

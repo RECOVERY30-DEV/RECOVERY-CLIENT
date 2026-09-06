@@ -29,7 +29,7 @@ export function CashflowStableSummary({ metrics, note }: CashflowStableSummaryPr
             <dd
               className={cn(
                 'text-right text-[12px] leading-[14px] font-semibold',
-                metric.tone === 'danger' ? 'text-[#ea0065]' : 'text-info-500',
+                metric.tone === 'danger' ? 'text-warning-700' : 'text-primary-blue-800',
               )}
             >
               {metric.value}

@@ -36,7 +36,10 @@ describe('recovery execution data', () => {
   })
 
   it.each([
-    [['fixed-cost-reschedule'], '/recovery/self-action?plan=fixed-cost-reschedule'],
+    [
+      ['fixed-cost-reschedule'],
+      '/recovery/actions/fixed-cost-reschedule/save?plan=fixed-cost-reschedule',
+    ],
     [['repayment-adjustment'], null],
     [['fixed-cost-reschedule', 'refinancing-review'], null],
     [[], null],
@@ -102,11 +105,14 @@ describe('recovery execution data', () => {
   it('provides the complete self action checklist and packet tracking fixtures', () => {
     expect(SELF_ACTION_PLAN.id).toBe('fixed-cost-reschedule')
     expect(SELF_ACTION_PREPARATION_ITEMS.map(({ title }) => title)).toEqual([
-      '임차인 협의 요청 예정일 입력',
+      '임대인에게 납부일 조정 요청하기',
       '자동이체 일정 확인',
-      '원리금 납부일 은행 협의 예정일 입력',
+      '원리금 납부일 은행 협의하기',
     ])
-    expect(RECOVERY_PACKET_CORRECTIONS).toHaveLength(2)
+    expect(RECOVERY_PACKET_CORRECTIONS).toEqual([
+      { amount: '+65만 원', date: '7월 20일', title: '현금매출 추가 입력' },
+      { amount: '-120만 원', date: '7월 22일', title: '예정 지출 (인테리어 대금)' },
+    ])
     expect(RECOVERY_PACKET_ANALYSIS_NOTE).toContain('보정값 반영분만 포함')
     expect(RECOVERY_PACKET_STATUS).toMatchObject({
       createdAt: '2025-07-14 09:32',
@@ -117,20 +123,29 @@ describe('recovery execution data', () => {
     expect(RECOVERY_PACKET_SCHEDULE.map(({ day }) => day)).toEqual([30, 60, 90])
   })
 
-  it('reuses the canonical risk summary and causes in the recovery packet', () => {
-    expect(RECOVERY_PACKET_RISK_SUMMARY).toBe(RECOVERY_RISK_SUMMARY)
+  it('keeps the packet risk timeline separate from the shared June cashflow fixture', () => {
+    expect(RECOVERY_RISK_SUMMARY).toEqual({
+      firstShortageAfter: '14일 후',
+      minimumBalanceRange: '-230만 ~ -80만 원',
+      shortageDate: '6월 28일',
+      shortSummary: '14일 후 · 6월 28일',
+    })
+    expect(RECOVERY_PACKET_RISK_SUMMARY).toEqual({
+      minimumBalanceRange: '-240만 원 ~ -180만 원',
+      shortSummary: '8일 후 · 7월 22일',
+    })
     expect(RECOVERY_PACKET_CAUSES).toBe(RECOVERY_RISK_CAUSES)
   })
 
   it('provides the follow-up states needed to render the 30·60·90 day check', () => {
     expect(FOLLOW_UP_SUMMARY).toEqual({
-      lastCheckedAt: '2025년 6월 23일',
-      nextCheckAt: '2025년 9월 23일',
+      lastCheckedAt: '2025년 9월 12일',
+      nextCheckAt: '2025년 10월 12일',
     })
-    expect(FOLLOW_UP_MILESTONES.map(({ day, status }) => [day, status])).toEqual([
-      [30, '완료'],
-      [60, '완료'],
-      [90, '예정'],
+    expect(FOLLOW_UP_MILESTONES.map(({ date, day, status }) => [day, date, status])).toEqual([
+      [30, '2025-08-13', '완료'],
+      [60, '2025-09-12', '완료'],
+      [90, '2025-10-12', '예정'],
     ])
     expect(FOLLOW_UP_BALANCE_STATUS).toMatchObject({
       balanceStatus: '회복 완료',
@@ -150,7 +165,7 @@ describe('recovery execution data', () => {
       minimumBalance: '₩1,200,000',
     })
     expect(FOLLOW_UP_CONSENTS).toMatchObject([
-      { isEnabled: true, label: '30-60-90일 점검 알림' },
+      { isEnabled: true, label: '30·60·90일 점검 알림' },
       { isEnabled: true, label: '결과 개선 활용 동의' },
     ])
   })

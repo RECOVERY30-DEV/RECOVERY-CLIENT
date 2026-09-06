@@ -18,7 +18,8 @@ export function CashflowCauseCard({ cause, rank }: CashflowCauseCardProps): Reac
           {rank}
         </span>
         <h3 className="text-[12px] leading-[14px] font-medium text-secondary-800">
-          {rank}. {cause.title}
+          <span className="sr-only">{rank}순위: </span>
+          {cause.title}
         </h3>
       </div>
 
@@ -45,7 +46,7 @@ export function CashflowCauseCard({ cause, rank }: CashflowCauseCardProps): Reac
       {cause.actions.map((action) => (
         <Link
           aria-label={`${cause.title}: ${action.label}`}
-          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
           href={action.href}
           key={action.href}
         >

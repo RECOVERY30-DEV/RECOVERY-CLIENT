@@ -19,9 +19,8 @@ type SelfActionSetupScreenProps = Readonly<{
 export function SelfActionSetupScreen({
   optionId = SELF_ACTION_OPTION_ID,
 }: SelfActionSetupScreenProps): React.JSX.Element {
-  const [checkedItemIds, setCheckedItemIds] = useState<readonly string[]>(
-    SELF_ACTION_PREPARATION_ITEMS.map(({ id }) => id),
-  )
+  const [checkedItemIds, setCheckedItemIds] = useState<readonly string[]>([])
+  const [isSaved, setIsSaved] = useState(false)
   const isReady = checkedItemIds.length === SELF_ACTION_PREPARATION_ITEMS.length
 
   function handlePreparationChange(id: string) {
@@ -102,6 +101,7 @@ export function SelfActionSetupScreen({
                 checked={checkedItemIds.includes(item.id)}
                 className="bg-neutral-400"
                 description={item.description}
+                disabled={isSaved}
                 id={item.id}
                 key={item.id}
                 label={item.title}
@@ -116,23 +116,29 @@ export function SelfActionSetupScreen({
             다음 행동 안내
           </h2>
           <div className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] typo-body-7 text-secondary-300">
-            <p>저장 후 Recovery Packet에서 실행 계획 전체를 확인하고 관리할 수 있습니다.</p>
-            <p className="mt-2">수정 시 기존 Packet은 유지되며 새 버전으로 저장됩니다.</p>
+            <p>확인 완료 후 Recovery Packet에서 실행 계획 전체를 볼 수 있습니다.</p>
+            <p className="mt-2">
+              현재 저장 상태는 이 화면 안에서만 유지되며 새로고침하면 초기화됩니다.
+            </p>
           </div>
         </section>
 
-        {isReady ? (
+        <Button
+          className="mt-[76px] w-full"
+          disabled={!isReady || isSaved}
+          onClick={() => setIsSaved(true)}
+        >
+          {isSaved ? '저장 완료' : '실행 계획 저장하기'}
+        </Button>
+
+        {isSaved ? (
           <Link
-            className="mt-[76px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-primary-100 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="mt-3 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href={getRecoveryPacketHref([optionId])}
           >
-            실행 계획 확인
+            Recovery Packet 확인하기
           </Link>
-        ) : (
-          <Button className="mt-[76px] w-full" disabled>
-            실행 계획 확인
-          </Button>
-        )}
+        ) : null}
       </div>
     </MobileScreen>
   )

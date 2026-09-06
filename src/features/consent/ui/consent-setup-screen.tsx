@@ -27,7 +27,7 @@ export function ConsentSetupScreen() {
             항목별 목적과 데이터 사용 범위를 확인한 뒤 선택해 주세요.
           </p>
           <Link
-            className="mt-2 inline-block border-b border-primary-blue-300 text-[12px] leading-4 font-medium text-primary-blue-300"
+            className="mt-2 inline-block border-b border-primary-blue-300 text-[12px] leading-4 font-medium text-primary-blue-800"
             href="/data-scope"
           >
             분석에 포함되는 데이터 범위 확인
