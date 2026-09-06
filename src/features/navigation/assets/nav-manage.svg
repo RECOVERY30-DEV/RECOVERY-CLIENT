@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="19" height="7.60001" viewBox="0 0 19 7.60001" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 12">
+<path id="Rectangle 11045" d="M0 3.80001C0 2.40089 1.13421 1.26667 2.53333 1.26667H16.4667C17.8658 1.26667 19 2.40089 19 3.80001V3.80001C19 5.19913 17.8658 6.33334 16.4667 6.33334H2.53333C1.13421 6.33334 0 5.19913 0 3.80001V3.80001Z" fill="currentColor"/>
+<foreignObject x="-1.21055" y="-2.47721" width="12.5544" height="12.5544"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(1.24px);clip-path:url(#bgblur_0_0_517_clip_path);height:100%;width:100%"></div></foreignObject><path id="Ellipse 28" data-figma-bg-blur-radius="2.47722" d="M8.86667 3.80001C8.86667 5.89869 7.16535 7.60001 5.06667 7.60001C2.96798 7.60001 1.26667 5.89869 1.26667 3.80001C1.26667 1.70133 2.96798 8.13802e-06 5.06667 8.13802e-06C7.16535 8.13802e-06 8.86667 1.70133 8.86667 3.80001Z" fill="white" fill-opacity="0.3"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_0_517_clip_path" transform="translate(1.21055 2.47721)"><path d="M8.86667 3.80001C8.86667 5.89869 7.16535 7.60001 5.06667 7.60001C2.96798 7.60001 1.26667 5.89869 1.26667 3.80001C1.26667 1.70133 2.96798 8.13802e-06 5.06667 8.13802e-06C7.16535 8.13802e-06 8.86667 1.70133 8.86667 3.80001Z"/>
+</clipPath></defs>
+</svg>

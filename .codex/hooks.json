@@ -1,0 +1,32 @@
+{
+  "description": "RECOVERY-CLIENT project context and shell guard hooks.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/session-start.mjs\"",
+            "timeout": 30,
+            "statusMessage": "Loading RECOVERY30 project context",
+            "additionalContextLimit": 3000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/shell-guard.mjs\"",
+            "timeout": 30,
+            "statusMessage": "Checking shell command"
+          }
+        ]
+      }
+    ]
+  }
+}
