@@ -76,6 +76,17 @@ describe('recovery option API', () => {
   it('기준과 회복안 적용 시나리오를 조회한다', async () => {
     const fetchMock = createJsonFetch([
       {
+        scenarioId: 1,
+        scenarioType: 'BASELINE',
+        firstShortfallDate: '2025-07-26',
+        minBalance: -1240000,
+        deltaDays: null,
+        deltaMinBalance: null,
+        monthlyPaymentDelta: null,
+        note: '현재 데이터 기반 기준 시나리오입니다.',
+        appliedOptionIds: [],
+      },
+      {
         scenarioId: 12,
         scenarioType: 'SIMULATED',
         firstShortfallDate: '2025-05-30',
@@ -91,7 +102,8 @@ describe('recovery option API', () => {
 
     const result = await getRecoveryScenarios(4821, { client: createApiClient(API_BASE_URL) })
 
-    expect(result[0]).toMatchObject({ scenarioType: 'SIMULATED', deltaDays: 16 })
+    expect(result[0]).toMatchObject({ scenarioType: 'BASELINE', deltaDays: null })
+    expect(result[1]).toMatchObject({ scenarioType: 'SIMULATED', deltaDays: 16 })
     expect(readRequest(fetchMock).url).toBe('https://api.example.com/api/forecasts/4821/scenarios')
   })
 

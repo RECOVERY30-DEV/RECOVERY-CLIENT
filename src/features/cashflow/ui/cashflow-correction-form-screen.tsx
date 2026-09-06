@@ -7,6 +7,7 @@ import type { KyInstance } from 'ky'
 
 import { createAdjustment } from '@/features/cashflow/api/adjustment-api'
 import type { AdjustmentType } from '@/features/cashflow/api/adjustment-contract'
+import { ApiError } from '@/shared/api/api-response'
 import { DEMO_BUSINESS_ID } from '@/shared/config/business'
 import { Button, MobileScreen } from '@/shared/ui'
 
@@ -14,6 +15,7 @@ import {
   getCashflowCorrectionFormConfig,
   type CashflowCorrectionKind,
 } from '../model/cashflow-correction-form-data'
+import { persistPendingAdjustment } from '../model/pending-adjustment-storage'
 import { CashflowCorrectionFormFields } from './cashflow-correction-form-fields'
 import { CashflowDatePickerDialog } from './cashflow-date-picker-dialog'
 import { CashflowDraftExitDialog } from './cashflow-draft-exit-dialog'
@@ -25,12 +27,13 @@ type CashflowCorrectionFormScreenProps = Readonly<{
 
 type ActiveDialog = 'date-picker' | 'draft-exit' | null
 type FocusRestoreTarget = 'back-link' | 'date-button'
+type SaveLocation = 'server' | 'device' | null
 
 const ADJUSTMENT_TYPES = {
   'cash-sales': 'CASH_SALES',
   'expected-expenses': 'EXPECTED_EXPENSE',
   'expected-income': 'EXPECTED_INCOME',
-  'external-funds': 'EXTERNAL_FUNDS',
+  'external-funds': 'EXTERNAL_FUND',
 } as const satisfies Record<CashflowCorrectionKind, AdjustmentType>
 
 function toApiDate(date: string): string {
@@ -56,11 +59,12 @@ export function CashflowCorrectionFormScreen({
   const [expenseItem, setExpenseItem] = useState('')
   const [memo, setMemo] = useState('')
   const [isConfirmed, setIsConfirmed] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
+  const [saveLocation, setSaveLocation] = useState<SaveLocation>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState(false)
   const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null)
 
+  const isSaved = saveLocation !== null
   const isDirty =
     !isSaved && Boolean(amount || date || selection || expenseItem || memo || isConfirmed)
   const numericAmount = Number(amount)
@@ -141,16 +145,35 @@ export function CashflowCorrectionFormScreen({
         {
           adjustmentType: getAdjustmentType(),
           amount: numericAmount,
-          certainty: isConfirmed ? 'CONFIRMED' : 'EXPECTED',
+          certainty: isConfirmed ? 'CONFIRMED' : 'ESTIMATED',
           expectedDate: toApiDate(date),
           ...(memo || expenseItem ? { memo: memo || expenseItem } : {}),
         },
         client === undefined ? {} : { client },
       )
       focusRestoreTargetRef.current = null
-      setIsSaved(true)
-    } catch {
-      setSaveError(true)
+      setSaveLocation('server')
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.status !== 400) {
+        setSaveError(true)
+        return
+      }
+
+      const savedOnDevice = persistPendingAdjustment({
+        adjustmentType: getAdjustmentType(),
+        amount: numericAmount,
+        certainty: isConfirmed ? 'CONFIRMED' : 'ESTIMATED',
+        expectedDate: toApiDate(date),
+        ...(memo || expenseItem ? { memo: memo || expenseItem } : {}),
+        selection,
+      })
+
+      if (savedOnDevice) {
+        focusRestoreTargetRef.current = null
+        setSaveLocation('device')
+      } else {
+        setSaveError(true)
+      }
     } finally {
       setIsSaving(false)
     }
@@ -209,7 +232,7 @@ export function CashflowCorrectionFormScreen({
             <h2 className="typo-body-5 text-neutral-900">{config.helpTitle}</h2>
             <p className="mt-[15px] typo-caption-3 text-secondary-300">{config.helpDescription}</p>
           </aside>
-          {isSaved ? (
+          {saveLocation === 'server' ? (
             <div
               className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-secondary-300"
               role="status"
@@ -217,6 +240,23 @@ export function CashflowCorrectionFormScreen({
               <p className="typo-body-5 text-neutral-900">보정값이 저장되었습니다.</p>
               <p className="mt-1 typo-caption-3">
                 재계산 실행 전까지 예측 결과에는 반영되지 않습니다.
+              </p>
+              <Link
+                className="mt-3 inline-flex border-b border-primary-blue-800 typo-body-8 text-primary-blue-800 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
+                href="/cashflow/corrections"
+              >
+                보정 목록으로 이동
+              </Link>
+            </div>
+          ) : null}
+          {saveLocation === 'device' ? (
+            <div
+              className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-secondary-300"
+              role="status"
+            >
+              <p className="typo-body-5 text-neutral-900">이 기기에 임시 저장되었습니다.</p>
+              <p className="mt-1 typo-caption-3">
+                서버 연동 전까지 예측 결과에는 반영되지 않습니다.
               </p>
               <Link
                 className="mt-3 inline-flex border-b border-primary-blue-800 typo-body-8 text-primary-blue-800 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"

@@ -13,7 +13,7 @@ import {
   parseAdjustments,
   parseAdjustmentSuggestions,
   parseAppliedAdjustments,
-  parseDeletedAdjustment,
+  type AdjustmentSuggestion,
   type CreateAdjustmentCommand,
   type UpdateAdjustmentCommand,
 } from './adjustment-contract'
@@ -92,7 +92,7 @@ export function deleteAdjustment(
   assertPositiveIdentifier(adjustmentId, 'adjustmentId')
   return deleteApiData(
     `/api/businesses/${businessId}/adjustments/${adjustmentId}`,
-    parseDeletedAdjustment,
+    parseAdjustment,
     toApiRequestOptions(options),
   )
 }
@@ -119,7 +119,10 @@ export function acceptAdjustmentSuggestion(
   return postApiData(
     `/api/businesses/${businessId}/adjustment-suggestions/${suggestionId}/accept`,
     {},
-    parseAdjustment,
+    (value): AdjustmentSuggestion => {
+      const suggestions = parseAdjustmentSuggestions([value])
+      return suggestions[0] as AdjustmentSuggestion
+    },
     toApiRequestOptions(options),
   )
 }

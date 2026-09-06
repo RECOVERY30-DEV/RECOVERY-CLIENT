@@ -18,14 +18,14 @@ import {
 
 const TYPE_LABELS = {
   CASH_SALES: '현금매출',
-  EXTERNAL_FUNDS: '타행·외부자금',
+  EXTERNAL_FUND: '타행·외부자금',
   EXPECTED_INCOME: '예정수입',
   EXPECTED_EXPENSE: '예정지출',
 } as const
 
 const TYPE_HREFS = {
   CASH_SALES: '/cashflow/corrections/cash-sales/new',
-  EXTERNAL_FUNDS: '/cashflow/corrections/external-funds/new',
+  EXTERNAL_FUND: '/cashflow/corrections/external-funds/new',
   EXPECTED_INCOME: '/cashflow/corrections/expected-income/new',
   EXPECTED_EXPENSE: '/cashflow/corrections/expected-expenses/new',
 } as const
@@ -115,13 +115,18 @@ function SuggestionItem({
     DEMO_BUSINESS_ID,
     client === undefined ? {} : { client },
   )
-  const title = suggestion.title ?? `${TYPE_LABELS[suggestion.adjustmentType]} 반복 패턴`
+  const title = suggestion.suggestedRule ?? `${TYPE_LABELS[suggestion.adjustmentType]} 반복 패턴`
+  const amount =
+    suggestion.suggestedAmount === null
+      ? '금액 미정'
+      : `${suggestion.suggestedAmount.toLocaleString('ko-KR')}원`
 
   return (
     <li className="border-t border-disabled-50 pt-4 first:border-t-0 first:pt-0">
       <p className="text-[12px] leading-[15px] font-medium text-primary-100">{title}</p>
+      <p className="mt-1 text-[12px] leading-[15px] text-secondary-300">{amount}</p>
       <p className="mt-1 text-[12px] leading-[15px] text-secondary-300">
-        {suggestion.expectedDate} · {suggestion.amount.toLocaleString('ko-KR')}원
+        {suggestion.evidenceText}
       </p>
       {suggestion.status === 'PROPOSED' ? (
         <Button

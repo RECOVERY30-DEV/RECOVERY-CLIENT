@@ -7,8 +7,36 @@ import { getConsents, updateConsent } from './consent-api'
 const API_BASE_URL = 'https://api.example.com'
 
 const consents = [
-  { typeCode: 'ANALYSIS', status: 'GRANTED' },
-  { typeCode: 'FOLLOWUP_TRACKING', status: 'REVOKED' },
+  {
+    typeCode: 'ANALYSIS',
+    name: '서비스 분석 동의',
+    required: true,
+    status: 'GRANTED',
+    grantedAt: '2025-07-14T23:32:00Z',
+    withdrawnAt: null,
+    lastChangedAt: '2025-07-14T23:32:00Z',
+    consentVersion: 'v1.0',
+  },
+  {
+    typeCode: 'FOLLOWUP_TRACKING',
+    name: '30·60·90일 사후 점검 동의',
+    required: false,
+    status: 'REVOKED',
+    grantedAt: null,
+    withdrawnAt: '2025-07-14T23:32:00Z',
+    lastChangedAt: '2025-07-14T23:32:00Z',
+    consentVersion: 'v1.0',
+  },
+  {
+    typeCode: 'PACKET_TRANSFER',
+    name: '상담원 전송 동의',
+    required: false,
+    status: 'NOT_SET',
+    grantedAt: null,
+    withdrawnAt: null,
+    lastChangedAt: null,
+    consentVersion: null,
+  },
 ]
 
 function createJsonFetch(data: unknown) {
@@ -34,9 +62,11 @@ describe('consent API', () => {
     const fetchMock = createJsonFetch(consents)
     vi.stubGlobal('fetch', fetchMock)
 
-    await expect(getConsents(1, { client: createApiClient(API_BASE_URL) })).resolves.toEqual(
-      consents,
-    )
+    await expect(getConsents(1, { client: createApiClient(API_BASE_URL) })).resolves.toEqual([
+      { typeCode: 'ANALYSIS', status: 'GRANTED' },
+      { typeCode: 'FOLLOWUP_TRACKING', status: 'REVOKED' },
+      { typeCode: 'PACKET_TRANSFER', status: 'NOT_SET' },
+    ])
     expect(readRequest(fetchMock).url).toBe('https://api.example.com/api/businesses/1/consents')
   })
 

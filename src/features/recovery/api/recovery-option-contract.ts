@@ -22,9 +22,9 @@ export type RecoveryScenario = Readonly<{
   scenarioType: RecoveryScenarioType
   firstShortfallDate: string
   minBalance: number
-  deltaDays: number
-  deltaMinBalance: number
-  monthlyPaymentDelta: number
+  deltaDays: number | null
+  deltaMinBalance: number | null
+  monthlyPaymentDelta: number | null
   note: string
   appliedOptionIds: readonly number[]
 }>
@@ -52,6 +52,17 @@ function readRecord(value: unknown, context: string): UnknownRecord {
 function readInteger(record: UnknownRecord, field: string, context: string): number {
   const value = record[field]
 
+  if (typeof value !== 'number' || !Number.isSafeInteger(value)) {
+    throw contractError(context, field)
+  }
+
+  return value
+}
+
+function readNullableInteger(record: UnknownRecord, field: string, context: string): number | null {
+  const value = record[field]
+
+  if (value === null) return null
   if (typeof value !== 'number' || !Number.isSafeInteger(value)) {
     throw contractError(context, field)
   }
@@ -161,9 +172,9 @@ export function parseRecoveryScenarios(value: unknown): readonly RecoveryScenari
       scenarioType: readEnum(record, 'scenarioType', ['BASELINE', 'SIMULATED'], context),
       firstShortfallDate: readDate(record, 'firstShortfallDate', context),
       minBalance: readInteger(record, 'minBalance', context),
-      deltaDays: readInteger(record, 'deltaDays', context),
-      deltaMinBalance: readInteger(record, 'deltaMinBalance', context),
-      monthlyPaymentDelta: readInteger(record, 'monthlyPaymentDelta', context),
+      deltaDays: readNullableInteger(record, 'deltaDays', context),
+      deltaMinBalance: readNullableInteger(record, 'deltaMinBalance', context),
+      monthlyPaymentDelta: readNullableInteger(record, 'monthlyPaymentDelta', context),
       note: readString(record, 'note', context),
       appliedOptionIds: readIntegerArray(record, 'appliedOptionIds', context),
     }

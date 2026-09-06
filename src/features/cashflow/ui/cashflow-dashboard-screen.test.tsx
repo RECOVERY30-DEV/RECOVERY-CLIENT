@@ -92,6 +92,38 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByText('공휴일 거래가 다음 영업일로 반영됩니다.')).toBeInTheDocument()
   })
 
+  it('일자별 현금흐름의 날짜는 고정하고 긴 안내문은 한 줄 말줄임표로 표시한다', async () => {
+    const dailyViews = Array.from({ length: 30 }, (_, index) => createDailyView(index))
+    const holidayNote = '7월 19일(토) 주말로 원리금 상환 기준일이 7월 18일(금)로 앞당겨졌습니다.'
+    dailyViews[17] = { ...dailyViews[17], holidayShiftNote: holidayNote }
+    renderDashboard({
+      '/api/businesses/1/forecasts/latest': {
+        forecastRunId: 1,
+        baseDate: '2025-07-15',
+        updatedAt: '2025-07-15T00:00:00Z',
+        status: 'RISK',
+      },
+      '/api/forecasts/1/daily': dailyViews,
+      '/api/forecasts/1/narratives': [],
+      '/api/forecasts/1/shortfall': {
+        forecastRunId: 1,
+        hasShortfall: true,
+        dDay: 11,
+        expectedDate: '2025-07-26',
+        horizonDays: 30,
+        shortfallAmountMin: 760000,
+        shortfallAmountMax: 1240000,
+      },
+    })
+
+    const description = await screen.findByText(holidayNote)
+    const row = description.closest('a')
+
+    expect(row).not.toBeNull()
+    expect(row?.querySelector('span')).toHaveClass('shrink-0')
+    expect(description).toHaveClass('min-w-0', 'truncate')
+  })
+
   it('FORECAST_404_1 shortfall 오류 때 정적 날짜 목록 대신 재시도 상태를 보여준다', async () => {
     const fetchMock = vi.fn<typeof fetch>(async (input) => {
       const request = input instanceof Request ? input : new Request(input)

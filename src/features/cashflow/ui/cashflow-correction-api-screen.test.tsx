@@ -32,46 +32,62 @@ describe('현금흐름 보정 API 화면', () => {
         paths.push(path)
         if (path.endsWith('/adjustment-suggestions/12/accept')) {
           return apiResponse({
-            adjustmentId: 3,
+            id: 12,
             adjustmentType: 'CASH_SALES',
-            amount: 1200000,
-            certainty: 'EXPECTED',
-            expectedDate: '2025-07-15',
-            status: 'DRAFT',
-            memo: null,
+            suggestedAmount: 1200000,
+            suggestedRule: '매월 15일',
+            evidenceText: '최근 3개월 동일 패턴',
+            confidence: 0.82,
+            status: 'ACCEPTED',
+            acceptedAdjustmentId: 3,
           })
         }
         if (path.endsWith('/adjustment-suggestions')) {
           return apiResponse([
             {
-              suggestionId: 12,
+              id: 12,
               adjustmentType: 'CASH_SALES',
-              amount: 1200000,
-              certainty: 'EXPECTED',
-              expectedDate: '2025-07-15',
+              suggestedAmount: 1200000,
+              suggestedRule: '매월 15일',
+              evidenceText: '최근 3개월 동일 패턴',
+              confidence: 0.82,
               status: 'PROPOSED',
-              title: '매월 15일 패턴',
+              acceptedAdjustmentId: null,
             },
           ])
         }
         return apiResponse([
           {
-            adjustmentId: 1,
+            id: 1,
             adjustmentType: 'CASH_SALES',
             amount: 650000,
             certainty: 'CONFIRMED',
             expectedDate: '2025-07-20',
+            direction: 'I',
+            recurrenceRule: null,
+            expenseCategory: null,
+            fundSource: null,
             status: 'SAVED',
             memo: null,
+            appliedRunId: 1,
+            createdAt: '2025-07-14T00:00:00Z',
+            updatedAt: '2025-07-14T00:00:00Z',
           },
           {
-            adjustmentId: 2,
+            id: 2,
             adjustmentType: 'EXPECTED_EXPENSE',
             amount: 1200000,
-            certainty: 'EXPECTED',
+            certainty: 'ESTIMATED',
             expectedDate: '2025-07-22',
+            direction: 'O',
+            recurrenceRule: null,
+            expenseCategory: '인테리어',
+            fundSource: null,
             status: 'SAVED',
             memo: '인테리어 대금',
+            appliedRunId: 1,
+            createdAt: '2025-07-14T00:00:00Z',
+            updatedAt: '2025-07-14T00:00:00Z',
           },
         ])
       }),
@@ -83,9 +99,9 @@ describe('현금흐름 보정 API 화면', () => {
 
     await waitFor(() => expect(screen.getByText('현금매출 +650,000원')).toBeInTheDocument())
     expect(screen.getByText('인테리어 대금 -1,200,000원')).toBeInTheDocument()
-    expect(screen.getByText('매월 15일 패턴')).toBeInTheDocument()
+    expect(screen.getByText('매월 15일')).toBeInTheDocument()
 
-    fireEvent.click(screen.getByRole('button', { name: '매월 15일 패턴 수락' }))
+    fireEvent.click(screen.getByRole('button', { name: '매월 15일 수락' }))
 
     await waitFor(() =>
       expect(paths).toContain('/api/businesses/1/adjustment-suggestions/12/accept'),

@@ -298,7 +298,9 @@ function ScenarioCard({
       <h3 className="text-[12px] leading-[14px] font-medium text-secondary-800">{title}</h3>
       <p className="mt-1 text-[11px] leading-[15px] text-secondary-300">{scenario.note}</p>
       <p className="mt-1 text-[11px] leading-[15px] text-secondary-300">
-        부족일 {scenario.deltaDays}일 지연 · 최저 잔액 {formatWon(scenario.minBalance)}원
+        {scenario.deltaDays === null
+          ? `기준 시나리오 · 최저 잔액 ${formatWon(scenario.minBalance)}원`
+          : `부족일 ${scenario.deltaDays}일 지연 · 최저 잔액 ${formatWon(scenario.minBalance)}원`}
       </p>
     </article>
   )

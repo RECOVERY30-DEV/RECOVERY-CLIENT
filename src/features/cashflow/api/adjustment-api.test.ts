@@ -34,19 +34,69 @@ describe('adjustment API', () => {
   })
 
   it('저장된 보정값과 제안 후보를 각각 조회한다', async () => {
-    const adjustmentsFetch = createJsonFetch([])
+    const adjustmentsFetch = createJsonFetch([
+      {
+        id: 1,
+        adjustmentType: 'CASH_SALES',
+        direction: 'I',
+        amount: 650000,
+        expectedDate: '2025-07-20',
+        certainty: 'ESTIMATED',
+        recurrenceRule: null,
+        expenseCategory: null,
+        fundSource: null,
+        memo: '매주 토요일 현금 매출',
+        status: 'SAVED',
+        appliedRunId: 1,
+        createdAt: '2025-07-14T00:00:00Z',
+        updatedAt: '2025-07-14T00:00:00Z',
+      },
+    ])
     vi.stubGlobal('fetch', adjustmentsFetch)
 
-    await listAdjustments(1, { client: createApiClient(API_BASE_URL) })
+    await expect(
+      listAdjustments(1, { client: createApiClient(API_BASE_URL) }),
+    ).resolves.toMatchObject([
+      {
+        adjustmentId: 1,
+        adjustmentType: 'CASH_SALES',
+        certainty: 'ESTIMATED',
+        status: 'SAVED',
+      },
+    ])
 
     expect(readRequest(adjustmentsFetch).url).toBe(
       'https://api.example.com/api/businesses/1/adjustments',
     )
 
-    const suggestionsFetch = createJsonFetch([])
+    const suggestionsFetch = createJsonFetch([
+      {
+        id: 2,
+        adjustmentType: 'EXTERNAL_FUND',
+        suggestedAmount: 850000,
+        suggestedRule: '매월 말일',
+        evidenceText: '최근 2개월 유사 패턴',
+        confidence: 0.7,
+        status: 'PROPOSED',
+        acceptedAdjustmentId: null,
+      },
+    ])
     vi.stubGlobal('fetch', suggestionsFetch)
 
-    await listAdjustmentSuggestions(1, { client: createApiClient(API_BASE_URL) })
+    await expect(
+      listAdjustmentSuggestions(1, { client: createApiClient(API_BASE_URL) }),
+    ).resolves.toMatchObject([
+      {
+        suggestionId: 2,
+        adjustmentType: 'EXTERNAL_FUND',
+        suggestedAmount: 850000,
+        suggestedRule: '매월 말일',
+        evidenceText: '최근 2개월 유사 패턴',
+        confidence: 0.7,
+        status: 'PROPOSED',
+        acceptedAdjustmentId: null,
+      },
+    ])
 
     expect(readRequest(suggestionsFetch).url).toBe(
       'https://api.example.com/api/businesses/1/adjustment-suggestions',
@@ -61,7 +111,7 @@ describe('adjustment API', () => {
       requestBody = await input.clone().json()
       return Response.json({
         success: true,
-        data: adjustmentFixture({ adjustmentId: 31, status: 'DRAFT' }),
+        data: adjustmentFixture({ id: 31, status: 'DRAFT' }),
         error: null,
       })
     })
@@ -114,7 +164,7 @@ describe('adjustment API', () => {
   })
 
   it('보정 ID로 삭제 요청을 전송한다', async () => {
-    const fetchMock = createJsonFetch({ deleted: true })
+    const fetchMock = createJsonFetch(adjustmentFixture({ status: 'DISCARDED' }))
     vi.stubGlobal('fetch', fetchMock)
 
     await deleteAdjustment(1, 31, { client: createApiClient(API_BASE_URL) })
@@ -125,15 +175,24 @@ describe('adjustment API', () => {
     )
   })
 
-  it('PROPOSED 후보를 DRAFT 보정값으로 수락한다', async () => {
-    const fetchMock = createJsonFetch(adjustmentFixture({ adjustmentId: 32, status: 'DRAFT' }))
+  it('PROPOSED 후보를 수락한 결과를 반환한다', async () => {
+    const fetchMock = createJsonFetch({
+      id: 12,
+      adjustmentType: 'CASH_SALES',
+      suggestedAmount: 1200000,
+      suggestedRule: '매월 15일',
+      evidenceText: '최근 3개월 동일 패턴',
+      confidence: 0.82,
+      status: 'ACCEPTED',
+      acceptedAdjustmentId: 32,
+    })
     vi.stubGlobal('fetch', fetchMock)
 
     const result = await acceptAdjustmentSuggestion(1, 12, {
       client: createApiClient(API_BASE_URL),
     })
 
-    expect(result.status).toBe('DRAFT')
+    expect(result).toMatchObject({ suggestionId: 12, status: 'ACCEPTED', acceptedAdjustmentId: 32 })
     expect(readRequest(fetchMock).method).toBe('POST')
     expect(readRequest(fetchMock).url).toBe(
       'https://api.example.com/api/businesses/1/adjustment-suggestions/12/accept',
@@ -156,7 +215,7 @@ describe('adjustment API', () => {
 
 function adjustmentFixture(overrides: Record<string, unknown> = {}) {
   return {
-    adjustmentId: 1,
+    id: 1,
     adjustmentType: 'CASH_SALES',
     amount: 650000,
     certainty: 'CONFIRMED',

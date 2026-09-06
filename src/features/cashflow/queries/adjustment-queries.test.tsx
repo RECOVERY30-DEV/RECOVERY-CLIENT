@@ -47,13 +47,14 @@ describe('adjustment queries', () => {
           new URL(input.url).pathname.endsWith('/adjustment-suggestions')
             ? [
                 {
-                  suggestionId: 12,
+                  id: 12,
                   adjustmentType: 'CASH_SALES',
-                  amount: 1200000,
-                  certainty: 'EXPECTED',
-                  expectedDate: '2025-07-15',
+                  suggestedAmount: 1200000,
+                  suggestedRule: '매월 15일',
+                  evidenceText: '최근 3개월 동일 패턴',
+                  confidence: 0.82,
                   status: 'PROPOSED',
-                  title: '매월 15일 패턴',
+                  acceptedAdjustmentId: null,
                 },
               ]
             : [adjustment],
