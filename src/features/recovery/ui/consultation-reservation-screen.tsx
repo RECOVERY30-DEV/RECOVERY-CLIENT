@@ -19,7 +19,7 @@ const CONSULTATION_SLOTS = [
   '2025년 7월 15일 오전 11시',
 ] as const
 
-const TRANSFER_ITEMS = [
+const RECOVERY_TRANSFER_ITEMS = [
   { id: 'cashflow-summary', label: '현금흐름 요약' },
   { id: 'cause-analysis', label: '주요 원인 분석' },
   { id: 'selected-recovery-options', label: '선택한 회복안' },
@@ -43,15 +43,15 @@ export function ConsultationReservationScreen({
   const [selectedSlot, setSelectedSlot] = useState<(typeof CONSULTATION_SLOTS)[number]>(
     CONSULTATION_SLOTS[0],
   )
-  const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>([
-    'cashflow-summary',
-    'selected-recovery-options',
-  ])
+  const transferItems = getTransferItems(isSupportProgramConsultation, supportProgram)
+  const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>(() =>
+    getDefaultSelectedTransferIds(isSupportProgramConsultation, supportProgram),
+  )
   const [isInformationOpen, setIsInformationOpen] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
   const informationButtonRef = useRef<HTMLButtonElement>(null)
   const shouldRestoreInformationFocus = useRef(false)
-  const selectedOptions = getRecoveryOptions(selectedOptionIds)
+  const selectedOptions = isSupportProgramConsultation ? [] : getRecoveryOptions(selectedOptionIds)
 
   useEffect(() => {
     if (!isInformationOpen && shouldRestoreInformationFocus.current) {
@@ -100,7 +100,11 @@ export function ConsultationReservationScreen({
               className="text-[18px] leading-[21px] font-bold text-primary-200"
               id="consultation-purpose-title"
             >
-              {supportProgram ? '상담 목적 및 지원사업' : '상담 목적 및 회복안'}
+              {isSupportProgramConsultation
+                ? supportProgram
+                  ? '상담 목적 및 지원사업'
+                  : '지원사업 상담 목적'
+                : '상담 목적 및 회복안'}
             </h2>
             {supportProgram ? (
               <div
@@ -130,7 +134,11 @@ export function ConsultationReservationScreen({
               </div>
             ) : null}
             <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
-              상담사는 선택한 회복안과 전송에 동의한 정보만 확인합니다.
+              {isSupportProgramConsultation
+                ? supportProgram
+                  ? '상담사는 선택한 지원사업과 전송에 동의한 정보만 확인합니다.'
+                  : '상담사는 지원사업 상담 요청과 전송에 동의한 정보만 확인합니다.'
+                : '상담사는 선택한 회복안과 전송에 동의한 정보만 확인합니다.'}
             </p>
           </section>
 
@@ -185,7 +193,7 @@ export function ConsultationReservationScreen({
               </button>
             </div>
             <div className="mt-3 space-y-2">
-              {TRANSFER_ITEMS.map((item) => (
+              {transferItems.map((item) => (
                 <Checkbox
                   checked={selectedTransfers.includes(item.id)}
                   id={item.id}
@@ -225,6 +233,37 @@ export function ConsultationReservationScreen({
       {isInformationOpen ? <TransferInformationPopover onClose={handleInformationClose} /> : null}
     </MobileScreen>
   )
+}
+
+function getTransferItems(
+  isSupportProgramConsultation: boolean,
+  supportProgram: SupportProgramConsultationContext | undefined,
+) {
+  if (!isSupportProgramConsultation) {
+    return RECOVERY_TRANSFER_ITEMS
+  }
+
+  return [
+    { id: 'cashflow-summary', label: '현금흐름 요약' },
+    { id: 'cause-analysis', label: '주요 원인 분석' },
+    supportProgram
+      ? { id: 'selected-support-program', label: '선택한 지원사업' }
+      : { id: 'support-program-request', label: '지원사업 상담 요청 내용' },
+  ]
+}
+
+function getDefaultSelectedTransferIds(
+  isSupportProgramConsultation: boolean,
+  supportProgram: SupportProgramConsultationContext | undefined,
+): readonly string[] {
+  if (!isSupportProgramConsultation) {
+    return ['cashflow-summary', 'selected-recovery-options']
+  }
+
+  return [
+    'cashflow-summary',
+    supportProgram ? 'selected-support-program' : 'support-program-request',
+  ]
 }
 
 function TransferInformationPopover({ onClose }: Readonly<{ onClose: () => void }>) {

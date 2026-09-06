@@ -1,7 +1,4 @@
-import {
-  getRecoveryOptionIds,
-  normalizeRecoveryOptionIds,
-} from '@/features/recovery/model/recovery-plan-data'
+import { normalizeRecoveryOptionIds } from '@/features/recovery/model/recovery-plan-data'
 import { ConsultationReservationScreen } from '@/features/recovery/ui/consultation-reservation-screen'
 import { getSupportProgramConsultationContext } from '@/features/support-program'
 
@@ -22,9 +19,7 @@ export default async function ConsultationPage({
   const supportProgram = getSupportProgramConsultationContext(getSingleSearchParam(program))
   const isSupportProgramConsultation =
     Boolean(supportProgram) || getSingleSearchParam(source) === 'support-programs'
-  const selectedOptionIds = supportProgram
-    ? getRecoveryOptionIds(plans)
-    : normalizeRecoveryOptionIds(plans)
+  const selectedOptionIds = isSupportProgramConsultation ? [] : normalizeRecoveryOptionIds(plans)
   const backHref = supportProgram
     ? `/recovery/support-programs/${supportProgram.id}`
     : isSupportProgramConsultation

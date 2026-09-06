@@ -32,7 +32,7 @@ export function SupportProgramCard({ program }: SupportProgramCardProps): React.
       </div>
       <Link
         aria-label={`${program.title} 상세 확인`}
-        className="mt-[14px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
+        className="mt-[14px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-800 transition-colors hover:text-primary-blue-800 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
         href={`/recovery/support-programs/${program.id}`}
       >
         상세 확인

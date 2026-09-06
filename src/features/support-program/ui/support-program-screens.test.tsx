@@ -67,6 +67,15 @@ describe('지원사업 목록 화면', () => {
       'text-secondary-500',
     )
   })
+
+  it('지원사업 카드 상세 링크는 고대비 hover와 focus 색상을 사용한다', () => {
+    render(<SupportProgramListScreen />)
+
+    expect(screen.getByRole('link', { name: '소상공인 경영안정자금 상세 확인' })).toHaveClass(
+      'hover:text-primary-blue-800',
+      'focus-visible:ring-primary-blue-800',
+    )
+  })
 })
 
 describe('지원사업 상세 화면', () => {
