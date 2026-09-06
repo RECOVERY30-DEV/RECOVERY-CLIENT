@@ -141,7 +141,9 @@ describe('상담 예약 화면', () => {
     fireEvent.click(await screen.findByRole('radio', { name: /2025년 7월 14일 오전 10시/ }))
     fireEvent.click(screen.getByRole('button', { name: '예약 확정하기' }))
 
-    await waitFor(() => expect(routerMocks.push).toHaveBeenCalledWith('/recovery/consultation/8/complete'))
+    await waitFor(() =>
+      expect(routerMocks.push).toHaveBeenCalledWith('/recovery/consultation/8/complete'),
+    )
     expect(requestedPaths).toEqual([
       '/api/counselors',
       '/api/counselors/1/slots',
@@ -296,8 +298,12 @@ describe('상담 예약 화면', () => {
   it('회복안 상담은 기존 회복안 선택과 전송 항목을 유지한다', () => {
     renderWithQuery(<ConsultationReservationScreen />)
 
-    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent('선택한 회복안 1번')
-    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent('선택한 회복안 3번')
+    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
+      '선택한 회복안 1번',
+    )
+    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
+      '선택한 회복안 3번',
+    )
     expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
   })
 
@@ -330,11 +336,7 @@ describe('상담 예약 화면', () => {
     ['query가 없을 때', undefined, []],
     ['빈 query일 때', '', []],
     ['유효하지 않은 query만 있을 때', 'unknown', []],
-    [
-      '중복된 query일 때',
-      ['1', '1', '3'],
-      ['선택한 회복안 1번', '선택한 회복안 3번'],
-    ],
+    ['중복된 query일 때', ['1', '1', '3'], ['선택한 회복안 1번', '선택한 회복안 3번']],
     [
       '유효하지 않은 값이 섞인 query일 때',
       ['unknown', '3', '1'],

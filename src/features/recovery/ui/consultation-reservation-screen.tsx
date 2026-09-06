@@ -202,8 +202,7 @@ export function ConsultationReservationScreen({
               </div>
             ) : null}
             <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
-              상담 목적, 상담 전 메모, 전송 동의 여부와 선택한 회복안 ID를 예약 요청에
-              포함합니다.
+              상담 목적, 상담 전 메모, 전송 동의 여부와 선택한 회복안 ID를 예약 요청에 포함합니다.
             </p>
           </section>
 
@@ -506,8 +505,8 @@ function TransferInformationPopover({ onClose }: Readonly<{ onClose: () => void 
           전송 정보 안내
         </h2>
         <p className="mt-3 text-[13px] leading-5 text-secondary-300">
-          예약 요청에는 상담 목적, 상담 전 메모, 전송 동의 여부가 포함됩니다. 회복안 상담은
-          선택한 회복안 ID도 함께 전달합니다.
+          예약 요청에는 상담 목적, 상담 전 메모, 전송 동의 여부가 포함됩니다. 회복안 상담은 선택한
+          회복안 ID도 함께 전달합니다.
         </p>
         <Button className="mt-5 w-full" onClick={onClose} variant="secondary">
           안내 닫기

@@ -49,12 +49,18 @@ export function ConsultationCompleteScreen({
                 : '상담 예약 정보를 확인했습니다.'}
             </h2>
             <dl className="mt-4 space-y-3 text-[12px] leading-[14px]">
-              <CompletionSummaryRow label="상담사" value={consultationQuery.data.counselorName ?? '배정 중'} />
+              <CompletionSummaryRow
+                label="상담사"
+                value={consultationQuery.data.counselorName ?? '배정 중'}
+              />
               <CompletionSummaryRow
                 label="예약 일시"
                 value={formatConsultationSchedule(consultationQuery.data.scheduledAt)}
               />
-              <CompletionSummaryRow label="상담 채널" value={getChannelLabel(consultationQuery.data.channel)} />
+              <CompletionSummaryRow
+                label="상담 채널"
+                value={getChannelLabel(consultationQuery.data.channel)}
+              />
             </dl>
           </section>
         ) : null}
