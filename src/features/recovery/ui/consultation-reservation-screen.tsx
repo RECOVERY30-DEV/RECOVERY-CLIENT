@@ -7,6 +7,7 @@ import {
   getRecoveryOptions,
   type RecoveryOptionId,
 } from '@/features/recovery/model/recovery-plan-data'
+import type { SupportProgramConsultationContext } from '@/features/support-program'
 import { BackLink, Button, Checkbox, MobileScreen, Textarea } from '@/shared/ui'
 import { useDialogFocusTrap } from '@/shared/ui/use-dialog-focus-trap'
 
@@ -18,31 +19,39 @@ const CONSULTATION_SLOTS = [
   '2025년 7월 15일 오전 11시',
 ] as const
 
-const TRANSFER_ITEMS = [
+const RECOVERY_TRANSFER_ITEMS = [
   { id: 'cashflow-summary', label: '현금흐름 요약' },
   { id: 'cause-analysis', label: '주요 원인 분석' },
   { id: 'selected-recovery-options', label: '선택한 회복안' },
 ] as const
 
 type ConsultationReservationScreenProps = Readonly<{
+  backHref?: string
+  backLabel?: string
+  isSupportProgramConsultation?: boolean
   selectedOptionIds?: readonly RecoveryOptionId[]
+  supportProgram?: SupportProgramConsultationContext
 }>
 
 export function ConsultationReservationScreen({
+  backHref = '/recovery/compare',
+  backLabel = '회복안 비교로 돌아가기',
+  isSupportProgramConsultation = false,
   selectedOptionIds = DEFAULT_RECOVERY_OPTION_IDS,
+  supportProgram,
 }: ConsultationReservationScreenProps): React.JSX.Element {
   const [selectedSlot, setSelectedSlot] = useState<(typeof CONSULTATION_SLOTS)[number]>(
     CONSULTATION_SLOTS[0],
   )
-  const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>([
-    'cashflow-summary',
-    'selected-recovery-options',
-  ])
+  const transferItems = getTransferItems(isSupportProgramConsultation, supportProgram)
+  const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>(() =>
+    getDefaultSelectedTransferIds(isSupportProgramConsultation, supportProgram),
+  )
   const [isInformationOpen, setIsInformationOpen] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
   const informationButtonRef = useRef<HTMLButtonElement>(null)
   const shouldRestoreInformationFocus = useRef(false)
-  const selectedOptions = getRecoveryOptions(selectedOptionIds)
+  const selectedOptions = isSupportProgramConsultation ? [] : getRecoveryOptions(selectedOptionIds)
 
   useEffect(() => {
     if (!isInformationOpen && shouldRestoreInformationFocus.current) {
@@ -71,12 +80,18 @@ export function ConsultationReservationScreen({
         data-testid="consultation-reservation-background"
         inert={isInformationOpen ? true : undefined}
       >
-        <BackLink href="/recovery/compare" label="회복안 비교로 돌아가기" />
+        <BackLink href={backHref} label={backLabel} />
         <div className="px-6 pt-[102px] pb-[62px]">
           <header>
-            <h1 className="text-[18px] leading-[21px] font-bold text-primary-200">상담 예약</h1>
+            <h1 className="text-[18px] leading-[21px] font-bold text-primary-200">
+              {isSupportProgramConsultation ? '지원사업 상담' : '상담 예약'}
+            </h1>
             <p className="mt-[6px] text-[13px] leading-4 text-secondary-300">
-              선택한 회복안을 바탕으로 상담 시간을 예약합니다.
+              {supportProgram
+                ? '선택한 지원사업을 우선으로 상담 내용을 확인합니다.'
+                : isSupportProgramConsultation
+                  ? '지원사업 관련 상담 내용을 확인합니다.'
+                  : '선택한 회복안을 바탕으로 상담 시간을 예약합니다.'}
             </p>
           </header>
 
@@ -85,24 +100,45 @@ export function ConsultationReservationScreen({
               className="text-[18px] leading-[21px] font-bold text-primary-200"
               id="consultation-purpose-title"
             >
-              상담 목적 및 회복안
+              {isSupportProgramConsultation
+                ? supportProgram
+                  ? '상담 목적 및 지원사업'
+                  : '지원사업 상담 목적'
+                : '상담 목적 및 회복안'}
             </h2>
-            <div
-              aria-label="선택한 상담 회복안"
-              className="mt-3 flex flex-wrap gap-2"
-              data-testid="selected-recovery-options-summary"
-            >
-              {selectedOptions.map((option) => (
-                <span
-                  className="rounded-full bg-primary-blue-100 px-3 py-1 text-[12px] leading-[14px] font-medium text-primary-blue-900"
-                  key={option.id}
-                >
-                  {option.title}
+            {supportProgram ? (
+              <div
+                aria-label="선택한 지원사업"
+                className="mt-3 flex flex-wrap gap-2"
+                data-testid="support-program-summary"
+              >
+                <span className="rounded-full bg-primary-blue-100 px-3 py-1 text-[12px] leading-[14px] font-medium text-primary-blue-900">
+                  {supportProgram.title}
                 </span>
-              ))}
-            </div>
+              </div>
+            ) : null}
+            {selectedOptions.length > 0 ? (
+              <div
+                aria-label="선택한 상담 회복안"
+                className="mt-3 flex flex-wrap gap-2"
+                data-testid="selected-recovery-options-summary"
+              >
+                {selectedOptions.map((option) => (
+                  <span
+                    className="rounded-full bg-primary-blue-100 px-3 py-1 text-[12px] leading-[14px] font-medium text-primary-blue-900"
+                    key={option.id}
+                  >
+                    {option.title}
+                  </span>
+                ))}
+              </div>
+            ) : null}
             <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
-              상담사는 선택한 회복안과 전송에 동의한 정보만 확인합니다.
+              {isSupportProgramConsultation
+                ? supportProgram
+                  ? '상담사는 선택한 지원사업과 전송에 동의한 정보만 확인합니다.'
+                  : '상담사는 지원사업 상담 요청과 전송에 동의한 정보만 확인합니다.'
+                : '상담사는 선택한 회복안과 전송에 동의한 정보만 확인합니다.'}
             </p>
           </section>
 
@@ -157,7 +193,7 @@ export function ConsultationReservationScreen({
               </button>
             </div>
             <div className="mt-3 space-y-2">
-              {TRANSFER_ITEMS.map((item) => (
+              {transferItems.map((item) => (
                 <Checkbox
                   checked={selectedTransfers.includes(item.id)}
                   id={item.id}
@@ -197,6 +233,37 @@ export function ConsultationReservationScreen({
       {isInformationOpen ? <TransferInformationPopover onClose={handleInformationClose} /> : null}
     </MobileScreen>
   )
+}
+
+function getTransferItems(
+  isSupportProgramConsultation: boolean,
+  supportProgram: SupportProgramConsultationContext | undefined,
+) {
+  if (!isSupportProgramConsultation) {
+    return RECOVERY_TRANSFER_ITEMS
+  }
+
+  return [
+    { id: 'cashflow-summary', label: '현금흐름 요약' },
+    { id: 'cause-analysis', label: '주요 원인 분석' },
+    supportProgram
+      ? { id: 'selected-support-program', label: '선택한 지원사업' }
+      : { id: 'support-program-request', label: '지원사업 상담 요청 내용' },
+  ]
+}
+
+function getDefaultSelectedTransferIds(
+  isSupportProgramConsultation: boolean,
+  supportProgram: SupportProgramConsultationContext | undefined,
+): readonly string[] {
+  if (!isSupportProgramConsultation) {
+    return ['cashflow-summary', 'selected-recovery-options']
+  }
+
+  return [
+    'cashflow-summary',
+    supportProgram ? 'selected-support-program' : 'support-program-request',
+  ]
 }
 
 function TransferInformationPopover({ onClose }: Readonly<{ onClose: () => void }>) {

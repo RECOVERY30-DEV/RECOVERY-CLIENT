@@ -6,6 +6,82 @@ import ConsultationPage from '@/app/recovery/consultation/page'
 import { ConsultationReservationScreen } from './consultation-reservation-screen'
 
 describe('상담 예약 화면', () => {
+  it('지원사업 상세 상담에는 해당 사업만 표시하고 선택한 지원사업 전송 항목을 제공한다', async () => {
+    render(
+      await ConsultationPage({
+        searchParams: Promise.resolve({ program: 'credit-guarantee-sales-decline' }),
+      }),
+    )
+
+    expect(screen.getByRole('heading', { name: '지원사업 상담' })).toBeInTheDocument()
+    expect(screen.getByText('신용보증기금 매출감소특례보증')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '지원사업 상세로 돌아가기' })).toHaveAttribute(
+      'href',
+      '/recovery/support-programs/credit-guarantee-sales-decline',
+    )
+    expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
+    expect(screen.queryByText('선택한 회복안')).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '선택한 지원사업' })).toBeChecked()
+  })
+
+  it('지원사업 목록 상담에는 기본 회복안을 표시하거나 전송하지 않는다', async () => {
+    render(
+      await ConsultationPage({ searchParams: Promise.resolve({ source: 'support-programs' }) }),
+    )
+
+    expect(screen.getByRole('heading', { name: '지원사업 상담' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '지원사업 목록으로 돌아가기' })).toHaveAttribute(
+      'href',
+      '/recovery/support-programs',
+    )
+    expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
+    expect(screen.queryByText('선택한 회복안')).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '지원사업 상담 요청 내용' })).toBeChecked()
+  })
+
+  it('지원사업과 plans query가 함께 있으면 지원사업 맥락을 우선한다', async () => {
+    render(
+      await ConsultationPage({
+        searchParams: Promise.resolve({
+          program: 'small-business-stability-fund',
+          plans: ['refinancing-review'],
+        }),
+      }),
+    )
+
+    expect(screen.getByRole('heading', { name: '지원사업 상담' })).toBeInTheDocument()
+    expect(screen.getByText('소상공인 경영안정자금')).toBeInTheDocument()
+    expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
+    expect(screen.queryByText('상환조건 조정 상담')).not.toBeInTheDocument()
+    expect(screen.queryByText('대환 검토')).not.toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '선택한 지원사업' })).toBeChecked()
+  })
+
+  it('유효하지 않은 지원사업 ID는 기본 회복안 상담으로 안전하게 되돌린다', async () => {
+    render(
+      await ConsultationPage({ searchParams: Promise.resolve({ program: 'unknown-program' }) }),
+    )
+
+    expect(screen.getByRole('link', { name: '회복안 비교로 돌아가기' })).toHaveAttribute(
+      'href',
+      '/recovery/compare',
+    )
+    expect(screen.getByText('상환조건 조정 상담')).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
+  })
+
+  it('회복안 상담은 기존 회복안 선택과 전송 항목을 유지한다', () => {
+    render(<ConsultationReservationScreen />)
+
+    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
+      '상환조건 조정 상담',
+    )
+    expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
+      '고정비 납부일 재배치',
+    )
+    expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
+  })
+
   it('query에서 전달된 회복안을 목적과 요약에 반영한다', async () => {
     render(
       await ConsultationPage({
