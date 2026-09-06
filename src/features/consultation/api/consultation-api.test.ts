@@ -69,7 +69,7 @@ describe('consultation API', () => {
     )
   })
 
-  it('선택 값만 포함한 예약 요청을 사업자 경로로 전송한다', async () => {
+  it('선택한 숫자 회복안 ID를 포함한 예약 요청을 사업자 경로로 전송한다', async () => {
     let requestBody: unknown
     const fetchMock = vi.fn<typeof fetch>(async (input) => {
       if (!(input instanceof Request)) {
@@ -99,6 +99,7 @@ describe('consultation API', () => {
         slotId: 31,
         preQuestion: '준비할 서류가 있나요?',
         transferConsentGranted: true,
+        recoveryOptionIds: [1, 3],
       },
       { client: createApiClient(API_BASE_URL) },
     )
@@ -115,8 +116,8 @@ describe('consultation API', () => {
       slotId: 31,
       preQuestion: '준비할 서류가 있나요?',
       transferConsentGranted: true,
+      recoveryOptionIds: [1, 3],
     })
-    expect(requestBody).not.toHaveProperty('recoveryOptionIds')
   })
 
   it('상담 예약 상세를 조회한다', async () => {

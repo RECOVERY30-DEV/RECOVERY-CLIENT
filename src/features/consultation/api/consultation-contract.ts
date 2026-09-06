@@ -32,6 +32,7 @@ export type BookConsultationCommand = Readonly<{
   preQuestion?: string
   transferConsentGranted?: boolean
   packetId?: number
+  recoveryOptionIds?: readonly number[]
 }>
 
 export type BookedConsultation = Readonly<{

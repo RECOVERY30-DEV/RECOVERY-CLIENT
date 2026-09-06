@@ -25,7 +25,7 @@ vi.mock('../queries/recovery-option-queries', () => ({
 
 const recoveryOptions: readonly RecoveryOptionView[] = [
   {
-    optionId: 3,
+    optionId: 1,
     optionCode: 'REPAYMENT_ADJUST',
     category: 'FINANCIAL_CONSULT',
     expectedEffectText: '부족일 최대 16일 연장 가능',
@@ -37,7 +37,7 @@ const recoveryOptions: readonly RecoveryOptionView[] = [
     selected: true,
   },
   {
-    optionId: 5,
+    optionId: 3,
     optionCode: 'FIXED_COST_RESCHEDULE',
     category: 'SELF_ACTION',
     expectedEffectText: '월말 부족 위험 완화 가능',
@@ -83,7 +83,7 @@ const scenarios: readonly RecoveryScenario[] = [
     deltaMinBalance: 610000,
     monthlyPaymentDelta: -150000,
     note: '상담 및 심사 결과에 따라 실제 효과는 달라질 수 있습니다.',
-    appliedOptionIds: [3],
+    appliedOptionIds: [1],
   },
 ]
 
@@ -128,7 +128,7 @@ describe('회복안 비교 화면', () => {
     await waitFor(() => expect(screen.getByText('총 1건')).toBeInTheDocument())
 
     fireEvent.click(screen.getByRole('button', { name: '고정비 납부일 재배치' }))
-    expect(mocks.mutate).toHaveBeenLastCalledWith([3, 5])
+    expect(mocks.mutate).toHaveBeenLastCalledWith([1, 3])
 
     fireEvent.click(screen.getByRole('button', { name: '대환 검토' }))
     expect(mocks.mutate).toHaveBeenCalledTimes(1)
@@ -150,16 +150,18 @@ describe('회복안 비교 화면', () => {
     expect(mocks.refetchOptions).toHaveBeenCalledTimes(1)
   })
 
-  it('상담과 지원사업 화면으로 이동할 수 있다', async () => {
+  it('선택한 숫자 회복안 ID를 상담 예약 경로로 전달한다', async () => {
     render(<RecoveryPlanComparisonScreen />)
 
     await waitFor(() =>
       expect(screen.getByRole('link', { name: '상담 예약하기' })).toBeInTheDocument(),
     )
 
+    fireEvent.click(screen.getByRole('button', { name: '고정비 납부일 재배치' }))
+
     expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveAttribute(
       'href',
-      '/recovery/consultation',
+      '/recovery/consultation?plans=1&plans=3',
     )
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',

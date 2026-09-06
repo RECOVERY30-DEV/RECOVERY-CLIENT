@@ -2,18 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { KyInstance } from 'ky'
+import { useRouter } from 'next/navigation'
 
 import {
   useBookConsultationMutation,
-  useConsultationQuery,
   useCounselorsQuery,
   useCounselorSlotsQuery,
 } from '@/features/consultation'
-import {
-  DEFAULT_RECOVERY_OPTION_IDS,
-  getRecoveryOptions,
-  type RecoveryOptionId,
-} from '@/features/recovery/model/recovery-plan-data'
 import type { SupportProgramConsultationContext } from '@/features/support-program'
 import { DEMO_BUSINESS_ID } from '@/shared/config/business'
 import { BackLink, Button, Checkbox, MobileScreen, Textarea } from '@/shared/ui'
@@ -32,7 +27,7 @@ type ConsultationReservationScreenProps = Readonly<{
   backLabel?: string
   client?: KyInstance
   isSupportProgramConsultation?: boolean
-  selectedOptionIds?: readonly RecoveryOptionId[]
+  selectedOptionIds?: readonly number[]
   supportProgram?: SupportProgramConsultationContext
 }>
 
@@ -41,9 +36,10 @@ export function ConsultationReservationScreen({
   backLabel = '회복안 비교로 돌아가기',
   client,
   isSupportProgramConsultation = false,
-  selectedOptionIds = DEFAULT_RECOVERY_OPTION_IDS,
+  selectedOptionIds = [1, 3],
   supportProgram,
 }: ConsultationReservationScreenProps): React.JSX.Element {
+  const router = useRouter()
   const counselorsQuery = useCounselorsQuery(client === undefined ? {} : { client })
   const [requestedCounselorId, setRequestedCounselorId] = useState<number | null>(null)
   const selectedCounselorId =
@@ -72,15 +68,10 @@ export function ConsultationReservationScreen({
     DEMO_BUSINESS_ID,
     client === undefined ? {} : { client },
   )
-  const [consultationId, setConsultationId] = useState<number | null>(null)
-  const consultationQuery = useConsultationQuery(
-    consultationId,
-    client === undefined ? {} : { client },
-  )
   const isSelectionLocked = booking.isPending
   const informationButtonRef = useRef<HTMLButtonElement>(null)
   const shouldRestoreInformationFocus = useRef(false)
-  const selectedOptions = isSupportProgramConsultation ? [] : getRecoveryOptions(selectedOptionIds)
+  const hasSelectedRecoveryOptions = !isSupportProgramConsultation && selectedOptionIds.length > 0
 
   useEffect(() => {
     if (!isInformationOpen && shouldRestoreInformationFocus.current) {
@@ -109,7 +100,6 @@ export function ConsultationReservationScreen({
 
     setRequestedCounselorId(counselorId)
     setRequestedSlotId(null)
-    setConsultationId(null)
     booking.reset()
   }
 
@@ -119,7 +109,6 @@ export function ConsultationReservationScreen({
     }
 
     setRequestedSlotId(slotId)
-    setConsultationId(null)
     booking.reset()
   }
 
@@ -132,7 +121,7 @@ export function ConsultationReservationScreen({
       ? `${supportProgram.title} 상담`
       : isSupportProgramConsultation
         ? '지원사업 상담'
-        : selectedOptions.map((option) => option.title).join(', ')
+        : '선택한 회복안 상담'
     const trimmedPreQuestion = preQuestion.trim()
 
     booking.mutate(
@@ -143,8 +132,12 @@ export function ConsultationReservationScreen({
         purposeText,
         ...(trimmedPreQuestion === '' ? {} : { preQuestion: trimmedPreQuestion }),
         transferConsentGranted: selectedTransfers.length > 0,
+        ...(isSupportProgramConsultation ? {} : { recoveryOptionIds: selectedOptionIds }),
       },
-      { onSuccess: (bookedConsultation) => setConsultationId(bookedConsultation.consultationId) },
+      {
+        onSuccess: (bookedConsultation) =>
+          router.push(`/recovery/consultation/${bookedConsultation.consultationId}/complete`),
+      },
     )
   }
 
@@ -192,25 +185,25 @@ export function ConsultationReservationScreen({
                 </span>
               </div>
             ) : null}
-            {selectedOptions.length > 0 ? (
+            {hasSelectedRecoveryOptions ? (
               <div
                 aria-label="선택한 상담 회복안"
                 className="mt-3 flex flex-wrap gap-2"
                 data-testid="selected-recovery-options-summary"
               >
-                {selectedOptions.map((option) => (
+                {selectedOptionIds.map((optionId) => (
                   <span
                     className="rounded border border-primary-blue-800 bg-base-white px-3 py-1 text-[12px] leading-[14px] font-medium text-primary-blue-900"
-                    key={option.id}
+                    key={optionId}
                   >
-                    {option.title}
+                    선택한 회복안 {optionId}번
                   </span>
                 ))}
               </div>
             ) : null}
             <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
-              상담 목적, 상담 전 메모, 전송 동의 여부만 예약 요청에 포함합니다. 선택한
-              회복안·지원사업·전송 항목과 회복안 ID는 아직 전송하지 않습니다.
+              상담 목적, 상담 전 메모, 전송 동의 여부와 선택한 회복안 ID를 예약 요청에
+              포함합니다.
             </p>
           </section>
 
@@ -372,7 +365,8 @@ export function ConsultationReservationScreen({
               </button>
             </div>
             <p className="mt-1 text-[11px] leading-[15px] text-secondary-300">
-              선택한 항목은 예약 요청에 포함되지 않으며, 전송 동의 여부만 예약에 반영됩니다.
+              선택한 항목은 예약 요청에 포함되지 않으며, 전송 동의 여부와 회복안 ID만 예약에
+              반영됩니다.
             </p>
             <div className="mt-3 space-y-2">
               {transferItems.map((item) => (
@@ -386,8 +380,8 @@ export function ConsultationReservationScreen({
               ))}
             </div>
             <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
-              동의하지 않아도 예약할 수 있습니다. 선택한 항목과 회복안 ID는 아직 예약 요청으로
-              전송하지 않습니다.
+              동의하지 않아도 예약할 수 있습니다. 선택한 항목은 전송하지 않으며, 회복안 상담은
+              선택한 회복안 ID를 예약 요청으로 전송합니다.
             </p>
           </section>
 
@@ -412,7 +406,7 @@ export function ConsultationReservationScreen({
                     ? '선택한 지원사업 1건'
                     : isSupportProgramConsultation
                       ? '지원사업 상담'
-                      : `선택한 회복안 ${selectedOptions.length}건`
+                      : `선택한 회복안 ${selectedOptionIds.length}건`
                 }
               />
               <ReservationSummaryRow
@@ -441,31 +435,6 @@ export function ConsultationReservationScreen({
               <Button className="mt-3" onClick={handleSubmit} size="sm" variant="outline">
                 다시 시도
               </Button>
-            </div>
-          ) : null}
-          {consultationQuery.isError ? (
-            <div className="bg-error-50 mt-3 rounded-[10px] p-[14px] typo-caption-3 text-error-500">
-              <p role="alert">예약은 접수되었지만 상세 정보를 불러오지 못했습니다.</p>
-              <Button
-                className="mt-3"
-                onClick={() => void consultationQuery.refetch()}
-                size="sm"
-                variant="outline"
-              >
-                다시 시도
-              </Button>
-            </div>
-          ) : null}
-          {consultationQuery.data ? (
-            <div
-              aria-live="polite"
-              className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] typo-caption-3 text-secondary-300"
-            >
-              <p className="font-medium text-primary-100">상담 예약이 접수되었습니다.</p>
-              <p className="mt-1">
-                {formatConsultationSlot(consultationQuery.data.scheduledAt)} 예약을 상담사가 확인할
-                예정입니다.
-              </p>
             </div>
           ) : null}
         </div>
@@ -537,8 +506,8 @@ function TransferInformationPopover({ onClose }: Readonly<{ onClose: () => void 
           전송 정보 안내
         </h2>
         <p className="mt-3 text-[13px] leading-5 text-secondary-300">
-          현재 예약 요청에는 상담 목적, 상담 전 메모, 전송 동의 여부만 포함합니다. 선택한 전송
-          항목과 회복안 ID는 아직 전달하지 않습니다.
+          예약 요청에는 상담 목적, 상담 전 메모, 전송 동의 여부가 포함됩니다. 회복안 상담은
+          선택한 회복안 ID도 함께 전달합니다.
         </p>
         <Button className="mt-5 w-full" onClick={onClose} variant="secondary">
           안내 닫기
