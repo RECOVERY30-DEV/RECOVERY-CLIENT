@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import type { FormEvent } from 'react'
 
 import RecoveryMark from '@/shared/assets/brand/recovery-mark.svg'
@@ -8,8 +9,11 @@ import NextCircle from '@/shared/assets/icons/next-circle.svg'
 import { Button, Input, MobileScreen } from '@/shared/ui'
 
 export function LoginScreen() {
+  const router = useRouter()
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    router.replace('/home')
   }
 
   return (
@@ -36,7 +40,6 @@ export function LoginScreen() {
               autoComplete="email"
               className="mt-[3px] border-transparent bg-neutral-100 text-[11px] leading-4 font-normal placeholder:text-secondary-300"
               placeholder="메일을 입력해주세요."
-              required
               type="email"
             />
           </label>
@@ -48,7 +51,6 @@ export function LoginScreen() {
               autoComplete="current-password"
               className="mt-[3px] border-transparent bg-neutral-100 text-[11px] leading-4 font-normal placeholder:text-secondary-300"
               placeholder="비밀번호를 입력해주세요."
-              required
               type="password"
             />
           </label>

@@ -1,5 +1,5 @@
-import { BusinessHomeScreen } from '@/features/business-home/ui/business-home-screen'
+import { BusinessHomeContainer } from '@/features/business-home/ui/business-home-container'
 
 export default function HomePage() {
-  return <BusinessHomeScreen />
+  return <BusinessHomeContainer />
 }
