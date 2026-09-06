@@ -9,7 +9,7 @@ type CashflowCauseCardProps = Readonly<{
 
 export function CashflowCauseCard({ cause, rank }: CashflowCauseCardProps): React.JSX.Element {
   return (
-    <article className="rounded-[10px] border border-disabled-50 bg-neutral-100 px-[14px] py-5">
+    <article className="rounded-[10px] border border-disabled-50 bg-neutral-100 p-[14px]">
       <div className="flex items-center gap-[5px]">
         <span
           aria-hidden="true"
@@ -43,16 +43,22 @@ export function CashflowCauseCard({ cause, rank }: CashflowCauseCardProps): Reac
         </div>
       </dl>
 
-      {cause.actions.map((action) => (
-        <Link
-          aria-label={`${cause.title}: ${action.label}`}
-          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
-          href={action.href}
-          key={action.href}
-        >
-          {action.label}
-        </Link>
-      ))}
+      <div
+        className={`mt-5 grid grid-cols-1 gap-2 ${
+          cause.actions.length > 1 ? 'min-[360px]:grid-cols-2' : ''
+        }`}
+      >
+        {cause.actions.map((action) => (
+          <Link
+            aria-label={`${cause.title}: ${action.label}`}
+            className="inline-flex min-h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-3 py-2 text-center text-[14px] leading-5 font-medium text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
+            href={action.href}
+            key={action.href}
+          >
+            {action.label}
+          </Link>
+        ))}
+      </div>
     </article>
   )
 }
