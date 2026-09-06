@@ -72,6 +72,10 @@ export function RecoveryOptionCard({
           <span>사전 조건</span>
           <strong className="text-right font-medium">{option.preconditionText}</strong>
         </span>
+        <span className="flex justify-between gap-3">
+          <span>난이도</span>
+          <strong className="text-right font-medium">{option.difficulty}</strong>
+        </span>
       </span>
       <span className="mt-3 block text-[11px] leading-[13px] text-secondary-300" id={noteId}>
         {option.disclaimer}

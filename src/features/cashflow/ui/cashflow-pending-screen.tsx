@@ -2,7 +2,6 @@ import Link from 'next/link'
 
 import { BackLink, Button, MobileScreen } from '@/shared/ui'
 
-import { CASHFLOW_MISSING_INFORMATION } from '../model/cashflow-correction-data'
 import { CashflowCoverageCard } from './cashflow-coverage-card'
 
 const PENDING_METRICS = [
@@ -12,7 +11,21 @@ const PENDING_METRICS = [
   { label: '예측 신뢰도', value: '낮음 — 보정 필요' },
 ] as const
 
-export function CashflowPendingScreen(): React.JSX.Element {
+type CashflowPendingScreenProps = Readonly<{
+  analysisPeriod?: string
+  coverageItems?: ReadonlyArray<Readonly<{ label: string; value: string }>>
+  lowCoverageItems?: ReadonlyArray<string>
+}>
+
+export function CashflowPendingScreen({
+  analysisPeriod = '오늘 ~ 30일 후',
+  coverageItems,
+  lowCoverageItems = [],
+}: CashflowPendingScreenProps = {}): React.JSX.Element {
+  const pendingMetrics = PENDING_METRICS.map((metric) =>
+    metric.label === '분석 기간' ? { ...metric, value: analysisPeriod } : metric,
+  )
+
   return (
     <MobileScreen aria-label="현금흐름 판단 보류 화면" className="min-h-[1014px]" mode="document">
       <BackLink href="/cashflow" label="현금흐름 대시보드로 돌아가기" />
@@ -24,7 +37,7 @@ export function CashflowPendingScreen(): React.JSX.Element {
           </p>
           <h1 className="mt-2 text-[18px] leading-[21px] font-bold text-primary-200">판단 보류</h1>
           <p className="mt-[6px] text-[13px] leading-4 text-secondary-300">
-            누락 가능 정보를 보정하면
+            반영률이 낮은 정보를 보정하면
             <br />
             현금흐름 예측을 다시 확인할 수 있어요.
           </p>
@@ -42,7 +55,7 @@ export function CashflowPendingScreen(): React.JSX.Element {
               판단보류 요약
             </h2>
             <dl className="mt-5 flex flex-col">
-              {PENDING_METRICS.map((metric) => (
+              {pendingMetrics.map((metric) => (
                 <div
                   className="flex min-h-[30px] items-center justify-between gap-3"
                   key={metric.label}
@@ -58,25 +71,34 @@ export function CashflowPendingScreen(): React.JSX.Element {
             </dl>
           </section>
 
-          <CashflowCoverageCard />
+          <CashflowCoverageCard items={coverageItems} />
 
           <section
-            aria-labelledby="cashflow-missing-information-title"
+            aria-labelledby="cashflow-low-coverage-title"
             className="rounded-[10px] bg-neutral-100 px-[14px] py-5"
           >
             <h2
               className="text-[18px] leading-[21px] font-bold text-neutral-900"
-              id="cashflow-missing-information-title"
+              id="cashflow-low-coverage-title"
             >
-              누락 가능 정보
+              반영률이 낮은 정보
             </h2>
-            <ul className="mt-5 flex flex-col gap-[14px]">
-              {CASHFLOW_MISSING_INFORMATION.map((item) => (
-                <li className="text-[12px] leading-[15px] font-medium text-primary-100" key={item}>
-                  {item}
-                </li>
-              ))}
-            </ul>
+            {lowCoverageItems.length === 0 ? (
+              <p className="mt-5 text-[12px] leading-[15px] text-secondary-300">
+                반영률이 낮은 정보가 없습니다. 데이터 수집 상태를 확인해 주세요.
+              </p>
+            ) : (
+              <ul className="mt-5 flex flex-col gap-[14px]">
+                {lowCoverageItems.map((item) => (
+                  <li
+                    className="text-[12px] leading-[15px] font-medium text-primary-100"
+                    key={item}
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </div>
 

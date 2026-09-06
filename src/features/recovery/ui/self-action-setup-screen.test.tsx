@@ -13,6 +13,10 @@ describe('자체 실행 저장 화면', () => {
     expect(screen.getByText('20일')).toBeInTheDocument()
     expect(screen.getByText('-240만 원')).toBeInTheDocument()
     expect(screen.getByText('-180만 원')).toBeInTheDocument()
+    expect(screen.getByTestId('self-action-effect-grid')).toHaveClass(
+      'grid-cols-1',
+      'min-[360px]:grid-cols-2',
+    )
   })
 
   it('모든 준비 항목을 확인해야 실행 계획을 저장할 수 있다', () => {

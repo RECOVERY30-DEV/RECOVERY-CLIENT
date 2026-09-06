@@ -1,5 +1,5 @@
-import { CashflowCauseDetailScreen } from '@/features/cashflow/ui/cashflow-cause-detail-screen'
+import { CashflowCauseContainer } from '@/features/cashflow/ui/cashflow-forecast-containers'
 
 export default function CashflowCauseDetailPage() {
-  return <CashflowCauseDetailScreen />
+  return <CashflowCauseContainer />
 }

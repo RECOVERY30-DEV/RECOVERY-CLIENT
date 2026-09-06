@@ -29,8 +29,19 @@ describe('현금흐름 정보 보정 허브 화면', () => {
       'href',
       '/cashflow/corrections/expected-expenses/new',
     )
-    expect(screen.getByText('예측 가능 기간')).toBeInTheDocument()
+    expect(screen.getByText('첫 부족일 변화')).toBeInTheDocument()
     expect(screen.getByText('D+12 → D+18 (예상)')).toBeInTheDocument()
+  })
+
+  it('피그마 기준의 진행 상태와 재계산 예상 영향을 함께 설명한다', () => {
+    render(<CashflowCorrectionOverviewScreen />)
+
+    expect(screen.getByRole('heading', { name: '보정 항목' })).toBeInTheDocument()
+    expect(screen.getAllByText('데이터 반영률')).toHaveLength(2)
+    expect(screen.getByText('마지막 재계산')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '재계산 예상 영향' })).toBeInTheDocument()
+    expect(screen.getByText('첫 부족일 변화')).toBeInTheDocument()
+    expect(screen.getByText('예상 최저잔액 변화')).toBeInTheDocument()
   })
 
   it('후보 이름이 포함된 접근 가능한 이름으로 각 반복 패턴 동작을 구분한다', () => {

@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createApiClient } from './api-client'
 import { ApiContractError } from './api-response'
-import { getApiData } from './api-request'
+import { getApiData, postApiData } from './api-request'
 
 const parseIdentifier = (value: unknown) => {
   if (
@@ -106,5 +106,47 @@ describe('getApiData', () => {
     })
 
     await expect(request).rejects.toMatchObject({ name: 'AbortError' })
+  })
+})
+
+describe('postApiData', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('JSON body를 POST하고 성공 응답의 data만 반환한다', async () => {
+    let requestBody: unknown
+    const fetchMock = vi.fn<typeof fetch>(async (input) => {
+      if (!(input instanceof Request)) {
+        throw new TypeError('Ky가 fetch에 Request를 전달해야 합니다.')
+      }
+
+      requestBody = await input.clone().json()
+
+      return Response.json({
+        success: true,
+        data: { id: 8 },
+        error: null,
+      })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await postApiData(
+      'businesses/1/consultations',
+      { channel: 'PHONE', slotId: 31 },
+      parseIdentifier,
+      { client: createApiClient('https://api.example.com/api') },
+    )
+    const request = fetchMock.mock.calls[0]?.[0]
+
+    expect(result).toEqual({ id: 8 })
+    expect(request).toBeInstanceOf(Request)
+
+    if (!(request instanceof Request)) {
+      throw new TypeError('Ky가 fetch에 Request를 전달해야 합니다.')
+    }
+
+    expect(request.method).toBe('POST')
+    expect(requestBody).toEqual({ channel: 'PHONE', slotId: 31 })
   })
 })
