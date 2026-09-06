@@ -298,7 +298,8 @@ function TransferInformationPopover({ onClose }: Readonly<{ onClose: () => void 
           전송 정보 안내
         </h2>
         <p className="mt-3 text-[13px] leading-5 text-secondary-300">
-          선택한 항목만 상담사에게 전달되며, 예약 요청 외의 용도로 사용하지 않습니다.
+          서버 연동 전에는 선택한 항목이 상담 준비 화면에만 표시되며 실제 상담사에게 전송되지
+          않습니다.
         </p>
         <Button className="mt-5 w-full" onClick={onClose} variant="secondary">
           안내 닫기

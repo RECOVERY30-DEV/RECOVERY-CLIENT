@@ -159,6 +159,12 @@ describe('상담 예약 화면', () => {
     const dialog = screen.getByRole('dialog', { name: '전송 정보 안내' })
     const closeButton = screen.getByRole('button', { name: '안내 닫기' })
     expect(dialog).toHaveAttribute('aria-modal', 'true')
+    expect(
+      screen.getByText(
+        '서버 연동 전에는 선택한 항목이 상담 준비 화면에만 표시되며 실제 상담사에게 전송되지 않습니다.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/상담사에게 전달되며/)).not.toBeInTheDocument()
     expect(screen.getByTestId('consultation-reservation-background')).toHaveAttribute('inert')
     expect(backLink.closest('[inert]')).not.toBeNull()
     expect(information).toHaveAttribute('aria-expanded', 'true')
