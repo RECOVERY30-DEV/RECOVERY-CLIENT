@@ -129,6 +129,7 @@ describe('상담 예약 화면', () => {
     const afternoon = screen.getByRole('radio', { name: '2025년 7월 14일 오후 2시' })
     const nextDay = screen.getByRole('radio', { name: '2025년 7월 15일 오전 11시' })
     expect(morning).toBeChecked()
+    expect(morning.closest('label')).toHaveClass('has-[:focus-visible]:ring-primary-blue-800')
 
     fireEvent.click(nextDay)
     expect(nextDay).toBeChecked()
@@ -153,6 +154,7 @@ describe('상담 예약 화면', () => {
     expect(plans).toBeChecked()
 
     const information = screen.getByRole('button', { name: '전송 정보 안내' })
+    expect(information).toHaveClass('focus-visible:ring-primary-blue-800')
     fireEvent.click(information)
     const dialog = screen.getByRole('dialog', { name: '전송 정보 안내' })
     const closeButton = screen.getByRole('button', { name: '안내 닫기' })

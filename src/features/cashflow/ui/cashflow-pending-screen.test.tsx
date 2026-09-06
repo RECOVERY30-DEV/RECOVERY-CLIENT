@@ -36,6 +36,9 @@ describe('현금흐름 판단 보류 화면', () => {
       'href',
       '/cashflow/corrections',
     )
+    expect(screen.getByRole('link', { name: '정보 보정하기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('button', { name: '재시도 안내 확인' })).toBeDisabled()
   })
 })

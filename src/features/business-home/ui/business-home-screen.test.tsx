@@ -23,9 +23,15 @@ describe('사업자 홈 화면', () => {
       'href',
       '/cashflow',
     )
+    expect(screen.getByRole('link', { name: '위험분석 바로가기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: '분석 데이터 범위 자세히 보기' })).toHaveAttribute(
       'href',
       '/data-scope',
+    )
+    expect(screen.getByRole('link', { name: '분석 데이터 범위 자세히 보기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page')
   })

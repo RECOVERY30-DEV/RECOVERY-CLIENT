@@ -184,7 +184,7 @@ export function ConsultationReservationScreen({
               <button
                 aria-controls="transfer-information-popover"
                 aria-expanded={isInformationOpen}
-                className="text-[12px] leading-[14px] text-primary-blue-800 underline focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+                className="text-[12px] leading-[14px] text-primary-blue-800 underline focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
                 onClick={() => setIsInformationOpen(true)}
                 ref={informationButtonRef}
                 type="button"

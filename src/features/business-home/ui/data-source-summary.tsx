@@ -32,7 +32,7 @@ export function AnalysisDataScopeCard() {
   return (
     <Link
       aria-label="분석 데이터 범위 자세히 보기"
-      className="block rounded-[10px] bg-neutral-100 px-[19px] py-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+      className="block rounded-[10px] bg-neutral-100 px-[19px] py-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
       href="/data-scope"
     >
       <h2 className="text-[18px] leading-[21px] font-bold text-neutral-900">분석 데이터 범위</h2>

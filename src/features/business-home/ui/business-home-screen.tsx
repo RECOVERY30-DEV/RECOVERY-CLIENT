@@ -31,7 +31,7 @@ export function BusinessHomeScreen() {
 
           <Link
             aria-label="위험분석 바로가기"
-            className="flex h-[68px] flex-col justify-center rounded-[10px] bg-[linear-gradient(95deg,#060c23_0%,#0d1b3b_70%,#291b31_100%)] px-[14px] text-base-white focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+            className="flex h-[68px] flex-col justify-center rounded-[10px] bg-[linear-gradient(95deg,#060c23_0%,#0d1b3b_70%,#291b31_100%)] px-[14px] text-base-white focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
             href="/cashflow"
           >
             <strong className="text-[18px] leading-[21px]">위험분석 바로가기</strong>

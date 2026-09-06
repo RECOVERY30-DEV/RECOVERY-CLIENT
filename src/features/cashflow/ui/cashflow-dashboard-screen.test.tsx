@@ -33,6 +33,9 @@ describe('현금흐름 대시보드 화면', () => {
       'href',
       '/cashflow/daily/2024-11-10',
     )
+    expect(screen.getByRole('link', { name: '11 / 10 (일) 상세 보기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByText('유출 −185만 원 (임차료)')).toBeInTheDocument()
     expect(screen.getByText('월말 원리금 임차료 집중')).toBeInTheDocument()
     expect(screen.getByText('최근 4주 매출 감소')).toBeInTheDocument()
@@ -42,5 +45,8 @@ describe('현금흐름 대시보드 화면', () => {
       '/cashflow/causes',
     )
     expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass('text-primary-100')
+    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
   })
 })

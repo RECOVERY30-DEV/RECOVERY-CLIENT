@@ -42,6 +42,7 @@ describe('회복안 비교 화면', () => {
     const repayment = screen.getByRole('button', { name: '상환조건 조정 상담' })
 
     expect(repayment).toHaveAccessibleName('상환조건 조정 상담')
+    expect(repayment).toHaveClass('focus-visible:ring-primary-blue-800')
     expect(repayment).toHaveAccessibleDescription(/예상 효과.*부족일 최대 16일 연장 가능/)
     expect(repayment).toHaveAccessibleDescription(/월 부담 변화.*월 상환액 약 15만 원 감소 예상/)
     expect(repayment).toHaveAccessibleDescription(/상환조건.*원리금 3회 이상 정상 납부 이력/)

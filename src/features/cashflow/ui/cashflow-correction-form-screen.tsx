@@ -115,7 +115,7 @@ export function CashflowCorrectionFormScreen({
       >
         <Link
           aria-label="정보 보정 화면으로 돌아가기"
-          className="absolute top-[61px] left-[11px] z-20 flex size-6 items-center justify-center text-primary-200 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+          className="absolute top-[61px] left-[11px] z-20 flex size-6 items-center justify-center text-primary-200 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
           href="/cashflow/corrections"
           onClick={handleBackClick}
           ref={backLinkRef}

@@ -121,6 +121,7 @@ describe('현금흐름 보정 입력 공통 화면', () => {
 
     fireEvent.change(screen.getByLabelText('금액 (원)'), { target: { value: '1200000' } })
     const backLink = screen.getByRole('link', { name: '정보 보정 화면으로 돌아가기' })
+    expect(backLink).toHaveClass('focus-visible:ring-primary-blue-800')
     fireEvent.click(backLink)
 
     expect(screen.getByRole('dialog', { name: '작성 중인 초안' })).toBeInTheDocument()
@@ -214,6 +215,9 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     const closeButton = screen.getByRole('button', { name: '닫기' })
     const lastDayButton = screen.getByRole('button', { name: '2025년 7월 31일' })
 
+    expect(closeButton).toHaveClass('focus-visible:ring-primary-blue-800')
+    expect(lastDayButton).toHaveClass('focus-visible:ring-primary-blue-800')
+
     lastDayButton.focus()
     fireEvent.keyDown(lastDayButton, { key: 'Tab' })
     expect(closeButton).toHaveFocus()
@@ -250,6 +254,9 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     const dialog = screen.getByRole('dialog', { name: '작성 중인 초안' })
     const continueButton = screen.getByRole('button', { name: '계속 작성' })
     const discardButton = screen.getByRole('button', { name: '초안 삭제 후 나가기' })
+
+    expect(continueButton).toHaveClass('focus-visible:ring-primary-blue-800')
+    expect(discardButton).toHaveClass('focus-visible:ring-primary-blue-800')
 
     fireEvent.keyDown(continueButton, { key: 'Tab', shiftKey: true })
     expect(discardButton).toHaveFocus()

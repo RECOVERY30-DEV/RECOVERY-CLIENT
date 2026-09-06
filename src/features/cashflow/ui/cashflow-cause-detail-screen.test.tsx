@@ -27,10 +27,18 @@ describe('현금부족 원인 상세 화면', () => {
     const causes = screen.getAllByRole('article')
 
     expect(causes).toHaveLength(3)
-    expect(screen.getByRole('heading', { name: '최근 8주 매출 감소' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '월말 임차료·원리금 집중' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '계절적 매출 회복 지연' })).toBeInTheDocument()
-    expect(causes[0]).toHaveTextContent(/^1최근 8주 매출 감소/)
+    const firstCauseHeading = screen.getByRole('heading', {
+      name: '1순위: 최근 8주 매출 감소',
+    })
+    expect(firstCauseHeading).toBeInTheDocument()
+    expect(firstCauseHeading.querySelector('.sr-only')).toHaveTextContent('1순위:')
+    expect(firstCauseHeading).not.toHaveTextContent('1. 최근 8주 매출 감소')
+    expect(
+      screen.getByRole('heading', { name: '2순위: 월말 임차료·원리금 집중' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: '3순위: 계절적 매출 회복 지연' }),
+    ).toBeInTheDocument()
     expect(screen.getByText('–180만 원')).toBeInTheDocument()
     expect(screen.getByText('–320만 원')).toBeInTheDocument()
     expect(screen.getByText('추정 중')).toBeInTheDocument()
@@ -60,6 +68,9 @@ describe('현금부족 원인 상세 화면', () => {
     expect(
       screen.getByRole('link', { name: '계절적 매출 회복 지연: 현금매출 보정하기' }),
     ).toHaveTextContent('현금매출 보정하기')
+    expect(screen.getByRole('link', { name: '최근 8주 매출 감소: 보정값 추가하기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
   })
 
   it('핵심 수치와 근거·가정에 충분한 대비의 토큰을 적용한다', () => {
@@ -77,6 +88,9 @@ describe('현금부족 원인 상세 화면', () => {
     expect(screen.getByRole('link', { name: '실행 계획 확인' })).toHaveAttribute(
       'href',
       '/recovery/compare',
+    )
+    expect(screen.getByRole('link', { name: '실행 계획 확인' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
     expect(screen.getByRole('link', { name: '현금흐름 대시보드로 돌아가기' })).toHaveAttribute(
       'href',
