@@ -1,8 +1,8 @@
-import { getHomeDataSources, HOME_DATA_STATUSES } from '@/features/business-home/model/home-data'
+import type { HomeForecastViewModel } from '@/features/business-home/model/home-forecast-view-model'
 
-export function DataSourceSummary() {
-  const dataSources = getHomeDataSources()
-
+export function DataSourceSummary({
+  dataSources,
+}: Readonly<Pick<HomeForecastViewModel, 'dataSources'>>) {
   return (
     <section className="rounded-[10px] bg-neutral-100 px-[19px] py-[14px]">
       <p className="text-[12px] leading-[14px] font-semibold text-secondary-300">데이터 활용</p>
@@ -28,7 +28,9 @@ export function DataSourceSummary() {
   )
 }
 
-export function AnalysisDataScopeCard() {
+export function AnalysisDataScopeCard({
+  dataStatuses,
+}: Readonly<Pick<HomeForecastViewModel, 'dataStatuses'>>) {
   return (
     <section
       aria-labelledby="analysis-data-scope-title"
@@ -45,7 +47,7 @@ export function AnalysisDataScopeCard() {
       </p>
 
       <ul className="mt-[14px] flex flex-col gap-[6px]">
-        {HOME_DATA_STATUSES.map((source) => (
+        {dataStatuses.map((source) => (
           <li
             className="flex h-[50px] items-center justify-between rounded-lg bg-neutral-400 px-[14px] text-[14px] leading-[17px] font-medium text-primary-100"
             key={source.label}

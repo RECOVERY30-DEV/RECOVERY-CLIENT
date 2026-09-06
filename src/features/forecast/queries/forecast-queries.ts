@@ -32,7 +32,7 @@ export const forecastQueryKeys = {
     [...forecastQueryKeys.all, 'run', forecastRunId, 'coverage'] as const,
 }
 
-export function useForecastOverviewQueries(businessId: number, options: ForecastQueryOptions = {}) {
+export function useForecastSummaryQueries(businessId: number, options: ForecastQueryOptions = {}) {
   const latest = useQuery({
     queryKey: forecastQueryKeys.latest(businessId),
     queryFn: ({ signal }) =>
@@ -69,13 +69,6 @@ export function useForecastOverviewQueries(businessId: number, options: Forecast
         ? skipToken
         : ({ signal }) => getForecastSafetyBuffer(forecastRunId, requestOptions(signal)),
   })
-  const riskDrivers = useQuery({
-    queryKey: forecastQueryKeys.riskDrivers(runId),
-    queryFn:
-      forecastRunId === undefined
-        ? skipToken
-        : ({ signal }) => getForecastRiskDrivers(forecastRunId, requestOptions(signal)),
-  })
   const coverage = useQuery({
     queryKey: forecastQueryKeys.coverage(runId),
     queryFn:
@@ -89,7 +82,28 @@ export function useForecastOverviewQueries(businessId: number, options: Forecast
     minBalance,
     shortfall,
     safetyBuffer,
-    riskDrivers,
     coverage,
+  }
+}
+
+export function useForecastOverviewQueries(businessId: number, options: ForecastQueryOptions = {}) {
+  const summary = useForecastSummaryQueries(businessId, options)
+  const forecastRunId = summary.latest.data?.forecastRunId
+  const runId = forecastRunId ?? null
+  const riskDrivers = useQuery({
+    queryKey: forecastQueryKeys.riskDrivers(runId),
+    queryFn:
+      forecastRunId === undefined
+        ? skipToken
+        : ({ signal }) =>
+            getForecastRiskDrivers(forecastRunId, {
+              ...(options.client === undefined ? {} : { client: options.client }),
+              signal,
+            }),
+  })
+
+  return {
+    ...summary,
+    riskDrivers,
   }
 }
