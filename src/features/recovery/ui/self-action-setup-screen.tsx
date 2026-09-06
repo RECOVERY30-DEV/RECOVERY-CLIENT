@@ -71,7 +71,10 @@ export function SelfActionSetupScreen({
           aria-label="자체 실행 예상 효과"
           className="mt-7 rounded-[10px] bg-neutral-100 p-[14px]"
         >
-          <div className="grid grid-cols-2 gap-4">
+          <div
+            className="grid grid-cols-1 gap-4 min-[360px]:grid-cols-2"
+            data-testid="self-action-effect-grid"
+          >
             <EffectComparison
               after={SELF_ACTION_EFFECT.firstShortageAfter}
               before={SELF_ACTION_EFFECT.firstShortageBefore}

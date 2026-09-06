@@ -34,7 +34,10 @@ export const RECOVERY_RISK_CAUSES: readonly RecoveryRiskCause[] = [
     title: '월말 임차료·원리금 집중',
   },
   {
-    actions: [{ href: '/cashflow/corrections/cash-sales/new', label: '현금매출 보정하기' }],
+    actions: [
+      { href: '/cashflow/corrections/cash-sales/new', label: '현금매출 보정하기' },
+      { href: '#cashflow-forecast-accuracy', label: '근거 더 보기' },
+    ],
     contribution: '추정 중',
     description: '과거 같은 시기 패턴과 비교한 추정입니다. 보정 후 재계산을 권장합니다.',
     evidence: '최근 2년 동기간 매출 패턴',

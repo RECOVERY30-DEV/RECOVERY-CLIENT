@@ -36,6 +36,24 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByRole('link', { name: '현금흐름' })).toHaveAttribute('aria-current', 'page')
   })
 
+  it('Figma Info 상태색으로 갱신 및 일정 정보를 표시한다', () => {
+    render(<CashflowDashboardScreen />)
+
+    expect(screen.getAllByText('최종 갱신 09:14')).toHaveLength(2)
+    screen
+      .getAllByText('최종 갱신 09:14')
+      .forEach((element) => expect(element).toHaveClass('text-info-500'))
+    screen
+      .getAllByText('오늘 09:14 반영')
+      .forEach((element) => expect(element).toHaveClass('text-info-500'))
+    screen
+      .getAllByText(/유입|유출|공휴일/)
+      .forEach((element) => expect(element).toHaveClass('text-info-500'))
+    expect(screen.getByRole('link', { name: '누락 정보 보정하기' })).toHaveClass(
+      'text-primary-blue-500',
+    )
+  })
+
   it('일자별 현금흐름과 부족 원인 상위 세 항목 및 상세 경로를 제공한다', () => {
     render(<CashflowDashboardScreen />)
 
