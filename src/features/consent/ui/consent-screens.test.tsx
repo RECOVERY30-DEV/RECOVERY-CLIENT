@@ -20,7 +20,7 @@ function renderManagementScreen(
   query: Partial<{
     data: ReadonlyArray<{
       typeCode: 'ANALYSIS' | 'FOLLOWUP_TRACKING'
-      status: 'GRANTED' | 'REVOKED'
+      status: 'GRANTED' | 'WITHDRAWN'
     }>
     isError: boolean
     isPending: boolean
@@ -88,7 +88,7 @@ describe('동의 관리 화면', () => {
       {
         data: [
           { typeCode: 'ANALYSIS', status: 'GRANTED' },
-          { typeCode: 'FOLLOWUP_TRACKING', status: 'REVOKED' },
+          { typeCode: 'FOLLOWUP_TRACKING', status: 'WITHDRAWN' },
         ],
       },
       { isPending: true },
@@ -104,7 +104,7 @@ describe('동의 관리 화면', () => {
     renderManagementScreen({
       data: [
         { typeCode: 'ANALYSIS', status: 'GRANTED' },
-        { typeCode: 'FOLLOWUP_TRACKING', status: 'REVOKED' },
+        { typeCode: 'FOLLOWUP_TRACKING', status: 'WITHDRAWN' },
       ],
     })
 

@@ -21,7 +21,7 @@ const consents = [
     typeCode: 'FOLLOWUP_TRACKING',
     name: '30·60·90일 사후 점검 동의',
     required: false,
-    status: 'REVOKED',
+    status: 'WITHDRAWN',
     grantedAt: null,
     withdrawnAt: '2025-07-14T23:32:00Z',
     lastChangedAt: '2025-07-14T23:32:00Z',
@@ -64,7 +64,7 @@ describe('consent API', () => {
 
     await expect(getConsents(1, { client: createApiClient(API_BASE_URL) })).resolves.toEqual([
       { typeCode: 'ANALYSIS', status: 'GRANTED' },
-      { typeCode: 'FOLLOWUP_TRACKING', status: 'REVOKED' },
+      { typeCode: 'FOLLOWUP_TRACKING', status: 'WITHDRAWN' },
       { typeCode: 'PACKET_TRANSFER', status: 'NOT_SET' },
     ])
     expect(readRequest(fetchMock).url).toBe('https://api.example.com/api/businesses/1/consents')

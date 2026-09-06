@@ -1,7 +1,7 @@
 import { ApiContractError } from '@/shared/api/api-response'
 
 export type ConsentTypeCode = 'ANALYSIS' | 'FOLLOWUP_TRACKING' | 'PACKET_TRANSFER'
-export type ConsentStatus = 'GRANTED' | 'REVOKED' | 'NOT_SET'
+export type ConsentStatus = 'GRANTED' | 'WITHDRAWN' | 'NOT_SET'
 
 export type Consent = Readonly<{
   typeCode: ConsentTypeCode
@@ -50,7 +50,7 @@ function parseConsentRecord(value: unknown): Consent {
       ['ANALYSIS', 'FOLLOWUP_TRACKING', 'PACKET_TRANSFER'],
       context,
     ),
-    status: readEnum(record, 'status', ['GRANTED', 'REVOKED', 'NOT_SET'], context),
+    status: readEnum(record, 'status', ['GRANTED', 'WITHDRAWN', 'NOT_SET'], context),
   }
 }
 

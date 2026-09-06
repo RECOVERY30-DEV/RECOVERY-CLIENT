@@ -32,7 +32,7 @@ describe('consent queries', () => {
 
       return apiResponse([
         { typeCode: 'ANALYSIS', status: 'GRANTED' },
-        { typeCode: 'FOLLOWUP_TRACKING', status: 'REVOKED' },
+        { typeCode: 'FOLLOWUP_TRACKING', status: 'WITHDRAWN' },
       ])
     })
     vi.stubGlobal('fetch', fetchMock)
