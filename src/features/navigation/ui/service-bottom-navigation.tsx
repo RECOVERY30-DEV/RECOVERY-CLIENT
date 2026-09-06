@@ -16,7 +16,7 @@ type ServiceBottomNavigationProps = Readonly<{
 const NAVIGATION_ITEMS = [
   { href: '/home', icon: HomeIcon, id: 'home', label: '홈' },
   { href: '/cashflow', icon: CashflowIcon, id: 'cashflow', label: '현금흐름' },
-  { href: '/recovery', icon: RecoveryIcon, id: 'recovery', label: '회복안' },
+  { href: '/recovery/compare', icon: RecoveryIcon, id: 'recovery', label: '회복안' },
   { href: '/consents', icon: ManageIcon, id: 'manage', label: '관리' },
 ] as const satisfies ReadonlyArray<{
   href: string

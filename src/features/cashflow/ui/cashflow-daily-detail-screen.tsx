@@ -1,4 +1,6 @@
-import { BackLink, Button, MobileScreen } from '@/shared/ui'
+import Link from 'next/link'
+
+import { BackLink, MobileScreen } from '@/shared/ui'
 
 import { getCashflowDailyDetail } from '../model/cashflow-daily-detail-data'
 import { CashflowDailyNotes } from './cashflow-daily-notes'
@@ -32,12 +34,12 @@ export function CashflowDailyDetailScreen({ date }: CashflowDailyDetailScreenPro
           <CashflowDailySources sources={detail.sources} />
         </div>
 
-        <Button
-          className="mt-[70px] w-full disabled:bg-primary-100 disabled:text-base-white"
-          disabled
+        <Link
+          className="mt-[70px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
+          href="/cashflow/corrections"
         >
           보정값 추가·수정하기
-        </Button>
+        </Link>
       </div>
     </MobileScreen>
   )

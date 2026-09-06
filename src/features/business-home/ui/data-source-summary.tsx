@@ -1,8 +1,8 @@
-import Link from 'next/link'
-
-import { HOME_DATA_SOURCES, HOME_DATA_STATUSES } from '@/features/business-home/model/home-data'
+import { getHomeDataSources, HOME_DATA_STATUSES } from '@/features/business-home/model/home-data'
 
 export function DataSourceSummary() {
+  const dataSources = getHomeDataSources()
+
   return (
     <section className="rounded-[10px] bg-neutral-100 px-[19px] py-[14px]">
       <p className="text-[12px] leading-[14px] font-semibold text-secondary-300">데이터 활용</p>
@@ -11,7 +11,7 @@ export function DataSourceSummary() {
       </h2>
 
       <ul className="mt-[14px]">
-        {HOME_DATA_SOURCES.map((source) => (
+        {dataSources.map((source) => (
           <li
             className="flex h-[30px] items-center justify-between text-[12px] leading-[14px]"
             key={source.label}
@@ -30,12 +30,16 @@ export function DataSourceSummary() {
 
 export function AnalysisDataScopeCard() {
   return (
-    <Link
-      aria-label="분석 데이터 범위 자세히 보기"
-      className="block rounded-[10px] bg-neutral-100 px-[19px] py-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
-      href="/data-scope"
+    <section
+      aria-labelledby="analysis-data-scope-title"
+      className="rounded-[10px] bg-neutral-100 px-[19px] py-[14px]"
     >
-      <h2 className="text-[18px] leading-[21px] font-bold text-neutral-900">분석 데이터 범위</h2>
+      <h2
+        className="text-[18px] leading-[21px] font-bold text-neutral-900"
+        id="analysis-data-scope-title"
+      >
+        분석 데이터 범위
+      </h2>
       <p className="mt-1 text-[12px] leading-[14px] text-secondary-300">
         현금매출·타행자금 등 일부 정보는 포함되지 않을 수 있습니다.
       </p>
@@ -51,6 +55,6 @@ export function AnalysisDataScopeCard() {
           </li>
         ))}
       </ul>
-    </Link>
+    </section>
   )
 }

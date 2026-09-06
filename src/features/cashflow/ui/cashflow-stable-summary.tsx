@@ -1,6 +1,13 @@
-import { CASHFLOW_STABLE_METRICS } from '../model/cashflow-stable-status-data'
+import { cn } from '@/shared/lib'
 
-export function CashflowStableSummary() {
+import type { CashflowStatusMetric } from '../model/cashflow-stable-status-data'
+
+type CashflowStableSummaryProps = Readonly<{
+  metrics: readonly CashflowStatusMetric[]
+  note?: string
+}>
+
+export function CashflowStableSummary({ metrics, note }: CashflowStableSummaryProps) {
   return (
     <section
       aria-labelledby="cashflow-stable-summary-title"
@@ -14,17 +21,23 @@ export function CashflowStableSummary() {
       </h2>
 
       <dl className="mt-5 flex flex-col">
-        {CASHFLOW_STABLE_METRICS.map((metric) => (
+        {metrics.map((metric) => (
           <div className="flex min-h-[30px] items-center justify-between gap-3" key={metric.label}>
             <dt className="shrink-0 text-[12px] leading-[14px] font-medium text-primary-100">
               {metric.label}
             </dt>
-            <dd className="text-right text-[12px] leading-[14px] font-semibold text-primary-blue-800">
+            <dd
+              className={cn(
+                'text-right text-[12px] leading-[14px] font-semibold',
+                metric.tone === 'danger' ? 'text-warning-700' : 'text-primary-blue-800',
+              )}
+            >
               {metric.value}
             </dd>
           </div>
         ))}
       </dl>
+      {note ? <p className="mt-2 text-[12px] leading-[14px] text-secondary-300">{note}</p> : null}
     </section>
   )
 }

@@ -6,31 +6,16 @@ import { useState } from 'react'
 import { ServiceBottomNavigation } from '@/features/navigation/ui/service-bottom-navigation'
 import { BackLink, Button, MobileScreen } from '@/shared/ui'
 
+import { CONSENT_DATA_USAGE_ITEMS } from '../model/consent-data'
 import { ConsentControls } from './consent-controls'
-import { ConsentWithdrawalDialog } from './consent-withdrawal-dialog'
 
 export function ConsentSetupScreen() {
-  const [hasAnalysisConsent, setHasAnalysisConsent] = useState(true)
+  const [hasAnalysisConsent, setHasAnalysisConsent] = useState(false)
   const [hasCounselorConsent, setHasCounselorConsent] = useState(false)
-  const [hasFollowUpConsent, setHasFollowUpConsent] = useState(true)
-  const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false)
-
-  function handleAnalysisChange() {
-    if (hasAnalysisConsent) {
-      setIsWithdrawalOpen(true)
-      return
-    }
-
-    setHasAnalysisConsent(true)
-  }
-
-  function handleConfirmWithdrawal() {
-    setHasAnalysisConsent(false)
-    setIsWithdrawalOpen(false)
-  }
+  const [hasFollowUpConsent, setHasFollowUpConsent] = useState(false)
 
   return (
-    <MobileScreen aria-label="분석 동의 선택 화면" className="min-h-[907px]" mode="document">
+    <MobileScreen aria-label="분석 동의 선택 화면" className="min-h-[1170px]" mode="document">
       <BackLink href="/login" label="로그인으로 돌아가기" />
 
       <div className="px-6 pt-[102px]">
@@ -54,17 +39,33 @@ export function ConsentSetupScreen() {
             hasAnalysisConsent={hasAnalysisConsent}
             hasCounselorConsent={hasCounselorConsent}
             hasFollowUpConsent={hasFollowUpConsent}
-            onAnalysisChange={handleAnalysisChange}
+            onAnalysisChange={() => setHasAnalysisConsent((value) => !value)}
             onCounselorChange={() => setHasCounselorConsent((value) => !value)}
             onFollowUpChange={() => setHasFollowUpConsent((value) => !value)}
           />
         </div>
 
+        <section className="mt-10">
+          <h2 className="text-[18px] leading-[21px] font-bold text-primary-200">
+            데이터 활용 범위
+          </h2>
+          <ul className="mt-5 flex flex-col gap-1">
+            {CONSENT_DATA_USAGE_ITEMS.map((item) => (
+              <li
+                className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-[13px] leading-4 text-secondary-300"
+                key={item}
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <div className="mt-10 flex justify-center pb-10">
           {hasAnalysisConsent ? (
             <Link
               className="flex h-[50px] w-[230px] items-center justify-center rounded-full bg-[radial-gradient(circle_at_center,#060c23_0%,#0e1b39_25%,#162a4f_50%,#27487a_100%)] text-[16px] leading-[22px] text-base-white"
-              href="/home"
+              href="/cashflow"
             >
               분석 시작하기
             </Link>
@@ -77,13 +78,6 @@ export function ConsentSetupScreen() {
       </div>
 
       <ServiceBottomNavigation activeItem="manage" />
-
-      {isWithdrawalOpen ? (
-        <ConsentWithdrawalDialog
-          onCancel={() => setIsWithdrawalOpen(false)}
-          onConfirm={handleConfirmWithdrawal}
-        />
-      ) : null}
     </MobileScreen>
   )
 }

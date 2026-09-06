@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import { CASHFLOW_STABLE_REASONS } from '../model/cashflow-stable-status-data'
 import { CashflowStableStatusScreen } from './cashflow-stable-status-screen'
 
 describe('현금흐름 안정 상태 안내 화면', () => {
@@ -37,10 +38,30 @@ describe('현금흐름 안정 상태 안내 화면', () => {
       'href',
       '/cashflow',
     )
-    expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
+    const correctionLink = screen.getByRole('link', { name: '확인 필요' })
+
+    expect(correctionLink).toHaveAttribute('href', '/cashflow/corrections')
+    expect(correctionLink).toHaveClass(
+      'text-primary-blue-800',
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: '30·60·90일 사후점검 확인하기' })).toHaveAttribute(
       'href',
       '/recovery/follow-up',
     )
+  })
+
+  it('위험 상태 데이터가 주어지면 위험 안내와 위험 핵심 수치를 제공한다', () => {
+    render(<CashflowStableStatusScreen status="risk" />)
+
+    expect(screen.getByRole('heading', { name: '현금흐름 위험' })).toBeInTheDocument()
+    expect(screen.getByText('약 -128만 원 ~ -54만 원')).toBeInTheDocument()
+    expect(screen.getByText('약 -128만 원 ~ -54만 원')).toHaveClass('text-warning-700')
+    expect(screen.getByText('미충족')).toBeInTheDocument()
+    expect(screen.getByText('2025년 07월 29일')).toBeInTheDocument()
+  })
+
+  it('판단 근거를 항목당 최대 40자로 제공한다', () => {
+    expect(CASHFLOW_STABLE_REASONS.every((reason) => Array.from(reason).length <= 40)).toBe(true)
   })
 })

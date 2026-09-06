@@ -24,7 +24,7 @@ describe('일자별 현금흐름 상세 화면', () => {
     expect(screen.queryByText('+₩3,200,000')).not.toBeInTheDocument()
   })
 
-  it('대시보드 복귀 경로와 데이터 출처를 제공하고 미구현 보정 이동은 비활성화한다', () => {
+  it('대시보드 복귀 경로와 데이터 출처 및 보정 이동을 제공한다', () => {
     render(<CashflowDailyDetailScreen date="2024-11-10" />)
 
     expect(screen.getByRole('link', { name: '현금흐름 대시보드로 돌아가기' })).toHaveAttribute(
@@ -33,6 +33,9 @@ describe('일자별 현금흐름 상세 화면', () => {
     )
     expect(screen.getByText('사업자 계좌 (우리은행)')).toBeInTheDocument()
     expect(screen.getByText('카드 정산 (신한카드)')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '보정값 추가·수정하기' })).toBeDisabled()
+    const correctionLink = screen.getByRole('link', { name: '보정값 추가·수정하기' })
+
+    expect(correctionLink).toHaveAttribute('href', '/cashflow/corrections')
+    expect(correctionLink).toHaveClass('focus-visible:ring-primary-blue-800')
   })
 })

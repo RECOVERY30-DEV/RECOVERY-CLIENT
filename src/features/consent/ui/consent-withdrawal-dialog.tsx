@@ -7,11 +7,15 @@ type ConsentWithdrawalDialogProps = Readonly<{
 
 export function ConsentWithdrawalDialog({ onCancel, onConfirm }: ConsentWithdrawalDialogProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-primary-200/50 px-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-primary-200/50 px-4"
+      onClick={onCancel}
+    >
       <section
         aria-labelledby="consent-withdrawal-title"
         aria-modal="true"
         className="w-full max-w-[324px] rounded-[20px] bg-base-white px-5 py-[15px]"
+        onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
         <h2
