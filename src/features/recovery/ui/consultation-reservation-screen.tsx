@@ -57,10 +57,11 @@ export function ConsultationReservationScreen({
   )
   const bookableSlots = slotsQuery.data?.filter((slot) => slot.bookable) ?? []
   const [requestedSlotId, setRequestedSlotId] = useState<number | null>(null)
-  const selectedSlotId =
-    bookableSlots.find((slot) => slot.slotId === requestedSlotId)?.slotId ??
-    bookableSlots[0]?.slotId ??
-    null
+  const selectedSlot =
+    bookableSlots.find((slot) => slot.slotId === requestedSlotId) ?? bookableSlots[0] ?? null
+  const selectedSlotId = selectedSlot?.slotId ?? null
+  const selectedSlotLabel =
+    selectedSlot === null ? '선택 필요' : formatConsultationSlot(selectedSlot.startAt)
   const transferItems = getTransferItems(isSupportProgramConsultation, supportProgram)
   const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>(() =>
     getDefaultSelectedTransferIds(isSupportProgramConsultation, supportProgram),
@@ -148,7 +149,7 @@ export function ConsultationReservationScreen({
   }
 
   return (
-    <MobileScreen aria-label="상담 예약 화면" className="min-h-[1260px]" mode="document">
+    <MobileScreen aria-label="상담 예약 화면" className="min-h-[1755px]" mode="document">
       <div
         aria-hidden={isInformationOpen ? true : undefined}
         data-testid="consultation-reservation-background"
@@ -199,7 +200,7 @@ export function ConsultationReservationScreen({
               >
                 {selectedOptions.map((option) => (
                   <span
-                    className="rounded-full bg-primary-blue-100 px-3 py-1 text-[12px] leading-[14px] font-medium text-primary-blue-900"
+                    className="rounded border border-primary-blue-800 bg-base-white px-3 py-1 text-[12px] leading-[14px] font-medium text-primary-blue-900"
                     key={option.id}
                   >
                     {option.title}
@@ -259,19 +260,28 @@ export function ConsultationReservationScreen({
             <legend className="text-[18px] leading-[21px] font-bold text-primary-200">
               상담 채널
             </legend>
-            <div className="mt-3">
+            <div className="mt-3 space-y-2">
               <ConsultationChoice
                 checked
+                description="평일 09:00 ~ 18:00"
                 name="consultation-channel"
                 onChange={() => {}}
                 value="전화 상담"
+              />
+              <ConsultationChoice
+                checked={false}
+                description="준비 중"
+                disabled
+                name="consultation-channel"
+                onChange={() => {}}
+                value="채팅 상담"
               />
             </div>
           </fieldset>
 
           <fieldset className="mt-5">
             <legend className="text-[18px] leading-[21px] font-bold text-primary-200">
-              예약 시간
+              예약 가능 일시 선택
             </legend>
             <div className="mt-3 space-y-2">
               {selectedCounselorId === null ? (
@@ -305,6 +315,7 @@ export function ConsultationReservationScreen({
                   <ConsultationChoice
                     checked={selectedSlotId === slot.slotId}
                     disabled={isSelectionLocked}
+                    description={`잔여 ${slot.remainingSeats}석`}
                     key={slot.slotId}
                     name="consultation-slot"
                     onChange={() => handleSlotChange(slot.slotId)}
@@ -313,15 +324,41 @@ export function ConsultationReservationScreen({
                 ))
               )}
             </div>
+            <button
+              className="mt-3 border-b border-secondary-300 text-[12px] leading-[16px] text-secondary-300 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
+              type="button"
+            >
+              원하는 시간이 없어요
+            </button>
           </fieldset>
 
-          <section aria-labelledby="consultation-transfer-title" className="mt-5">
+          <div className="mt-8">
+            <label
+              className="text-[18px] leading-[21px] font-bold text-primary-200"
+              htmlFor="consultation-note"
+            >
+              상담 전 메모{' '}
+              <span className="text-[12px] font-normal text-secondary-300">(선택)</span>
+            </label>
+            <p className="mt-1 text-[13px] leading-4 text-secondary-300">
+              상담에서 꼭 확인하고 싶은 내용을 입력해 주세요.
+            </p>
+            <Textarea
+              className="mt-3"
+              id="consultation-note"
+              onChange={(event) => setPreQuestion(event.target.value)}
+              placeholder="상담 시 확인하고 싶은 내용을 입력해주세요"
+              value={preQuestion}
+            />
+          </div>
+
+          <section aria-labelledby="consultation-transfer-title" className="mt-8">
             <div className="flex items-center justify-between gap-3">
               <h2
                 className="text-[18px] leading-[21px] font-bold text-primary-200"
                 id="consultation-transfer-title"
               >
-                상담사에게 전송할 정보
+                상담원 전송 정보 범위
               </h2>
               <button
                 aria-controls="transfer-information-popover"
@@ -334,6 +371,9 @@ export function ConsultationReservationScreen({
                 전송 정보 안내
               </button>
             </div>
+            <p className="mt-1 text-[11px] leading-[15px] text-secondary-300">
+              선택한 항목은 예약 요청에 포함되지 않으며, 전송 동의 여부만 예약에 반영됩니다.
+            </p>
             <div className="mt-3 space-y-2">
               {transferItems.map((item) => (
                 <Checkbox
@@ -345,24 +385,42 @@ export function ConsultationReservationScreen({
                 />
               ))}
             </div>
+            <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
+              동의하지 않아도 예약할 수 있습니다. 선택한 항목과 회복안 ID는 아직 예약 요청으로
+              전송하지 않습니다.
+            </p>
           </section>
 
-          <div className="mt-5">
-            <label
-              className="text-[18px] leading-[21px] font-bold text-primary-200"
-              htmlFor="consultation-note"
+          <section
+            aria-labelledby="consultation-final-summary-title"
+            className="mt-8 rounded-[10px] bg-neutral-100 p-[14px]"
+          >
+            <p className="text-[11px] leading-[14px] text-secondary-300">예약 정보</p>
+            <h2
+              className="mt-1 text-[18px] leading-[21px] font-bold text-primary-200"
+              id="consultation-final-summary-title"
             >
-              상담 전 메모{' '}
-              <span className="text-[12px] font-normal text-secondary-300">(선택)</span>
-            </label>
-            <Textarea
-              className="mt-3"
-              id="consultation-note"
-              onChange={(event) => setPreQuestion(event.target.value)}
-              placeholder="상담 시 확인하고 싶은 내용을 입력해주세요"
-              value={preQuestion}
-            />
-          </div>
+              예약 내용 최종 확인
+            </h2>
+            <dl className="mt-4 space-y-3 text-[12px] leading-[14px]">
+              <ReservationSummaryRow label="상담 채널" value="전화 상담" />
+              <ReservationSummaryRow label="예약 일시" value={selectedSlotLabel} />
+              <ReservationSummaryRow
+                label="회복안"
+                value={
+                  supportProgram
+                    ? '선택한 지원사업 1건'
+                    : isSupportProgramConsultation
+                      ? '지원사업 상담'
+                      : `선택한 회복안 ${selectedOptions.length}건`
+                }
+              />
+              <ReservationSummaryRow
+                label="정보 전송"
+                value={`${selectedTransfers.length}개 항목 동의`}
+              />
+            </dl>
+          </section>
 
           <Button
             className="mt-8 w-full"
@@ -415,6 +473,15 @@ export function ConsultationReservationScreen({
 
       {isInformationOpen ? <TransferInformationPopover onClose={handleInformationClose} /> : null}
     </MobileScreen>
+  )
+}
+
+function ReservationSummaryRow({ label, value }: Readonly<{ label: string; value: string }>) {
+  return (
+    <div className="flex items-start justify-between gap-3">
+      <dt className="shrink-0 text-secondary-300">{label}</dt>
+      <dd className="text-right font-medium text-primary-blue-800">{value}</dd>
+    </div>
   )
 }
 

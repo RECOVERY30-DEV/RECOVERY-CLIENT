@@ -16,6 +16,16 @@ describe('회복안 비교 화면', () => {
     expect(screen.getByText('3. 계절적 매출 회복 지연')).toBeInTheDocument()
   })
 
+  it('피그마 기준으로 위험 상태와 원인 근거를 상세하게 제공한다', () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    expect(screen.getByRole('heading', { name: '현재 위험 상태' })).toBeInTheDocument()
+    expect(screen.getByText('위험')).toBeInTheDocument()
+    expect(screen.getByText('예상 부족액')).toBeInTheDocument()
+    expect(screen.getByText('신한카드 정산 5건 · 6월 2일~11일')).toBeInTheDocument()
+    expect(screen.getByText('직전 4주 평균 입금 패턴 반영')).toBeInTheDocument()
+  })
+
   it('기본 두 회복안을 선택하고 최대 두 개까지만 선택한다', () => {
     render(<RecoveryPlanComparisonScreen />)
 
@@ -24,7 +34,8 @@ describe('회복안 비교 화면', () => {
     const refinancing = screen.getByRole('button', { name: '대환 검토' })
 
     expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
-    expect(screen.getByText('총 2건')).toHaveClass('text-primary-blue-800')
+    expect(screen.getAllByText('총 2건')).toHaveLength(2)
+    expect(screen.getAllByText('총 2건')[1]).toHaveClass('text-primary-blue-800')
     expect(repayment).toHaveClass('border-primary-blue-700')
     fireEvent.click(refinancing)
     expect(refinancing).toHaveAttribute('aria-pressed', 'false')
@@ -97,5 +108,8 @@ describe('회복안 비교 화면', () => {
     expect(screen.getAllByText('상환조건 조정 상담').length).toBeGreaterThan(0)
     expect(screen.getAllByText('고정비 납부일 재배치').length).toBeGreaterThan(0)
     expect(screen.queryByText('상황조건')).not.toBeInTheDocument()
+    expect(screen.getAllByText('첫 부족 예상일')).not.toHaveLength(0)
+    expect(screen.getAllByText('예상 최저잔액')).not.toHaveLength(0)
+    expect(screen.getAllByText('난이도')).toHaveLength(3)
   })
 })

@@ -5,9 +5,7 @@ import { CASHFLOW_DATA_SOURCES } from '../model/cashflow-dashboard-data'
 export function AnalysisDataScopeCard() {
   return (
     <section className="h-[288px] rounded-[10px] bg-neutral-100 px-[14px] py-5">
-      <p className="text-[12px] leading-[14px] font-semibold text-primary-blue-700">
-        최종 갱신 09:14
-      </p>
+      <p className="text-[12px] leading-[14px] font-semibold text-info-500">최종 갱신 09:14</p>
       <h2 className="mt-[5px] text-[18px] leading-[21px] font-bold text-neutral-900">
         분석 데이터 범위
       </h2>
@@ -19,7 +17,7 @@ export function AnalysisDataScopeCard() {
             key={source.label}
           >
             <dt className="font-medium text-primary-100">{source.label}</dt>
-            <dd className="font-semibold text-primary-blue-700">{source.status}</dd>
+            <dd className="font-semibold text-info-500">{source.status}</dd>
           </div>
         ))}
       </dl>

@@ -23,25 +23,29 @@ export function SupportProgramDetailScreen({
   }
 
   return (
-    <MobileScreen aria-label="지원사업 상세 화면" className="min-h-[1260px]" mode="document">
+    <MobileScreen aria-label="지원사업 상세 화면" className="min-h-[1420px]" mode="document">
       <BackLink href="/recovery/support-programs" label="지원사업 목록으로 돌아가기" />
       <div className="px-6 pt-[102px] pb-[62px]">
         <header>
-          <div className="flex items-start justify-between gap-3">
-            <h1 className="typo-sub-header-2 text-primary-200">{program.title}</h1>
+          <p className="typo-body-6 text-secondary-300">상담예약</p>
+          <h1 className="mt-[6px] typo-sub-header-2 text-primary-200">{program.title}</h1>
+          <div className="mt-[10px] flex flex-wrap items-center gap-2">
             <SupportProgramMatchStatus status={program.matchStatus} />
+            <span className="rounded-full bg-neutral-300 px-3 py-[6px] typo-caption-1 text-secondary-500">
+              {getSupportProgramApplicationLabel(program.applicationDeadline)} ·{' '}
+              {formatSupportProgramDeadline(program.applicationDeadline)}
+            </span>
           </div>
-          <p className="mt-[6px] typo-body-6 text-secondary-300">
-            {getSupportProgramApplicationLabel(program.applicationDeadline)} · 신청 마감{' '}
-            {formatSupportProgramDeadline(program.applicationDeadline)}
-          </p>
         </header>
 
-        <section aria-labelledby="support-overview-title" className="mt-5">
+        <section
+          aria-labelledby="support-overview-title"
+          className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-5"
+        >
           <h2 className="typo-sub-header-2 text-primary-200" id="support-overview-title">
             지원 개요
           </h2>
-          <dl className="mt-3 divide-y divide-disabled-50 rounded-[10px] bg-neutral-100 px-[14px]">
+          <dl className="mt-4 space-y-4">
             <OverviewItem label="지원 기관" value={program.institution} />
             <OverviewItem label="지원 내용" value={program.description} />
             <OverviewItem label="금리" value={program.interestRate} />
@@ -57,27 +61,24 @@ export function SupportProgramDetailScreen({
           <h2 className="typo-sub-header-2 text-primary-200" id="support-eligibility-title">
             자격요건 확인
           </h2>
-          <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] typo-body-6 text-secondary-300">
-            <strong className="font-semibold text-primary-100">자동 자격판정이 아님</strong>
-            <br />
-            예측 데이터 기반 추정이며, 최종 자격은 공식 공고와 상담을 통해 확인해야 합니다.
+          <p className="mt-[6px] typo-body-6 text-secondary-300">
+            예측 데이터 기반 추정이며 자동 자격판정이 아닙니다.
+            <strong className="sr-only">자동 자격판정이 아님</strong>
           </p>
-          <ul className="mt-3 space-y-2">
+          <ul
+            className="mt-3 space-y-[6px] rounded-[10px] bg-neutral-100 p-[14px]"
+            data-testid="support-eligibility-list"
+          >
             {program.eligibilityRequirements.map((requirement) => (
               <li
-                className="rounded-[10px] border border-disabled-50 p-[14px]"
+                className="rounded-[8px] bg-neutral-400 px-[14px] py-[10px]"
                 key={requirement.label}
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="typo-body-5 text-primary-100">{requirement.label}</p>
-                  <span
-                    className={`shrink-0 typo-caption-1 ${
-                      requirement.status === '충족 가능'
-                        ? 'text-primary-blue-800'
-                        : 'text-secondary-500'
-                    }`}
-                  >
-                    {requirement.status}
+                  <span className="flex size-5 shrink-0 items-center justify-center rounded-[3px] bg-primary-blue-900 text-[12px] font-bold text-base-white">
+                    <span className="sr-only">{requirement.status}</span>
+                    <span aria-hidden="true">{requirement.status === '충족 가능' ? '✓' : '!'}</span>
                   </span>
                 </div>
                 <p className="mt-1 typo-caption-3 text-secondary-300">{requirement.detail}</p>
@@ -90,10 +91,10 @@ export function SupportProgramDetailScreen({
           <h2 className="typo-sub-header-2 text-primary-200" id="support-documents-title">
             필요서류
           </h2>
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-3 space-y-[6px] rounded-[10px] bg-neutral-100 p-[14px]">
             {program.requiredDocuments.map((document) => (
               <li
-                className="flex items-center justify-between gap-3 rounded-[10px] bg-neutral-100 p-[14px]"
+                className="flex min-h-[50px] items-center justify-between gap-3 rounded-[8px] bg-neutral-400 px-[14px] py-[10px]"
                 key={document.label}
               >
                 <span className="typo-body-5 text-primary-100">{document.label}</span>
@@ -112,7 +113,9 @@ export function SupportProgramDetailScreen({
           <h2 className="typo-sub-header-2 text-primary-200" id="support-source-title">
             공식 출처 및 신청
           </h2>
-          <p className="mt-3 typo-body-5 text-primary-100">{program.officialAnnouncement}</p>
+          <p className="mt-3 typo-caption-3 text-secondary-300">
+            {program.officialAnnouncement} · 공식 공고
+          </p>
           <p className="mt-1 typo-caption-3 text-secondary-300">
             공식 URL이 확인되지 않아 바로가기를 제공하지 않습니다.
           </p>
@@ -137,9 +140,9 @@ export function SupportProgramDetailScreen({
 
 function OverviewItem({ label, value }: Readonly<{ label: string; value: string }>) {
   return (
-    <div className="py-3">
-      <dt className="typo-caption-1 text-secondary-300">{label}</dt>
-      <dd className="mt-1 typo-body-5 text-primary-100">{value}</dd>
+    <div className="flex items-start justify-between gap-3">
+      <dt className="shrink-0 typo-caption-1 text-primary-100">{label}</dt>
+      <dd className="text-right typo-caption-1 font-semibold text-primary-blue-700">{value}</dd>
     </div>
   )
 }

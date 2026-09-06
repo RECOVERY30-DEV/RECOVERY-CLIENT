@@ -9,6 +9,26 @@ export type LatestForecast = Readonly<{
   status: ForecastStatus
 }>
 
+export type ForecastDetail = Readonly<{
+  forecastRunId: number
+  businessId: number
+  baseDate: string
+  updatedAt: string
+  status: ForecastStatus
+  horizonDays: number
+  coverageOverall: number
+  hasShortfall: boolean
+  daysToShortfall: number | null
+  firstShortfallDate: string | null
+  shortfallAmountMin: number | null
+  shortfallAmountMax: number | null
+  minBalanceAvailable: boolean
+  minBalanceConservative: number | null
+  minBalanceExpected: number | null
+  minBalanceOptimistic: number | null
+  bufferMet: boolean
+}>
+
 export type ForecastMinBalance = Readonly<{
   forecastRunId: number
   available: boolean
@@ -50,6 +70,8 @@ export type ForecastRiskDriver = Readonly<{
   metricText: string | null
   contributionAmount: number | null
   estimating: boolean
+  description: string | null
+  assumptionText: string | null
   evidence?: ReadonlyArray<ForecastEvidence>
 }>
 
@@ -200,6 +222,56 @@ export function parseLatestForecast(value: unknown): LatestForecast {
   }
 }
 
+export function parseForecastDetail(value: unknown): ForecastDetail {
+  const context = 'forecastDetail'
+  const record = readRecord(value, context)
+  const hasShortfall = readBoolean(record, 'hasShortfall', context)
+  const daysToShortfall = readNullableInteger(record, 'daysToShortfall', context)
+  const firstShortfallDate = readNullableDate(record, 'firstShortfallDate', context)
+  const shortfallAmountMin = readNullableInteger(record, 'shortfallAmountMin', context)
+  const shortfallAmountMax = readNullableInteger(record, 'shortfallAmountMax', context)
+  const shortfallValues = [
+    daysToShortfall,
+    firstShortfallDate,
+    shortfallAmountMin,
+    shortfallAmountMax,
+  ]
+  const minBalanceAvailable = readBoolean(record, 'minBalanceAvailable', context)
+  const minBalanceConservative = readNullableInteger(record, 'minBalanceConservative', context)
+  const minBalanceExpected = readNullableInteger(record, 'minBalanceExpected', context)
+  const minBalanceOptimistic = readNullableInteger(record, 'minBalanceOptimistic', context)
+  const minBalances = [minBalanceConservative, minBalanceExpected, minBalanceOptimistic]
+
+  if (
+    (hasShortfall && shortfallValues.some((item) => item === null)) ||
+    (!hasShortfall && shortfallValues.some((item) => item !== null)) ||
+    (minBalanceAvailable && minBalances.some((item) => item === null)) ||
+    (!minBalanceAvailable && minBalances.some((item) => item !== null))
+  ) {
+    throw contractError(context)
+  }
+
+  return {
+    forecastRunId: readInteger(record, 'forecastRunId', context),
+    businessId: readInteger(record, 'businessId', context),
+    baseDate: readDate(record, 'baseDate', context),
+    updatedAt: readDateTime(record, 'updatedAt', context),
+    status: readEnum(record, 'status', ['RISK', 'STABLE', 'HOLD'], context),
+    horizonDays: readInteger(record, 'horizonDays', context),
+    coverageOverall: readNumber(record, 'coverageOverall', context),
+    hasShortfall,
+    daysToShortfall,
+    firstShortfallDate,
+    shortfallAmountMin,
+    shortfallAmountMax,
+    minBalanceAvailable,
+    minBalanceConservative,
+    minBalanceExpected,
+    minBalanceOptimistic,
+    bufferMet: readBoolean(record, 'bufferMet', context),
+  }
+}
+
 export function parseForecastMinBalance(value: unknown): ForecastMinBalance {
   const context = 'forecastMinBalance'
   const record = readRecord(value, context)
@@ -282,7 +354,7 @@ function parseForecastRiskDriver(value: unknown): ForecastRiskDriver {
   const record = readRecord(value, context)
   const evidence = record.evidence
 
-  if (evidence !== undefined && !Array.isArray(evidence)) {
+  if (evidence !== undefined && evidence !== null && !Array.isArray(evidence)) {
     throw contractError(context, 'evidence')
   }
 
@@ -296,7 +368,9 @@ function parseForecastRiskDriver(value: unknown): ForecastRiskDriver {
     metricText: readNullableString(record, 'metricText', context),
     contributionAmount: readNullableInteger(record, 'contributionAmount', context),
     estimating: readBoolean(record, 'estimating', context),
-    ...(evidence === undefined ? {} : { evidence: evidence.map(parseForecastEvidence) }),
+    description: readNullableString(record, 'description', context),
+    assumptionText: readNullableString(record, 'assumptionText', context),
+    ...(Array.isArray(evidence) ? { evidence: evidence.map(parseForecastEvidence) } : {}),
   }
 }
 

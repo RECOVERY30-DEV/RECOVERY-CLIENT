@@ -1,5 +1,5 @@
-import { CashflowStableStatusScreen } from '@/features/cashflow/ui/cashflow-stable-status-screen'
+import { CashflowStatusContainer } from '@/features/cashflow/ui/cashflow-forecast-containers'
 
 export default function CashflowStablePage() {
-  return <CashflowStableStatusScreen />
+  return <CashflowStatusContainer />
 }

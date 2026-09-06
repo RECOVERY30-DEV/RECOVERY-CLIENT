@@ -5,6 +5,7 @@ import { ApiContractError } from '@/shared/api/api-response'
 
 import {
   getForecastCoverage,
+  getForecastDetail,
   getForecastMinBalance,
   getForecastRiskDrivers,
   getForecastSafetyBuffer,
@@ -61,6 +62,42 @@ describe('forecast API', () => {
     expect(readRequest(fetchMock).url).toBe(
       'https://api.example.com/api/businesses/1/forecasts/latest',
     )
+  })
+
+  it('특정 예측 실행의 상태와 핵심 수치를 조회한다', async () => {
+    const fetchMock = createJsonFetch({
+      forecastRunId: 4821,
+      businessId: 1,
+      baseDate: '2025-07-15',
+      updatedAt: '2025-07-14T23:32:00Z',
+      status: 'RISK',
+      horizonDays: 30,
+      coverageOverall: 84,
+      hasShortfall: true,
+      daysToShortfall: 11,
+      firstShortfallDate: '2025-07-26',
+      shortfallAmountMin: 760000,
+      shortfallAmountMax: 1240000,
+      minBalanceAvailable: true,
+      minBalanceConservative: -1280000,
+      minBalanceExpected: -940000,
+      minBalanceOptimistic: -540000,
+      bufferMet: false,
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await getForecastDetail(4821, {
+      client: createApiClient(API_BASE_URL),
+    })
+
+    expect(result).toMatchObject({
+      forecastRunId: 4821,
+      businessId: 1,
+      status: 'RISK',
+      daysToShortfall: 11,
+      minBalanceExpected: -940000,
+    })
+    expect(readRequest(fetchMock).url).toBe('https://api.example.com/api/forecasts/4821')
   })
 
   it('예측 실행의 시나리오별 최저 잔액을 조회한다', async () => {
@@ -156,6 +193,8 @@ describe('forecast API', () => {
         metricText: null,
         contributionAmount: -1850000,
         estimating: false,
+        description: '월말 고정비가 같은 날 출금될 예정입니다.',
+        assumptionText: '최근 3개월 출금 이력 기반 반영',
         evidence: [
           {
             refType: 'CARD_SETTLEMENT',
@@ -174,10 +213,45 @@ describe('forecast API', () => {
       includeEvidence: true,
     })
 
-    expect(result[0]).toMatchObject({ rank: 1, contributionAmount: -1850000 })
+    expect(result[0]).toMatchObject({
+      rank: 1,
+      contributionAmount: -1850000,
+      description: '월말 고정비가 같은 날 출금될 예정입니다.',
+      assumptionText: '최근 3개월 출금 이력 기반 반영',
+    })
     expect(readRequest(fetchMock).url).toBe(
       'https://api.example.com/api/forecasts/4821/risk-drivers?limit=3&include=evidence',
     )
+  })
+
+  it('근거 요청 없이 받은 null 근거는 없는 근거로 처리한다', async () => {
+    const fetchMock = createJsonFetch([
+      {
+        rank: 1,
+        driverCode: 'RENT_LOAN_CONCENTRATION',
+        title: '월말 원리금 임차료 집중',
+        occurrenceDate: '2025-07-31',
+        occurrenceText: null,
+        impactPeriodText: null,
+        metricText: null,
+        contributionAmount: -1850000,
+        estimating: false,
+        description: '월말 고정비가 같은 날 출금될 예정입니다.',
+        assumptionText: '최근 3개월 출금 이력 기반 반영',
+        evidence: null,
+      },
+    ])
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await getForecastRiskDrivers(4821, {
+      client: createApiClient(API_BASE_URL),
+    })
+
+    expect(result[0]).toMatchObject({
+      rank: 1,
+      title: '월말 원리금 임차료 집중',
+    })
+    expect(result[0]).not.toHaveProperty('evidence')
   })
 
   it('분석 데이터별 커버리지 상태를 조회한다', async () => {

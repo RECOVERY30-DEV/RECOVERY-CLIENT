@@ -4,6 +4,7 @@ import { getApiData, type ApiRequestOptions } from '@/shared/api/api-request'
 
 import {
   parseForecastCoverage,
+  parseForecastDetail,
   parseForecastMinBalance,
   parseForecastRiskDrivers,
   parseForecastSafetyBuffer,
@@ -41,6 +42,16 @@ export function getLatestForecast(businessId: number, options: ForecastRequestOp
   return getApiData(
     `/api/businesses/${businessId}/forecasts/latest`,
     parseLatestForecast,
+    toApiRequestOptions(options),
+  )
+}
+
+export function getForecastDetail(forecastRunId: number, options: ForecastRequestOptions = {}) {
+  assertPositiveIdentifier(forecastRunId, 'forecastRunId')
+
+  return getApiData(
+    `/api/forecasts/${forecastRunId}`,
+    parseForecastDetail,
     toApiRequestOptions(options),
   )
 }

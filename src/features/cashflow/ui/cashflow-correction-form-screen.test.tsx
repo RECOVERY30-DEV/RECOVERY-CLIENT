@@ -58,6 +58,17 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     },
   )
 
+  it.each([
+    ['cash-sales', '입력 안내'],
+    ['external-funds', '예측 반영 기준'],
+    ['expected-income', '저장 안내'],
+    ['expected-expenses', '예측 반영 안내'],
+  ] as const)('%s kind에 맞는 도움말 제목을 제공한다', (kind, helpTitle) => {
+    render(<CashflowCorrectionFormScreen kind={kind} />)
+
+    expect(screen.getByRole('heading', { name: helpTitle })).toBeInTheDocument()
+  })
+
   it('필수 입력이 모두 채워질 때까지 저장을 비활성화한다', () => {
     render(<CashflowCorrectionFormScreen kind="expected-expenses" />)
 
@@ -81,7 +92,7 @@ describe('현금흐름 보정 입력 공통 화면', () => {
 
     expect(dateButton).toHaveClass('focus-visible:ring-primary-blue-800')
     expect(screen.getByText('예정일을 선택해주세요.')).toHaveClass('text-secondary-300')
-    expect(screen.getByText(/^서버 저장 기능은/)).toHaveClass('text-secondary-300')
+    expect(screen.getByText(/^확정 매출은 이미 확정된/)).toHaveClass('text-secondary-300')
     expect(screen.getByText(/^확정 매출과 예정 매출을/)).toHaveClass('text-secondary-300')
   })
 
@@ -94,6 +105,11 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     expect(screen.getByRole('dialog', { name: '예정일 선택' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '닫기' })).toHaveFocus()
     expect(screen.getByRole('button', { name: '2025년 7월 1일' })).toBeInTheDocument()
+
+    expect(screen.getByRole('button', { name: '이전 연도' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '다음 연도' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '이전 달' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '다음 달' })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: '2025년 7월 15일' }))
 
