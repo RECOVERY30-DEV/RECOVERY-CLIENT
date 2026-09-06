@@ -1,95 +1,53 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen, waitFor } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+import { createApiClient } from '@/shared/api/api-client'
 
 import { CashflowCorrectionOverviewScreen } from './cashflow-correction-overview-screen'
 
 describe('현금흐름 정보 보정 허브 화면', () => {
-  it('보정 현황과 Task 2 입력 경로를 제공한다', () => {
-    render(<CashflowCorrectionOverviewScreen />)
+  afterEach(() => vi.unstubAllGlobals())
 
-    expect(screen.getByRole('heading', { name: '누락 정보 보정' })).toBeInTheDocument()
-    expect(screen.getByText('62% · 판단보류')).toBeInTheDocument()
-    expect(screen.getByText('오늘 오전 9:14')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /현금매출/ })).toHaveAttribute(
-      'href',
-      '/cashflow/corrections/cash-sales/new',
+  it('정적 진행 상태 대신 API 보정값과 후보를 표시한다', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn<typeof fetch>(async (input) => {
+        if (!(input instanceof Request))
+          throw new TypeError('Ky가 fetch에 Request를 전달해야 합니다.')
+        const suggestions = new URL(input.url).pathname.endsWith('/adjustment-suggestions')
+        return Response.json({
+          success: true,
+          data: suggestions
+            ? []
+            : [
+                {
+                  adjustmentId: 1,
+                  adjustmentType: 'CASH_SALES',
+                  amount: 650000,
+                  certainty: 'CONFIRMED',
+                  expectedDate: '2025-07-20',
+                  status: 'SAVED',
+                  memo: null,
+                },
+              ],
+          error: null,
+        })
+      }),
     )
-    expect(screen.getByRole('link', { name: /현금매출/ })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <CashflowCorrectionOverviewScreen client={createApiClient('https://api.example.com')} />
+      </QueryClientProvider>,
     )
-    expect(screen.getByRole('link', { name: /타행·외부자금/ })).toHaveAttribute(
-      'href',
-      '/cashflow/corrections/external-funds/new',
-    )
-    expect(screen.getByRole('link', { name: /예정수입/ })).toHaveAttribute(
-      'href',
-      '/cashflow/corrections/expected-income/new',
-    )
-    expect(screen.getByRole('link', { name: /예정지출/ })).toHaveAttribute(
+
+    await waitFor(() => expect(screen.getByText('현금매출 +650,000원')).toBeInTheDocument())
+    expect(screen.getByRole('link', { name: '예정지출 입력' })).toHaveAttribute(
       'href',
       '/cashflow/corrections/expected-expenses/new',
     )
-    expect(screen.getByText('첫 부족일 변화')).toBeInTheDocument()
-    expect(screen.getByText('D+12 → D+18 (예상)')).toBeInTheDocument()
-  })
-
-  it('피그마 기준의 진행 상태와 재계산 예상 영향을 함께 설명한다', () => {
-    render(<CashflowCorrectionOverviewScreen />)
-
-    expect(screen.getByRole('heading', { name: '보정 항목' })).toBeInTheDocument()
-    expect(screen.getAllByText('데이터 반영률')).toHaveLength(2)
-    expect(screen.getByText('마지막 재계산')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '재계산 예상 영향' })).toBeInTheDocument()
-    expect(screen.getByText('첫 부족일 변화')).toBeInTheDocument()
-    expect(screen.getByText('예상 최저잔액 변화')).toBeInTheDocument()
-  })
-
-  it('후보 이름이 포함된 접근 가능한 이름으로 각 반복 패턴 동작을 구분한다', () => {
-    render(<CashflowCorrectionOverviewScreen />)
-
-    expect(
-      screen.getByRole('button', { name: '매월 15일 현금 매출 약 120만 원 확인' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: '매월 15일 현금 매출 약 120만 원 해당 없음' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: '매월 말 타행 입금 약 85만 원 확인' }),
-    ).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: '매월 말 타행 입금 약 85만 원 해당 없음' }),
-    ).toBeInTheDocument()
-  })
-
-  it('확인과 해당 없음 선택 결과를 live status로 알리고 후보별 상태가 독립적이다', () => {
-    render(<CashflowCorrectionOverviewScreen />)
-
-    fireEvent.click(screen.getByRole('button', { name: '매월 15일 현금 매출 약 120만 원 확인' }))
-
-    expect(
-      screen.getByRole('status', { name: '매월 15일 현금 매출 약 120만 원 확인됨' }),
-    ).toHaveFocus()
-    expect(screen.getByText('확인됨')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: '매월 말 타행 입금 약 85만 원 해당 없음' }))
-
-    expect(screen.getByText('확인됨')).toBeInTheDocument()
-    expect(
-      screen.getByRole('status', { name: '매월 말 타행 입금 약 85만 원 해당 없음' }),
-    ).toHaveFocus()
-    expect(screen.getByText('해당 없음')).toBeInTheDocument()
-  })
-
-  it('서버 재계산을 막고 판단 보류로 돌아가는 경로를 제공한다', () => {
-    render(<CashflowCorrectionOverviewScreen />)
-
-    expect(screen.getByRole('button', { name: '재계산 실행' })).toBeDisabled()
-    expect(screen.getByRole('link', { name: '보정 중단' })).toHaveAttribute(
-      'href',
-      '/cashflow/pending',
-    )
-    expect(screen.getByRole('link', { name: '보정 중단' })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
-    )
+    expect(screen.getByRole('button', { name: '재계산 실행' })).toBeEnabled()
   })
 })

@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { createApiClient } from '@/shared/api/api-client'
+
 const { push } = vi.hoisted(() => ({ push: vi.fn() }))
 
 vi.mock('next/navigation', () => ({
@@ -46,7 +48,12 @@ describe('현금흐름 보정 입력 공통 화면', () => {
   ] as const)(
     '%s kind에 맞는 문구와 선택 구성을 제공한다',
     (kind, title, selectionLabel, dateButtonName, options) => {
-      render(<CashflowCorrectionFormScreen kind={kind} />)
+      render(
+        <CashflowCorrectionFormScreen
+          client={createApiClient('https://api.example.com')}
+          kind={kind}
+        />,
+      )
 
       expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: dateButtonName })).toBeInTheDocument()
@@ -155,10 +162,38 @@ describe('현금흐름 보정 입력 공통 화면', () => {
     ['expected-income', '반복주기', '예정일 예정일을 선택해주세요.', undefined],
     ['expected-expenses', '반복주기', '예정일 예정일을 선택해주세요.', '임대료'],
   ] as const)(
-    '%s kind의 유효한 입력은 현재 화면에만 저장하고 목록 이동을 선택지로 제공한다',
-    (kind, selectionLabel, dateButtonName, expenseItem) => {
+    '%s kind의 유효한 입력은 API에 저장하고 목록 이동을 선택지로 제공한다',
+    async (kind, selectionLabel, dateButtonName, expenseItem) => {
       push.mockClear()
-      render(<CashflowCorrectionFormScreen kind={kind} />)
+      vi.stubGlobal(
+        'fetch',
+        vi.fn<typeof fetch>(async () =>
+          Response.json({
+            success: true,
+            data: {
+              adjustmentId: 1,
+              adjustmentType: {
+                'cash-sales': 'CASH_SALES',
+                'expected-expenses': 'EXPECTED_EXPENSE',
+                'expected-income': 'EXPECTED_INCOME',
+                'external-funds': 'EXTERNAL_FUNDS',
+              }[kind],
+              amount: 1200000,
+              certainty: 'EXPECTED',
+              expectedDate: '2025-07-15',
+              status: 'DRAFT',
+              memo: null,
+            },
+            error: null,
+          }),
+        ),
+      )
+      render(
+        <CashflowCorrectionFormScreen
+          client={createApiClient('https://api.example.com')}
+          kind={kind}
+        />,
+      )
 
       if (expenseItem) {
         fireEvent.change(screen.getByLabelText('지출 항목'), { target: { value: expenseItem } })
@@ -172,9 +207,11 @@ describe('현금흐름 보정 입력 공통 화면', () => {
       fireEvent.click(screen.getByRole('button', { name: '저장' }))
 
       expect(push).not.toHaveBeenCalled()
-      expect(screen.getByRole('status')).toBeInTheDocument()
-      expect(screen.getByText('현재 화면에만 저장됐습니다.')).toBeInTheDocument()
-      expect(screen.getByText('새로고침하면 입력 내용이 초기화됩니다.')).toBeInTheDocument()
+      expect(await screen.findByRole('status')).toBeInTheDocument()
+      expect(screen.getByText('보정값이 저장되었습니다.')).toBeInTheDocument()
+      expect(
+        screen.getByText('재계산 실행 전까지 예측 결과에는 반영되지 않습니다.'),
+      ).toBeInTheDocument()
       expect(screen.getByRole('button', { name: '저장 완료' })).toBeDisabled()
       expect(screen.getByLabelText('금액 (원)')).toBeDisabled()
       expect(screen.getByRole('link', { name: '보정 목록으로 이동' })).toHaveAttribute(
