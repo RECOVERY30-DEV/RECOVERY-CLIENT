@@ -237,7 +237,7 @@ describe('상담 예약 API 사용자 흐름', () => {
         slotId: 31,
         purposeText: '선택한 회복안 상담',
         preQuestion: '준비할 서류가 있나요?',
-        transferConsentGranted: true,
+        transferConsentGranted: false,
         recoveryOptionIds: [1, 3],
       })
     })

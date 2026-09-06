@@ -59,9 +59,7 @@ export function ConsultationReservationScreen({
   const selectedSlotLabel =
     selectedSlot === null ? '선택 필요' : formatConsultationSlot(selectedSlot.startAt)
   const transferItems = getTransferItems(isSupportProgramConsultation, supportProgram)
-  const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>(() =>
-    getDefaultSelectedTransferIds(isSupportProgramConsultation, supportProgram),
-  )
+  const [selectedTransfers, setSelectedTransfers] = useState<readonly string[]>([])
   const [isInformationOpen, setIsInformationOpen] = useState(false)
   const [preQuestion, setPreQuestion] = useState('')
   const booking = useBookConsultationMutation(
@@ -461,20 +459,6 @@ function getTransferItems(
     supportProgram
       ? { id: 'selected-support-program', label: '선택한 지원사업' }
       : { id: 'support-program-request', label: '지원사업 상담 요청 내용' },
-  ]
-}
-
-function getDefaultSelectedTransferIds(
-  isSupportProgramConsultation: boolean,
-  supportProgram: SupportProgramConsultationContext | undefined,
-): readonly string[] {
-  if (!isSupportProgramConsultation) {
-    return ['cashflow-summary', 'selected-recovery-options']
-  }
-
-  return [
-    'cashflow-summary',
-    supportProgram ? 'selected-support-program' : 'support-program-request',
   ]
 }
 

@@ -154,7 +154,7 @@ describe('상담 예약 화면', () => {
       counselorId: 1,
       slotId: 31,
       purposeText: '선택한 회복안 상담',
-      transferConsentGranted: true,
+      transferConsentGranted: false,
       recoveryOptionIds: [1, 3],
     })
   })
@@ -246,7 +246,7 @@ describe('상담 예약 화면', () => {
     )
     expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
     expect(screen.queryByText('선택한 회복안')).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: '선택한 지원사업' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '선택한 지원사업' })).not.toBeChecked()
   })
 
   it('지원사업 목록 상담에는 기본 회복안을 표시하거나 전송하지 않는다', async () => {
@@ -261,7 +261,7 @@ describe('상담 예약 화면', () => {
     )
     expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
     expect(screen.queryByText('선택한 회복안')).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: '지원사업 상담 요청 내용' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '지원사업 상담 요청 내용' })).not.toBeChecked()
   })
 
   it('지원사업과 plans query가 함께 있으면 지원사업 맥락을 우선한다', async () => {
@@ -279,7 +279,7 @@ describe('상담 예약 화면', () => {
     expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
     expect(screen.queryByText('상환조건 조정 상담')).not.toBeInTheDocument()
     expect(screen.queryByText('대환 검토')).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: '선택한 지원사업' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '선택한 지원사업' })).not.toBeChecked()
   })
 
   it('유효하지 않은 지원사업 ID는 기본 회복안 상담으로 안전하게 되돌린다', async () => {
@@ -292,10 +292,10 @@ describe('상담 예약 화면', () => {
       '/recovery/compare',
     )
     expect(screen.queryByTestId('selected-recovery-options-summary')).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).not.toBeChecked()
   })
 
-  it('회복안 상담은 기존 회복안 선택과 전송 항목을 유지한다', () => {
+  it('회복안 상담은 기존 회복안 선택을 유지하고 전송 항목은 해제 상태로 시작한다', () => {
     renderWithQuery(<ConsultationReservationScreen />)
 
     expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
@@ -304,7 +304,7 @@ describe('상담 예약 화면', () => {
     expect(screen.getByTestId('selected-recovery-options-summary')).toHaveTextContent(
       '선택한 회복안 3번',
     )
-    expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '선택한 회복안' })).not.toBeChecked()
   })
 
   it('본문 요약은 현재 예약 요청에 포함되는 정보만 안내한다', () => {
@@ -387,14 +387,14 @@ describe('상담 예약 화면', () => {
     const summary = screen.getByRole('checkbox', { name: '현금흐름 요약' })
     const causes = screen.getByRole('checkbox', { name: '주요 원인 분석' })
     const plans = screen.getByRole('checkbox', { name: '선택한 회복안' })
-    expect(summary).toBeChecked()
+    expect(summary).not.toBeChecked()
     expect(causes).not.toBeChecked()
-    expect(plans).toBeChecked()
+    expect(plans).not.toBeChecked()
 
     fireEvent.click(causes)
-    expect(summary).toBeChecked()
+    expect(summary).not.toBeChecked()
     expect(causes).toBeChecked()
-    expect(plans).toBeChecked()
+    expect(plans).not.toBeChecked()
 
     const information = screen.getByRole('button', { name: '전송 정보 안내' })
     expect(information).toHaveClass('focus-visible:ring-primary-blue-800')
