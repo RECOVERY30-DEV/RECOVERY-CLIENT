@@ -17,7 +17,7 @@ export function DailyCashflowCard() {
           <li key={item.id}>
             <Link
               aria-label={`${item.date} 상세 보기`}
-              className="flex h-[30px] items-center justify-between rounded px-0.5 text-[12px] leading-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+              className="flex h-[30px] items-center justify-between rounded px-0.5 text-[12px] leading-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
               href={`/cashflow/daily/${item.id}`}
             >
               <span className="font-medium text-primary-100">{item.date}</span>

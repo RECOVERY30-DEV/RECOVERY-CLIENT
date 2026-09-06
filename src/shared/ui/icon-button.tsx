@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { cn } from '@/shared/lib'
 
 const iconButtonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center rounded-full text-primary-100 transition-colors focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:text-disabled-200 [&>svg]:size-full',
+  'inline-flex shrink-0 items-center justify-center rounded-full text-primary-100 transition-colors focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:text-disabled-200 [&>svg]:size-full',
   {
     variants: {
       size: {

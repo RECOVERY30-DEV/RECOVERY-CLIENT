@@ -57,7 +57,7 @@ export function ConsentControls({
           label="30·60·90일 사후 점검 동의"
           onChange={onFollowUpChange}
         />
-        <div className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-neutral-700">
+        <div className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-secondary-300">
           <p className="text-[13px] leading-4">
             분석 이후 30·60·90일에 실행 결과와 잔액 회복 여부를 점검합니다. 철회해도 분석 이용에는
             영향이 없습니다.

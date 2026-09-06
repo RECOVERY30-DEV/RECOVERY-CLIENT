@@ -20,9 +20,13 @@ describe('Checkbox', () => {
 
     const container = screen.getByText('현금흐름 Snapshot').closest('div')
 
-    expect(screen.getByText('매출, 지출 및 가용 현금을 포함합니다.')).toBeVisible()
+    expect(screen.getByText('매출, 지출 및 가용 현금을 포함합니다.')).toHaveClass(
+      'text-secondary-300',
+    )
     expect(container).toHaveClass('bg-neutral-400')
-    expect(screen.getByRole('checkbox', { name: '현금흐름 Snapshot' }).closest('label')).toBeNull()
+    const checkbox = screen.getByRole('checkbox', { name: '현금흐름 Snapshot' })
+    expect(checkbox.closest('label')).toBeNull()
+    expect(checkbox.parentElement).toHaveClass('has-[:focus-visible]:ring-primary-blue-800')
   })
 
   it('외부 접근성 설명과 이름 속성을 보존한다', () => {

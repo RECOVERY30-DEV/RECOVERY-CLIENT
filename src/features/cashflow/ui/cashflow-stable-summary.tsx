@@ -19,7 +19,7 @@ export function CashflowStableSummary() {
             <dt className="shrink-0 text-[12px] leading-[14px] font-medium text-primary-100">
               {metric.label}
             </dt>
-            <dd className="text-right text-[12px] leading-[14px] font-semibold text-info-500">
+            <dd className="text-right text-[12px] leading-[14px] font-semibold text-primary-blue-800">
               {metric.value}
             </dd>
           </div>

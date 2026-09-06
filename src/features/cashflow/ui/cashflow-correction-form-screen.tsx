@@ -35,10 +35,13 @@ export function CashflowCorrectionFormScreen({
   const [expenseItem, setExpenseItem] = useState('')
   const [memo, setMemo] = useState('')
   const [isConfirmed, setIsConfirmed] = useState(false)
+  const [isSaved, setIsSaved] = useState(false)
   const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null)
 
-  const isDirty = Boolean(amount || date || selection || expenseItem || memo || isConfirmed)
-  const canSave = Boolean(amount && date && selection && (!config.hasExpenseItem || expenseItem))
+  const isDirty =
+    !isSaved && Boolean(amount || date || selection || expenseItem || memo || isConfirmed)
+  const canSave =
+    !isSaved && Boolean(amount && date && selection && (!config.hasExpenseItem || expenseItem))
 
   useLayoutEffect(() => {
     if (activeDialog !== null) {
@@ -99,7 +102,7 @@ export function CashflowCorrectionFormScreen({
 
     if (canSave) {
       focusRestoreTargetRef.current = null
-      router.push('/cashflow/corrections')
+      setIsSaved(true)
     }
   }
 
@@ -112,7 +115,7 @@ export function CashflowCorrectionFormScreen({
       >
         <Link
           aria-label="정보 보정 화면으로 돌아가기"
-          className="absolute top-[61px] left-[11px] z-20 flex size-6 items-center justify-center text-primary-200 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+          className="absolute top-[61px] left-[11px] z-20 flex size-6 items-center justify-center text-primary-200 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
           href="/cashflow/corrections"
           onClick={handleBackClick}
           ref={backLinkRef}
@@ -133,6 +136,7 @@ export function CashflowCorrectionFormScreen({
               config={config}
               date={date}
               dateButtonRef={dateButtonRef}
+              disabled={isSaved}
               expenseItem={expenseItem}
               isConfirmed={isConfirmed}
               memo={memo}
@@ -148,10 +152,25 @@ export function CashflowCorrectionFormScreen({
           </section>
           <aside className="mt-10 rounded-[10px] bg-neutral-100 px-[14px] py-[10px]">
             <h2 className="typo-body-5 text-neutral-900">{config.helpTitle}</h2>
-            <p className="mt-[15px] typo-caption-3 text-neutral-700">{config.helpDescription}</p>
+            <p className="mt-[15px] typo-caption-3 text-secondary-300">{config.helpDescription}</p>
           </aside>
+          {isSaved ? (
+            <div
+              className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-secondary-300"
+              role="status"
+            >
+              <p className="typo-body-5 text-neutral-900">현재 화면에만 저장됐습니다.</p>
+              <p className="mt-1 typo-caption-3">새로고침하면 입력 내용이 초기화됩니다.</p>
+              <Link
+                className="mt-3 inline-flex border-b border-primary-blue-800 typo-body-8 text-primary-blue-800 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
+                href="/cashflow/corrections"
+              >
+                보정 목록으로 이동
+              </Link>
+            </div>
+          ) : null}
           <Button className="mt-10 w-full" disabled={!canSave} type="submit">
-            저장
+            {isSaved ? '저장 완료' : '저장'}
           </Button>
         </form>
       </div>

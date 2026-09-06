@@ -58,25 +58,30 @@ export function RecoveryFollowUpScreen({
           <div className="mt-3 rounded-[10px] bg-neutral-100 p-[14px]">
             <ol className="grid grid-cols-3 border-b border-disabled-50 pb-4">
               {FOLLOW_UP_MILESTONES.map((milestone) => (
-                <li className="flex items-center gap-2 typo-caption-3" key={milestone.day}>
-                  <span
-                    aria-hidden="true"
-                    className={
-                      milestone.status === '완료'
-                        ? 'text-[24px] font-bold text-primary-blue-800'
-                        : 'text-[24px] font-bold text-secondary-300'
-                    }
-                  >
-                    ✓
+                <li className="flex flex-col items-center gap-1 typo-caption-3" key={milestone.day}>
+                  <span className="flex items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className={
+                        milestone.status === '완료'
+                          ? 'text-[24px] font-bold text-primary-blue-800'
+                          : 'text-[24px] font-bold text-secondary-300'
+                      }
+                    >
+                      ✓
+                    </span>
+                    <span>{milestone.day}일</span>
+                    <span
+                      className={
+                        milestone.status === '완료' ? 'text-primary-blue-800' : 'text-secondary-300'
+                      }
+                    >
+                      {milestone.status}
+                    </span>
                   </span>
-                  <span>{milestone.day}일</span>
-                  <span
-                    className={
-                      milestone.status === '완료' ? 'text-primary-blue-800' : 'text-secondary-300'
-                    }
-                  >
-                    {milestone.status}
-                  </span>
+                  <time className="text-secondary-300" dateTime={milestone.date}>
+                    {milestone.date}
+                  </time>
                 </li>
               ))}
             </ol>
@@ -214,6 +219,13 @@ export function RecoveryFollowUpScreen({
             </div>
           </div>
         </section>
+
+        <Link
+          className="mt-7 inline-block typo-caption-3 text-secondary-300 underline focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
+          href="/recovery/support-programs"
+        >
+          지원사업 확인
+        </Link>
       </div>
 
       <ServiceBottomNavigation activeItem="recovery" className="mt-[72px]" />

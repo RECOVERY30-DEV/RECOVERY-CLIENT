@@ -12,6 +12,9 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByText('-128만원 ~ -54만원')).toBeInTheDocument()
     expect(screen.getByText('위험상태')).toBeInTheDocument()
     expect(screen.getByText('부족일까지 18일 남았습니다.')).toBeInTheDocument()
+    expect(screen.getByText('30일 후').parentElement).toHaveClass('text-secondary-300')
+    expect(screen.getByText('−120만')).toHaveClass('text-warning-700')
+    expect(screen.getByText(/범위 전체가 0원 아래로/)).toHaveClass('text-secondary-300')
   })
 
   it('데이터 범위 경로를 제공하고 미구현 보정 이동은 비활성화한다', () => {
@@ -33,6 +36,9 @@ describe('현금흐름 대시보드 화면', () => {
       'href',
       '/cashflow/daily/2024-11-10',
     )
+    expect(screen.getByRole('link', { name: '11 / 10 (일) 상세 보기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByText('유출 −185만 원 (임차료)')).toBeInTheDocument()
     expect(screen.getByText('월말 원리금 임차료 집중')).toBeInTheDocument()
     expect(screen.getByText('최근 4주 매출 감소')).toBeInTheDocument()
@@ -42,5 +48,8 @@ describe('현금흐름 대시보드 화면', () => {
       '/cashflow/causes',
     )
     expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass('text-primary-100')
+    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
   })
 })

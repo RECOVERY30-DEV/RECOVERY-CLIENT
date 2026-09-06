@@ -12,6 +12,7 @@ describe('현금흐름 안정 상태 안내 화면', () => {
     expect(screen.getByRole('heading', { name: '핵심 수치 요약' })).toBeInTheDocument()
     expect(screen.getByText('약 312만 원 ~ 448만 원')).toBeInTheDocument()
     expect(screen.getByText('30일 이내 없음')).toBeInTheDocument()
+    expect(screen.getByText('약 312만 원 ~ 448만 원')).toHaveClass('text-primary-blue-800')
   })
 
   it('판단 근거와 상태가 바뀌는 조건을 안내한다', () => {
@@ -29,7 +30,7 @@ describe('현금흐름 안정 상태 안내 화면', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('대시보드 복귀 경로를 제공하고 미구현 후속 이동은 비활성화한다', () => {
+  it('대시보드 복귀와 사후점검 경로를 제공한다', () => {
     render(<CashflowStableStatusScreen />)
 
     expect(screen.getByRole('link', { name: '현금흐름 대시보드로 돌아가기' })).toHaveAttribute(
@@ -37,6 +38,9 @@ describe('현금흐름 안정 상태 안내 화면', () => {
       '/cashflow',
     )
     expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: '30·60·90일 사후점검 확인하기' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: '30·60·90일 사후점검 확인하기' })).toHaveAttribute(
+      'href',
+      '/recovery/follow-up',
+    )
   })
 })

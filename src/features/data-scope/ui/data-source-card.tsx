@@ -68,10 +68,10 @@ export function DataSourceCard({
 
       <div className="mt-1 flex items-center gap-[5px]">
         {kind === 'account' ? <BankLogos /> : null}
-        <p className="text-[11px] leading-[13px] text-neutral-700">{description}</p>
+        <p className="text-[11px] leading-[13px] text-secondary-300">{description}</p>
       </div>
 
-      <dl className="mt-[15px] flex flex-col gap-[5px] text-[12px] leading-[14px] text-neutral-700">
+      <dl className="mt-[15px] flex flex-col gap-[5px] text-[12px] leading-[14px] text-secondary-300">
         <div className="flex justify-between gap-4">
           <dt>마지막 갱신</dt>
           <dd className="font-medium">{refreshedAt}</dd>

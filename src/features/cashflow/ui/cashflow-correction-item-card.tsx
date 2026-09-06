@@ -11,7 +11,7 @@ export function CashflowCorrectionItemCard({ item }: CashflowCorrectionItemCardP
     <li>
       <Link
         aria-label={`${item.title} 입력하기`}
-        className="block rounded-[10px] bg-neutral-100 px-[14px] py-5 transition-colors hover:bg-neutral-200 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+        className="block rounded-[10px] bg-neutral-100 px-[14px] py-5 transition-colors hover:bg-neutral-200 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
         href={item.href}
       >
         <div className="flex items-center justify-between gap-3">

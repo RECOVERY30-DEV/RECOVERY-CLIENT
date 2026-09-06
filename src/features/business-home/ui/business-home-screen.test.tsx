@@ -14,6 +14,11 @@ describe('사업자 홈 화면', () => {
     expect(screen.getByText('최근 갱신 2시간 전')).toBeInTheDocument()
     expect(screen.getByText('최근 갱신 어제 오전 9시')).toBeInTheDocument()
     expect(screen.getByText('최근 갱신 3일 전')).toBeInTheDocument()
+    expect(screen.getByText('최근 갱신 2시간 전')).toHaveClass('text-warning-700')
+    screen
+      .getAllByText('갱신 완료')
+      .forEach((status) => expect(status).toHaveClass('text-primary-blue-800'))
+    expect(screen.getByText(/연체 전 회복 지원용 분석/)).toHaveClass('text-base-white/80')
   })
 
   it('위험 분석과 데이터 범위의 후속 경로를 제공한다', () => {
@@ -23,9 +28,15 @@ describe('사업자 홈 화면', () => {
       'href',
       '/cashflow',
     )
+    expect(screen.getByRole('link', { name: '위험분석 바로가기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: '분석 데이터 범위 자세히 보기' })).toHaveAttribute(
       'href',
       '/data-scope',
+    )
+    expect(screen.getByRole('link', { name: '분석 데이터 범위 자세히 보기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
     expect(screen.getByRole('link', { name: '홈' })).toHaveAttribute('aria-current', 'page')
   })

@@ -71,7 +71,7 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
         </section>
 
         <Link
-          className="mt-8 inline-flex h-[42px] w-full items-center justify-center rounded-[6px] bg-primary-100 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="mt-8 inline-flex h-[42px] w-full items-center justify-center rounded-[6px] bg-primary-100 px-[22px] py-[8px] text-[16px] leading-6 font-medium text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
           href="/recovery/compare"
         >
           실행 계획 확인

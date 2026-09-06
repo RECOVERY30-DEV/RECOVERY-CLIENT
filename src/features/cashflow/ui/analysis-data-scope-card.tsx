@@ -28,7 +28,7 @@ export function AnalysisDataScopeCard() {
         현금매출·타행자금 등 누락 가능 항목이 있습니다.
       </p>
       <Link
-        className="mt-[20px] inline-flex border-b border-neutral-700 py-0.5 text-[12px] leading-[14px] font-medium text-neutral-700"
+        className="mt-[20px] inline-flex border-b border-neutral-700 py-0.5 text-[12px] leading-[14px] font-medium text-secondary-300"
         href="/data-scope"
       >
         분석 데이터 범위 확인하기

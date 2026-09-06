@@ -14,6 +14,9 @@ describe('현금흐름 정보 보정 허브 화면', () => {
       'href',
       '/cashflow/corrections/cash-sales/new',
     )
+    expect(screen.getByRole('link', { name: /현금매출/ })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: /타행·외부자금/ })).toHaveAttribute(
       'href',
       '/cashflow/corrections/external-funds/new',
@@ -73,6 +76,9 @@ describe('현금흐름 정보 보정 허브 화면', () => {
     expect(screen.getByRole('link', { name: '보정 중단' })).toHaveAttribute(
       'href',
       '/cashflow/pending',
+    )
+    expect(screen.getByRole('link', { name: '보정 중단' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
   })
 })

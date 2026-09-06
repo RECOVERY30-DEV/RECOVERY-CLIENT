@@ -42,6 +42,7 @@ describe('회복안 비교 화면', () => {
     const repayment = screen.getByRole('button', { name: '상환조건 조정 상담' })
 
     expect(repayment).toHaveAccessibleName('상환조건 조정 상담')
+    expect(repayment).toHaveClass('focus-visible:ring-primary-blue-800')
     expect(repayment).toHaveAccessibleDescription(/예상 효과.*부족일 최대 16일 연장 가능/)
     expect(repayment).toHaveAccessibleDescription(/월 부담 변화.*월 상환액 약 15만 원 감소 예상/)
     expect(repayment).toHaveAccessibleDescription(/상환조건.*원리금 3회 이상 정상 납부 이력/)
@@ -60,11 +61,17 @@ describe('회복안 비교 화면', () => {
       'href',
       '/recovery/consultation?plans=fixed-cost-reschedule&plans=refinancing-review',
     )
+    expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',
       '/recovery/support-programs',
     )
-    expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
+    expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
+    expect(screen.getByRole('button', { name: '자체 실행으로 저장' })).toBeDisabled()
     expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
   })
 
@@ -73,9 +80,12 @@ describe('회복안 비교 화면', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '상환조건 조정 상담' }))
 
-    expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveAttribute(
       'href',
-      '/recovery/self-action?plan=fixed-cost-reschedule',
+      '/recovery/actions/fixed-cost-reschedule/save?plan=fixed-cost-reschedule',
+    )
+    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
   })
 

@@ -40,13 +40,13 @@ function Checkbox({
           {label}
         </label>
         {description ? (
-          <span className="mt-0.5 block typo-caption-2 text-neutral-700" id={descriptionId}>
+          <span className="mt-0.5 block typo-caption-2 text-secondary-300" id={descriptionId}>
             {description}
           </span>
         ) : null}
       </span>
 
-      <span className="relative size-6 shrink-0 rounded-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-blue-400 has-[:focus-visible]:ring-offset-2">
+      <span className="relative size-6 shrink-0 rounded-sm has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-blue-800 has-[:focus-visible]:ring-offset-2">
         <input
           {...props}
           aria-describedby={describedBy}

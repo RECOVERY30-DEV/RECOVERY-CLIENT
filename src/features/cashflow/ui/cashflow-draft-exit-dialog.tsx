@@ -31,14 +31,14 @@ export function CashflowDraftExitDialog({ onContinue, onDiscard }: CashflowDraft
         </p>
         <div className="mt-5 flex flex-col gap-2">
           <button
-            className="min-h-[42px] rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="min-h-[42px] rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             onClick={onContinue}
             type="button"
           >
             계속 작성
           </button>
           <button
-            className="min-h-[42px] rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="min-h-[42px] rounded-[8px] bg-secondary-700 px-[22px] py-2 typo-body-3 text-base-white focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             onClick={onDiscard}
             type="button"
           >

@@ -32,6 +32,7 @@ describe('Select', () => {
       'h-9',
       'border-field',
       'bg-base-white',
+      'focus:ring-primary-blue-800',
     )
   })
 
