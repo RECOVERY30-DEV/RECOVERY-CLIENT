@@ -190,7 +190,11 @@ describe('상담 예약 화면', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '예약 확정하기' }))
 
-    expect(screen.getByText('예약 요청 완료')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '예약 요청 완료' })).toBeDisabled()
+    expect(screen.getByText('화면 내 예약 정보 확인 완료')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '화면 내 확인 완료' })).toBeDisabled()
+    expect(
+      screen.getByText(/이 상태는 새로고침하면 초기화되며 실제 상담사에게 전송되지 않습니다/),
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/상담사는 .* 확인합니다/)).not.toBeInTheDocument()
   })
 })

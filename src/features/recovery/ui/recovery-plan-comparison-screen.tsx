@@ -175,11 +175,11 @@ export function RecoveryPlanComparisonScreen(): React.JSX.Element {
               className="inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-3 text-primary-blue-900 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
               href={selfActionHref}
             >
-              셀프 실행으로 저장
+              자체 실행으로 저장
             </Link>
           ) : (
             <Button className="w-full" disabled variant="secondary">
-              셀프 실행으로 저장
+              자체 실행으로 저장
             </Button>
           )}
           <Button className="w-full" disabled variant="outline">

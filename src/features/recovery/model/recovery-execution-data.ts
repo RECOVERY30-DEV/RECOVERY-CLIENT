@@ -1,4 +1,4 @@
-import { RECOVERY_RISK_CAUSES, RECOVERY_RISK_SUMMARY } from '@/shared/lib/recovery-risk-data'
+import { RECOVERY_RISK_CAUSES } from '@/shared/lib/recovery-risk-data'
 
 import {
   getRecoveryOptions,
@@ -18,9 +18,9 @@ export type SelfActionPreparationItem = Readonly<{
 
 export const SELF_ACTION_PREPARATION_ITEMS: readonly SelfActionPreparationItem[] = [
   {
-    description: '임차인에게 납부일 조정 요청하기',
+    description: '임대인과 납부일 조정 가능 여부 확인',
     id: 'tenant-request-date',
-    title: '임차인 협의 요청 예정일 입력',
+    title: '임대인에게 납부일 조정 요청하기',
   },
   {
     description: '자동이체 출금일 재설정 확인',
@@ -30,7 +30,7 @@ export const SELF_ACTION_PREPARATION_ITEMS: readonly SelfActionPreparationItem[]
   {
     description: '거래 은행에 원리금 납부일 변경 신청',
     id: 'loan-payment-request-date',
-    title: '원리금 납부일 은행 협의 예정일 입력',
+    title: '원리금 납부일 은행 협의하기',
   },
 ]
 
@@ -38,15 +38,15 @@ export const SELF_ACTION_EFFECT = {
   disclaimer: '실제 효과는 협의 결과에 따라 달라질 수 있습니다.',
   firstShortageAfter: '20일',
   firstShortageBefore: '8일',
-  minimumBalanceAfter: '+180만원',
-  minimumBalanceBefore: '-230만원',
-  summary: '첫 부족일 +12일 연장, 예상 최저잔액 +180만 원',
+  minimumBalanceAfter: '-180만 원',
+  minimumBalanceBefore: '-240만 원',
+  summary: '첫 부족일 +12일 연장, 예상 최저잔액 -180만 원',
 } as const
 
 const selfActionPlan = RECOVERY_OPTION_CATALOG.find(({ id }) => id === SELF_ACTION_OPTION_ID)
 
 if (!selfActionPlan) {
-  throw new Error('셀프 실행 회복안이 회복안 목록에 존재해야 합니다.')
+  throw new Error('자체 실행 회복안이 회복안 목록에 존재해야 합니다.')
 }
 
 export const SELF_ACTION_PLAN = selfActionPlan
@@ -68,7 +68,7 @@ export function getSelfActionHref(selectedOptionIds: readonly RecoveryOptionId[]
     return null
   }
 
-  return `/recovery/self-action?plan=${SELF_ACTION_OPTION_ID}`
+  return `/recovery/actions/${SELF_ACTION_OPTION_ID}/save?plan=${SELF_ACTION_OPTION_ID}`
 }
 
 export function getRecoveryPacketHref(plans: string | readonly string[] | undefined): string {
@@ -101,7 +101,10 @@ export const RECOVERY_PACKET_CORRECTIONS: readonly RecoveryPacketCorrection[] = 
 export const RECOVERY_PACKET_ANALYSIS_NOTE =
   '사업자계좌·카드정산·자동이체 포함. 현금거래·타행자금은 보정값 반영분만 포함됩니다.'
 
-export const RECOVERY_PACKET_RISK_SUMMARY = RECOVERY_RISK_SUMMARY
+export const RECOVERY_PACKET_RISK_SUMMARY = {
+  minimumBalanceRange: '-240만 원 ~ -180만 원',
+  shortSummary: '8일 후 · 7월 22일',
+} as const
 export const RECOVERY_PACKET_CAUSES = RECOVERY_RISK_CAUSES
 
 type RecoveryPacketActionMetadata = Readonly<{
@@ -116,7 +119,7 @@ const RECOVERY_PACKET_ACTION_METADATA: Readonly<
   Record<RecoveryOptionId, RecoveryPacketActionMetadata>
 > = {
   'fixed-cost-reschedule': {
-    effect: '부족일 +7일 개선 추정',
+    effect: '부족일 +12일 개선 추정',
     nextAction: '직접 실행 준비 가능',
     preparation: '임차계약서 확인, 임대인 협의',
   },
@@ -151,29 +154,30 @@ export const RECOVERY_PACKET_STATUS = {
 export type RecoveryPacketScheduleItem = Readonly<{
   date: string
   day: 30 | 60 | 90
-  status: '예정'
+  status: '완료' | '예정'
 }>
 
 export const RECOVERY_PACKET_SCHEDULE: readonly RecoveryPacketScheduleItem[] = [
-  { date: '2025-08-13', day: 30, status: '예정' },
-  { date: '2025-09-12', day: 60, status: '예정' },
+  { date: '2025-08-13', day: 30, status: '완료' },
+  { date: '2025-09-12', day: 60, status: '완료' },
   { date: '2025-10-12', day: 90, status: '예정' },
 ]
 
 export const FOLLOW_UP_SUMMARY = {
-  lastCheckedAt: '2025년 6월 23일',
-  nextCheckAt: '2025년 9월 23일',
+  lastCheckedAt: '2025년 9월 12일',
+  nextCheckAt: '2025년 10월 12일',
 } as const
 
 export type FollowUpMilestone = Readonly<{
+  date: string
   day: 30 | 60 | 90
   status: '완료' | '예정'
 }>
 
 export const FOLLOW_UP_MILESTONES: readonly FollowUpMilestone[] = [
-  { day: 30, status: '완료' },
-  { day: 60, status: '완료' },
-  { day: 90, status: '예정' },
+  { date: '2025-08-13', day: 30, status: '완료' },
+  { date: '2025-09-12', day: 60, status: '완료' },
+  { date: '2025-10-12', day: 90, status: '예정' },
 ]
 
 export const FOLLOW_UP_BALANCE_STATUS = {
@@ -233,6 +237,6 @@ export type FollowUpConsent = Readonly<{
 }>
 
 export const FOLLOW_UP_CONSENTS: readonly FollowUpConsent[] = [
-  { id: 'check-reminders', isEnabled: true, label: '30-60-90일 점검 알림' },
+  { id: 'check-reminders', isEnabled: true, label: '30·60·90일 점검 알림' },
   { id: 'result-improvement', isEnabled: true, label: '결과 개선 활용 동의' },
 ]

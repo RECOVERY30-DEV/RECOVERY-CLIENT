@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import RecoveryFollowUpPage from './follow-up/page'
 import RecoveryPacketPage from './page'
+import CanonicalSelfActionPage from './actions/fixed-cost-reschedule/save/page'
 import SelfActionPage from './self-action/page'
 
 describe('회복 실행·추적 route adapter', () => {
@@ -39,10 +40,19 @@ describe('회복 실행·추적 route adapter', () => {
     )
 
     expect(screen.getByRole('heading', { name: '고정비 납부일 재배치' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '실행 계획 확인' })).toHaveAttribute(
-      'href',
-      '/recovery?plans=fixed-cost-reschedule',
+    expect(screen.getByRole('button', { name: '실행 계획 저장하기' })).toBeDisabled()
+  })
+
+  it('계획된 canonical 자체 실행 저장 route로 진입한다', async () => {
+    render(
+      await CanonicalSelfActionPage({
+        searchParams: Promise.resolve({ plan: 'fixed-cost-reschedule' }),
+      }),
     )
+
+    expect(screen.getByRole('heading', { name: '자체 실행 저장' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '고정비 납부일 재배치' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '실행 계획 저장하기' })).toBeDisabled()
   })
 
   it('사후점검 query의 회복안만 실행 상태로 전달한다', async () => {

@@ -71,7 +71,7 @@ describe('회복안 비교 화면', () => {
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveClass(
       'focus-visible:ring-primary-blue-800',
     )
-    expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '자체 실행으로 저장' })).toBeDisabled()
     expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
   })
 
@@ -80,11 +80,11 @@ describe('회복안 비교 화면', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '상환조건 조정 상담' }))
 
-    expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveAttribute(
       'href',
-      '/recovery/self-action?plan=fixed-cost-reschedule',
+      '/recovery/actions/fixed-cost-reschedule/save?plan=fixed-cost-reschedule',
     )
-    expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveClass(
+    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveClass(
       'focus-visible:ring-primary-blue-800',
     )
   })

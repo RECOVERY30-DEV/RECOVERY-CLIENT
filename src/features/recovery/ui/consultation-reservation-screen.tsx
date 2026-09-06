@@ -136,9 +136,9 @@ export function ConsultationReservationScreen({
             <p className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] text-[12px] leading-[18px] text-secondary-300">
               {isSupportProgramConsultation
                 ? supportProgram
-                  ? '상담사는 선택한 지원사업과 전송에 동의한 정보만 확인합니다.'
-                  : '상담사는 지원사업 상담 요청과 전송에 동의한 정보만 확인합니다.'
-                : '상담사는 선택한 회복안과 전송에 동의한 정보만 확인합니다.'}
+                  ? '선택한 지원사업과 동의 항목은 상담 준비용 화면 예시이며 실제 전송되지 않습니다.'
+                  : '지원사업 상담 요청과 동의 항목은 상담 준비용 화면 예시이며 실제 전송되지 않습니다.'
+                : '선택한 회복안과 동의 항목은 상담 준비용 화면 예시이며 실제 전송되지 않습니다.'}
             </p>
           </section>
 
@@ -225,8 +225,19 @@ export function ConsultationReservationScreen({
             disabled={isCompleted}
             onClick={() => setIsCompleted(true)}
           >
-            {isCompleted ? '예약 요청 완료' : '예약 확정하기'}
+            {isCompleted ? '화면 내 확인 완료' : '예약 확정하기'}
           </Button>
+          {isCompleted ? (
+            <div
+              aria-live="polite"
+              className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] typo-caption-3 text-secondary-300"
+            >
+              <p className="font-medium text-primary-100">화면 내 예약 정보 확인 완료</p>
+              <p className="mt-1">
+                이 상태는 새로고침하면 초기화되며 실제 상담사에게 전송되지 않습니다.
+              </p>
+            </div>
+          ) : null}
         </div>
       </div>
 

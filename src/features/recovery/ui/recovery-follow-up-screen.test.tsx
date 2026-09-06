@@ -8,16 +8,19 @@ describe('사후점검 화면', () => {
     render(<RecoveryFollowUpScreen />)
 
     expect(screen.getByRole('heading', { name: '실행 상태 점검' })).toBeInTheDocument()
-    expect(screen.getByText('마지막 점검 2025년 6월 23일')).toBeInTheDocument()
+    expect(screen.getByText('마지막 점검 2025년 9월 12일')).toBeInTheDocument()
     const milestones = screen
       .getByRole('heading', { name: '30·60·90일 점검 현황' })
       .closest('section')
     expect(milestones).not.toBeNull()
     expect(within(milestones!).getByText('30일')).toBeInTheDocument()
+    expect(within(milestones!).getByText('2025-08-13')).toBeInTheDocument()
     expect(within(milestones!).getAllByText('완료')).toHaveLength(2)
+    expect(within(milestones!).getByText('2025-09-12')).toBeInTheDocument()
     expect(within(milestones!).getByText('90일')).toBeInTheDocument()
+    expect(within(milestones!).getByText('2025-10-12')).toBeInTheDocument()
     expect(within(milestones!).getByText('예정')).toBeInTheDocument()
-    expect(screen.getByText('2025년 9월 23일')).toBeInTheDocument()
+    expect(screen.getByText('2025년 10월 12일')).toBeInTheDocument()
   })
 
   it('잔액 회복, 회복안 실행 상태와 최신 위험을 표시한다', () => {
@@ -48,7 +51,7 @@ describe('사후점검 화면', () => {
   it('사후점검 동의를 화면 안에서 변경하고 회복안 경로를 제공한다', () => {
     render(<RecoveryFollowUpScreen />)
 
-    const reminder = screen.getByRole('switch', { name: '30-60-90일 점검 알림' })
+    const reminder = screen.getByRole('switch', { name: '30·60·90일 점검 알림' })
     const improvement = screen.getByRole('switch', { name: '결과 개선 활용 동의' })
     expect(reminder).toBeChecked()
     expect(improvement).toBeChecked()
@@ -56,5 +59,9 @@ describe('사후점검 화면', () => {
     fireEvent.click(improvement)
     expect(improvement).not.toBeChecked()
     expect(screen.getByRole('link', { name: '회복안' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
+      'href',
+      '/recovery/support-programs',
+    )
   })
 })
