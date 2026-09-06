@@ -30,7 +30,7 @@ export function CashflowDatePickerDialog({ onClose, onSelect }: CashflowDatePick
             예정일 선택
           </h2>
           <button
-            className="h-[30px] border-b border-neutral-700 px-[10px] py-1 typo-body-8 text-neutral-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
+            className="h-[30px] border-b border-neutral-700 px-[10px] py-1 typo-body-8 text-secondary-300 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
             onClick={onClose}
             type="button"
           >

@@ -35,7 +35,7 @@ export function BusinessHomeScreen() {
             href="/cashflow"
           >
             <strong className="text-[18px] leading-[21px]">위험분석 바로가기</strong>
-            <span className="mt-1 text-[12px] leading-[14px] text-neutral-600">
+            <span className="mt-1 text-[12px] leading-[14px] text-base-white/80">
               연체 전 회복 지원용 분석으로 신용평가·대출 심사와 무관합니다.
             </span>
           </Link>

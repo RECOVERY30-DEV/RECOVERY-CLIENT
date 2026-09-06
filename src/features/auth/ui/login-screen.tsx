@@ -34,7 +34,7 @@ export function LoginScreen() {
             <Input
               aria-label="이메일"
               autoComplete="email"
-              className="mt-[3px] border-transparent bg-neutral-100 text-[11px] leading-4 font-normal placeholder:text-neutral-600"
+              className="mt-[3px] border-transparent bg-neutral-100 text-[11px] leading-4 font-normal placeholder:text-secondary-300"
               placeholder="메일을 입력해주세요."
               required
               type="email"
@@ -46,7 +46,7 @@ export function LoginScreen() {
             <Input
               aria-label="비밀번호"
               autoComplete="current-password"
-              className="mt-[3px] border-transparent bg-neutral-100 text-[11px] leading-4 font-normal placeholder:text-neutral-600"
+              className="mt-[3px] border-transparent bg-neutral-100 text-[11px] leading-4 font-normal placeholder:text-secondary-300"
               placeholder="비밀번호를 입력해주세요."
               required
               type="password"
@@ -67,7 +67,7 @@ export function LoginScreen() {
             </Link>
 
             <Link
-              className="border-b border-b-neutral-700 text-[12px] leading-4 font-medium text-neutral-700"
+              className="border-b border-b-neutral-700 text-[12px] leading-4 font-medium text-secondary-300"
               href="/account-recovery"
             >
               계정을 잃어버리셨나요?

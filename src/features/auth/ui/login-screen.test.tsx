@@ -16,9 +16,11 @@ describe('로그인 화면', () => {
 
     expect(emailInput).toHaveAttribute('type', 'email')
     expect(emailInput).toHaveAttribute('autocomplete', 'email')
+    expect(emailInput).toHaveClass('placeholder:text-secondary-300')
     expect(emailInput).toBeRequired()
     expect(passwordInput).toHaveAttribute('type', 'password')
     expect(passwordInput).toHaveAttribute('autocomplete', 'current-password')
+    expect(passwordInput).toHaveClass('placeholder:text-secondary-300')
     expect(passwordInput).toBeRequired()
     expect(submitButton).toHaveAttribute('type', 'submit')
   })

@@ -26,6 +26,7 @@ describe('분석 데이터 범위 화면', () => {
       'href',
       '/cashflow/pending',
     )
+    expect(screen.getByRole('link', { name: '오류 확인' })).toHaveClass('text-primary-blue-800')
     expect(screen.getByRole('link', { name: '홈으로 돌아가기' })).toHaveAttribute('href', '/home')
   })
 })

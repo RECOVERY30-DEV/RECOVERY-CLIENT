@@ -12,6 +12,9 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByText('-128만원 ~ -54만원')).toBeInTheDocument()
     expect(screen.getByText('위험상태')).toBeInTheDocument()
     expect(screen.getByText('부족일까지 18일 남았습니다.')).toBeInTheDocument()
+    expect(screen.getByText('30일 후').parentElement).toHaveClass('text-secondary-300')
+    expect(screen.getByText('−120만')).toHaveClass('text-warning-700')
+    expect(screen.getByText(/범위 전체가 0원 아래로/)).toHaveClass('text-secondary-300')
   })
 
   it('데이터 범위 경로를 제공하고 미구현 보정 이동은 비활성화한다', () => {

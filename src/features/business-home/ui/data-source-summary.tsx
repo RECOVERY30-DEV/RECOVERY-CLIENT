@@ -20,7 +20,7 @@ export function DataSourceSummary() {
               <span aria-hidden="true" className="size-2 rounded-[1px] bg-warning-500" />
               {source.label}
             </span>
-            <span className="font-semibold text-warning-500">{source.refreshedAt}</span>
+            <span className="font-semibold text-warning-700">{source.refreshedAt}</span>
           </li>
         ))}
       </ul>
@@ -36,7 +36,7 @@ export function AnalysisDataScopeCard() {
       href="/data-scope"
     >
       <h2 className="text-[18px] leading-[21px] font-bold text-neutral-900">분석 데이터 범위</h2>
-      <p className="mt-1 text-[12px] leading-[14px] text-neutral-700">
+      <p className="mt-1 text-[12px] leading-[14px] text-secondary-300">
         현금매출·타행자금 등 일부 정보는 포함되지 않을 수 있습니다.
       </p>
 
@@ -47,15 +47,7 @@ export function AnalysisDataScopeCard() {
             key={source.label}
           >
             <span>{source.label}</span>
-            <span
-              className={
-                source.status === '부분 반영'
-                  ? 'text-[12px] font-semibold text-primary-blue-300'
-                  : 'text-[12px] font-semibold text-primary-blue-500'
-              }
-            >
-              {source.status}
-            </span>
+            <span className="text-[12px] font-semibold text-primary-blue-800">{source.status}</span>
           </li>
         ))}
       </ul>

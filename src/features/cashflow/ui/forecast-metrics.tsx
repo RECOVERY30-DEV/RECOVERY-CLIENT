@@ -6,7 +6,7 @@ function ShortageDateCard() {
     <section className="h-[104px] rounded-[10px] bg-neutral-100 p-[14px]">
       <p className="text-[12px] leading-[14px] font-semibold text-secondary-300">첫 부족 예상일</p>
       <p className="mt-1 text-[18px] leading-[21px] font-bold text-neutral-900">D-18</p>
-      <div className="mt-1 flex justify-between text-[11px] leading-[13px] text-neutral-700">
+      <div className="mt-1 flex justify-between text-[11px] leading-[13px] text-secondary-300">
         <span className="text-[12px]">오늘</span>
         <span>30일 후</span>
       </div>
@@ -30,7 +30,7 @@ function BalanceRangeCard() {
       </p>
 
       <div className="mt-[30px]">
-        <div className="flex justify-between text-[11px] leading-[13px] text-neutral-700">
+        <div className="flex justify-between text-[11px] leading-[13px] text-secondary-300">
           <span>보수적</span>
           <span>낙관적</span>
         </div>
@@ -46,12 +46,12 @@ function BalanceRangeCard() {
           />
         </div>
         <div className="mt-[10px] flex justify-between text-[12px] leading-[14px] font-semibold">
-          <span className="text-warning-500">−120만</span>
+          <span className="text-warning-700">−120만</span>
           <span className="text-disabled-200">0</span>
         </div>
       </div>
 
-      <p className="mt-6 text-[11px] leading-[13px] text-neutral-700">
+      <p className="mt-6 text-[11px] leading-[13px] text-secondary-300">
         범위 전체가 0원 아래로, 예상 구간 안에서 흑자 전환은 확인되지 않음
       </p>
     </section>
