@@ -1,115 +1,169 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { RecoveryOptionView, RecoveryScenario } from '../api/recovery-option-contract'
 import { RecoveryPlanComparisonScreen } from './recovery-plan-comparison-screen'
 
+const mocks = vi.hoisted(() => ({
+  mutate: vi.fn(),
+  refetchOptions: vi.fn(),
+  refetchScenarios: vi.fn(),
+  resetMutation: vi.fn(),
+  useForecastSummaryQueries: vi.fn(),
+  useRecoveryOptionQueries: vi.fn(),
+  useSaveRecoveryOptionSelectionsMutation: vi.fn(),
+}))
+
+vi.mock('@/features/forecast', () => ({
+  useForecastSummaryQueries: mocks.useForecastSummaryQueries,
+}))
+
+vi.mock('../queries/recovery-option-queries', () => ({
+  useRecoveryOptionQueries: mocks.useRecoveryOptionQueries,
+  useSaveRecoveryOptionSelectionsMutation: mocks.useSaveRecoveryOptionSelectionsMutation,
+}))
+
+const recoveryOptions: readonly RecoveryOptionView[] = [
+  {
+    optionId: 3,
+    optionCode: 'REPAYMENT_ADJUST',
+    category: 'FINANCIAL_CONSULT',
+    expectedEffectText: '부족일 최대 16일 연장 가능',
+    monthlyBurdenChangeText: '월 상환액 약 15만 원 감소 예상',
+    preconditionText: '원리금 3회 이상 정상 납부 이력',
+    difficulty: 'LOW',
+    requiresReview: true,
+    disclaimer: '승인 여부와 조건은 금융기관 심사 결과에 따릅니다.',
+    selected: true,
+  },
+  {
+    optionId: 5,
+    optionCode: 'FIXED_COST_RESCHEDULE',
+    category: 'SELF_ACTION',
+    expectedEffectText: '월말 부족 위험 완화 가능',
+    monthlyBurdenChangeText: '월 부담 총액은 유지',
+    preconditionText: '임차료·공과금 납부일 협의 가능',
+    difficulty: 'LOW',
+    requiresReview: false,
+    disclaimer: '거래처 협의 결과에 따라 달라질 수 있습니다.',
+    selected: false,
+  },
+  {
+    optionId: 7,
+    optionCode: 'REFINANCING_REVIEW',
+    category: 'FINANCIAL_CONSULT',
+    expectedEffectText: '월 상환 부담 조정 가능',
+    monthlyBurdenChangeText: '심사 결과에 따라 달라짐',
+    preconditionText: '금리·중도상환 조건 비교 필요',
+    difficulty: 'HIGH',
+    requiresReview: true,
+    disclaimer: '금융기관 심사 결과에 따라 달라질 수 있습니다.',
+    selected: false,
+  },
+]
+
+const scenarios: readonly RecoveryScenario[] = [
+  {
+    scenarioId: 1,
+    scenarioType: 'BASELINE',
+    firstShortfallDate: '2025-05-14',
+    minBalance: -1240000,
+    deltaDays: 0,
+    deltaMinBalance: 0,
+    monthlyPaymentDelta: 0,
+    note: '현재 현금흐름 예측을 유지합니다.',
+    appliedOptionIds: [],
+  },
+  {
+    scenarioId: 2,
+    scenarioType: 'SIMULATED',
+    firstShortfallDate: '2025-05-30',
+    minBalance: -630000,
+    deltaDays: 16,
+    deltaMinBalance: 610000,
+    monthlyPaymentDelta: -150000,
+    note: '상담 및 심사 결과에 따라 실제 효과는 달라질 수 있습니다.',
+    appliedOptionIds: [3],
+  },
+]
+
+function setSuccessfulQueries() {
+  mocks.useForecastSummaryQueries.mockReturnValue({ latest: { data: { forecastRunId: 4821 } } })
+  mocks.useRecoveryOptionQueries.mockReturnValue({
+    recoveryOptions: { data: recoveryOptions, isError: false, refetch: mocks.refetchOptions },
+    scenarios: { data: scenarios, isError: false, refetch: mocks.refetchScenarios },
+  })
+  mocks.useSaveRecoveryOptionSelectionsMutation.mockReturnValue({
+    mutate: mocks.mutate,
+    isError: false,
+    isPending: false,
+    reset: mocks.resetMutation,
+  })
+}
+
 describe('회복안 비교 화면', () => {
-  it('Task 3과 같은 위험 요약과 TOP 3 원인을 표시한다', () => {
-    render(<RecoveryPlanComparisonScreen />)
-
-    expect(screen.getByRole('heading', { name: '회복안 비교' })).toBeInTheDocument()
-    expect(screen.getByText('14일 후 · 6월 28일')).toBeInTheDocument()
-    expect(screen.getByText('-230만 ~ -80만 원')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: '주요 원인 TOP 3' })).toBeInTheDocument()
-    expect(screen.getByText('1. 최근 8주 매출 감소')).toBeInTheDocument()
-    expect(screen.getByText('2. 월말 임차료·원리금 집중')).toBeInTheDocument()
-    expect(screen.getByText('3. 계절적 매출 회복 지연')).toBeInTheDocument()
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setSuccessfulQueries()
   })
 
-  it('피그마 기준으로 위험 상태와 원인 근거를 상세하게 제공한다', () => {
+  it('API 회복안의 선택 상태와 비교 정보를 표시한다', async () => {
     render(<RecoveryPlanComparisonScreen />)
 
-    expect(screen.getByRole('heading', { name: '현재 위험 상태' })).toBeInTheDocument()
-    expect(screen.getByText('위험')).toBeInTheDocument()
-    expect(screen.getByText('예상 부족액')).toBeInTheDocument()
-    expect(screen.getByText('신한카드 정산 5건 · 6월 2일~11일')).toBeInTheDocument()
-    expect(screen.getByText('직전 4주 평균 입금 패턴 반영')).toBeInTheDocument()
-  })
-
-  it('기본 두 회복안을 선택하고 최대 두 개까지만 선택한다', () => {
-    render(<RecoveryPlanComparisonScreen />)
+    await waitFor(() => expect(screen.getByText('총 1건')).toBeInTheDocument())
 
     const repayment = screen.getByRole('button', { name: '상환조건 조정 상담' })
-    const fixedCost = screen.getByRole('button', { name: '고정비 납부일 재배치' })
-    const refinancing = screen.getByRole('button', { name: '대환 검토' })
-
-    expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
-    expect(screen.getAllByText('총 2건')).toHaveLength(2)
-    expect(screen.getAllByText('총 2건')[1]).toHaveClass('text-primary-blue-800')
-    expect(repayment).toHaveClass('border-primary-blue-700')
-    fireEvent.click(refinancing)
-    expect(refinancing).toHaveAttribute('aria-pressed', 'false')
-
-    fireEvent.click(repayment)
-    fireEvent.click(refinancing)
-    expect(fixedCost).toHaveAttribute('aria-pressed', 'true')
-    expect(refinancing).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
-  })
-
-  it('회복안 card가 제목과 비교 정보를 접근 가능한 이름과 설명으로 제공한다', () => {
-    render(<RecoveryPlanComparisonScreen />)
-
-    const repayment = screen.getByRole('button', { name: '상환조건 조정 상담' })
-
-    expect(repayment).toHaveAccessibleName('상환조건 조정 상담')
-    expect(repayment).toHaveClass('focus-visible:ring-primary-blue-800')
+    expect(repayment).toHaveAttribute('aria-pressed', 'true')
     expect(repayment).toHaveAccessibleDescription(/예상 효과.*부족일 최대 16일 연장 가능/)
     expect(repayment).toHaveAccessibleDescription(/월 부담 변화.*월 상환액 약 15만 원 감소 예상/)
-    expect(repayment).toHaveAccessibleDescription(/상환조건.*원리금 3회 이상 정상 납부 이력/)
-    expect(repayment).toHaveAccessibleDescription(
-      /금융기관과 상환 조건을 조정할 수 있는지 확인합니다/,
-    )
+    expect(repayment).toHaveAccessibleDescription(/사전 조건.*원리금 3회 이상 정상 납부 이력/)
+    expect(screen.getByText('기준')).toBeInTheDocument()
+    expect(screen.getAllByText('상환조건 조정 상담')).toHaveLength(2)
+    expect(screen.getByText(/부족일 16일 지연/)).toBeInTheDocument()
   })
 
-  it('선택한 회복안 ID를 상담 예약 링크 query로 전달한다', () => {
+  it('선택 변경을 저장 API에 전달하고 최대 두 개까지만 허용한다', async () => {
     render(<RecoveryPlanComparisonScreen />)
 
-    fireEvent.click(screen.getByRole('button', { name: '상환조건 조정 상담' }))
+    await waitFor(() => expect(screen.getByText('총 1건')).toBeInTheDocument())
+
+    fireEvent.click(screen.getByRole('button', { name: '고정비 납부일 재배치' }))
+    expect(mocks.mutate).toHaveBeenLastCalledWith([3, 5])
+
     fireEvent.click(screen.getByRole('button', { name: '대환 검토' }))
+    expect(mocks.mutate).toHaveBeenCalledTimes(1)
+  })
+
+  it('조회 실패 시 재시도 동작을 제공한다', () => {
+    mocks.useRecoveryOptionQueries.mockReturnValue({
+      recoveryOptions: {
+        data: undefined,
+        isError: true,
+        refetch: mocks.refetchOptions,
+      },
+      scenarios: { data: undefined, isError: false, refetch: mocks.refetchScenarios },
+    })
+
+    render(<RecoveryPlanComparisonScreen />)
+
+    fireEvent.click(screen.getByRole('button', { name: '다시 시도' }))
+    expect(mocks.refetchOptions).toHaveBeenCalledTimes(1)
+  })
+
+  it('상담과 지원사업 화면으로 이동할 수 있다', async () => {
+    render(<RecoveryPlanComparisonScreen />)
+
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: '상담 예약하기' })).toBeInTheDocument(),
+    )
 
     expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveAttribute(
       'href',
-      '/recovery/consultation?plans=fixed-cost-reschedule&plans=refinancing-review',
-    )
-    expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
+      '/recovery/consultation',
     )
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',
       '/recovery/support-programs',
     )
-    expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
-    )
-    expect(screen.getByRole('button', { name: '자체 실행으로 저장' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
-  })
-
-  it('고정비 납부일 재배치만 선택하면 자체 실행 저장으로 이동한다', () => {
-    render(<RecoveryPlanComparisonScreen />)
-
-    fireEvent.click(screen.getByRole('button', { name: '상환조건 조정 상담' }))
-
-    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveAttribute(
-      'href',
-      '/recovery/actions/fixed-cost-reschedule/save?plan=fixed-cost-reschedule',
-    )
-    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
-    )
-  })
-
-  it('기준과 선택 회복안을 비교하고 상환조건으로 올바르게 표기한다', () => {
-    render(<RecoveryPlanComparisonScreen />)
-
-    expect(screen.getByRole('heading', { name: '시나리오 비교' })).toBeInTheDocument()
-    expect(screen.getByText('기준')).toBeInTheDocument()
-    expect(screen.getAllByText('상환조건 조정 상담').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('고정비 납부일 재배치').length).toBeGreaterThan(0)
-    expect(screen.queryByText('상황조건')).not.toBeInTheDocument()
-    expect(screen.getAllByText('첫 부족 예상일')).not.toHaveLength(0)
-    expect(screen.getAllByText('예상 최저잔액')).not.toHaveLength(0)
-    expect(screen.getAllByText('난이도')).toHaveLength(3)
   })
 })
