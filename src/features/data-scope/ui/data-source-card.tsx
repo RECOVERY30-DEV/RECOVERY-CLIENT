@@ -5,7 +5,18 @@ import CardIcon from '@/features/data-scope/assets/data-card.svg'
 import PassbookIcon from '@/features/data-scope/assets/data-passbook.svg'
 import KbBankLogo from '@/features/data-scope/assets/kb-bank.png'
 import ShinhanBankLogo from '@/features/data-scope/assets/shinhan-bank.png'
-import type { DataSourceKind, DataSourceStatus } from '@/features/data-scope/model/data-scope-data'
+import type { DataSourceKind } from '@/features/data-scope/model/data-scope-data'
+
+export type DataSourceCardProps = Readonly<{
+  coverageLabel: string
+  description: string
+  kind: DataSourceKind
+  periodLabel: string
+  refreshedAt: string
+  syncStatusLabel: string
+  title: string
+  warning?: string
+}>
 
 function DataSourceIcon({ kind }: Readonly<{ kind: DataSourceKind }>) {
   if (kind === 'account') {
@@ -52,13 +63,15 @@ function BankLogos() {
 }
 
 export function DataSourceCard({
+  coverageLabel,
   description,
   kind,
-  reflectedRange,
+  periodLabel,
   refreshedAt,
+  syncStatusLabel,
   title,
   warning,
-}: DataSourceStatus) {
+}: DataSourceCardProps) {
   return (
     <article className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px]">
       <div className="flex items-center gap-[6px]">
@@ -78,7 +91,15 @@ export function DataSourceCard({
         </div>
         <div className="flex justify-between gap-4">
           <dt>반영 기간</dt>
-          <dd className="font-medium">{reflectedRange}</dd>
+          <dd className="font-medium">{periodLabel}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt>반영률</dt>
+          <dd className="font-medium">{coverageLabel}</dd>
+        </div>
+        <div className="flex justify-between gap-4">
+          <dt>연동 상태</dt>
+          <dd className="font-medium">{syncStatusLabel}</dd>
         </div>
       </dl>
 

@@ -43,6 +43,22 @@ function normalizeHttpError(error: HTTPError): ApiError {
   })
 }
 
+function throwNormalizedApiError(error: unknown): never {
+  if (error instanceof ApiError || error instanceof ApiContractError) {
+    throw error
+  }
+
+  if (error instanceof DOMException && error.name === 'AbortError') {
+    throw error
+  }
+
+  if (error instanceof HTTPError) {
+    throw normalizeHttpError(error)
+  }
+
+  throw new ApiError('서버와 통신할 수 없습니다.', { cause: error })
+}
+
 export async function getApiData<T>(
   path: string,
   parseData: (data: unknown) => T,
@@ -60,19 +76,7 @@ export async function getApiData<T>(
 
     return parseApiResponse(payload, parseData)
   } catch (error) {
-    if (error instanceof ApiError || error instanceof ApiContractError) {
-      throw error
-    }
-
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw error
-    }
-
-    if (error instanceof HTTPError) {
-      throw normalizeHttpError(error)
-    }
-
-    throw new ApiError('서버와 통신할 수 없습니다.', { cause: error })
+    throwNormalizedApiError(error)
   }
 }
 
@@ -94,18 +98,70 @@ export async function postApiData<T>(
 
     return parseApiResponse(payload, parseData)
   } catch (error) {
-    if (error instanceof ApiError || error instanceof ApiContractError) {
-      throw error
-    }
+    throwNormalizedApiError(error)
+  }
+}
 
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw error
-    }
+export async function putApiData<T>(
+  path: string,
+  body: unknown,
+  parseData: (data: unknown) => T,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const client = options.client ?? apiClient
 
-    if (error instanceof HTTPError) {
-      throw normalizeHttpError(error)
-    }
+  try {
+    const payload = await client
+      .put(path, {
+        json: body,
+        ...(options.signal === undefined ? {} : { signal: options.signal }),
+      })
+      .json<unknown>()
 
-    throw new ApiError('서버와 통신할 수 없습니다.', { cause: error })
+    return parseApiResponse(payload, parseData)
+  } catch (error) {
+    throwNormalizedApiError(error)
+  }
+}
+
+export async function patchApiData<T>(
+  path: string,
+  body: unknown,
+  parseData: (data: unknown) => T,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const client = options.client ?? apiClient
+
+  try {
+    const payload = await client
+      .patch(path, {
+        json: body,
+        ...(options.signal === undefined ? {} : { signal: options.signal }),
+      })
+      .json<unknown>()
+
+    return parseApiResponse(payload, parseData)
+  } catch (error) {
+    throwNormalizedApiError(error)
+  }
+}
+
+export async function deleteApiData<T>(
+  path: string,
+  parseData: (data: unknown) => T,
+  options: ApiRequestOptions = {},
+): Promise<T> {
+  const client = options.client ?? apiClient
+
+  try {
+    const payload = await client
+      .delete(path, {
+        ...(options.signal === undefined ? {} : { signal: options.signal }),
+      })
+      .json<unknown>()
+
+    return parseApiResponse(payload, parseData)
+  } catch (error) {
+    throwNormalizedApiError(error)
   }
 }

@@ -6,18 +6,24 @@ import { ConsentOption } from './consent-option'
 import { ConsentSection } from './consent-section'
 
 type ConsentControlsProps = Readonly<{
+  analysisDisabled?: boolean
+  counselorDisabled?: boolean
   hasAnalysisConsent: boolean
   hasCounselorConsent: boolean
   hasFollowUpConsent: boolean
+  followUpDisabled?: boolean
   onAnalysisChange: () => void
   onCounselorChange: () => void
   onFollowUpChange: () => void
 }>
 
 export function ConsentControls({
+  analysisDisabled,
+  counselorDisabled,
   hasAnalysisConsent,
   hasCounselorConsent,
   hasFollowUpConsent,
+  followUpDisabled,
   onAnalysisChange,
   onCounselorChange,
   onFollowUpChange,
@@ -31,6 +37,7 @@ export function ConsentControls({
       >
         <ConsentOption
           checked={hasAnalysisConsent}
+          disabled={analysisDisabled}
           icon={<ServiceAnalysisIcon className="size-6" />}
           label="서비스 분석 동의"
           onChange={onAnalysisChange}
@@ -44,6 +51,7 @@ export function ConsentControls({
       >
         <ConsentOption
           checked={hasCounselorConsent}
+          disabled={counselorDisabled}
           icon={<CounselorTransferIcon className="size-6" />}
           label="상담원 전송 동의"
           onChange={onCounselorChange}
@@ -53,6 +61,7 @@ export function ConsentControls({
       <div>
         <ConsentOption
           checked={hasFollowUpConsent}
+          disabled={followUpDisabled}
           icon={<FollowUpIcon className="size-6" />}
           label="30·60·90일 사후 점검 동의"
           onChange={onFollowUpChange}

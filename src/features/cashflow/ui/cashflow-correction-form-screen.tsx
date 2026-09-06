@@ -3,7 +3,11 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLayoutEffect, useRef, useState } from 'react'
+import type { KyInstance } from 'ky'
 
+import { createAdjustment } from '@/features/cashflow/api/adjustment-api'
+import type { AdjustmentType } from '@/features/cashflow/api/adjustment-contract'
+import { DEMO_BUSINESS_ID } from '@/shared/config/business'
 import { Button, MobileScreen } from '@/shared/ui'
 
 import {
@@ -15,13 +19,30 @@ import { CashflowDatePickerDialog } from './cashflow-date-picker-dialog'
 import { CashflowDraftExitDialog } from './cashflow-draft-exit-dialog'
 
 type CashflowCorrectionFormScreenProps = Readonly<{
+  client?: KyInstance
   kind: CashflowCorrectionKind
 }>
 
 type ActiveDialog = 'date-picker' | 'draft-exit' | null
 type FocusRestoreTarget = 'back-link' | 'date-button'
 
+const ADJUSTMENT_TYPES = {
+  'cash-sales': 'CASH_SALES',
+  'expected-expenses': 'EXPECTED_EXPENSE',
+  'expected-income': 'EXPECTED_INCOME',
+  'external-funds': 'EXTERNAL_FUNDS',
+} as const satisfies Record<CashflowCorrectionKind, AdjustmentType>
+
+function toApiDate(date: string): string {
+  const match = /^(\d{4})년 (\d{1,2})월 (\d{1,2})일$/.exec(date)
+  if (match === null) return date
+
+  const [, year, month, day] = match
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+}
+
 export function CashflowCorrectionFormScreen({
+  client,
   kind,
 }: CashflowCorrectionFormScreenProps): React.JSX.Element {
   const config = getCashflowCorrectionFormConfig(kind)
@@ -36,12 +57,19 @@ export function CashflowCorrectionFormScreen({
   const [memo, setMemo] = useState('')
   const [isConfirmed, setIsConfirmed] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState(false)
   const [activeDialog, setActiveDialog] = useState<ActiveDialog>(null)
 
   const isDirty =
     !isSaved && Boolean(amount || date || selection || expenseItem || memo || isConfirmed)
+  const numericAmount = Number(amount)
   const canSave =
-    !isSaved && Boolean(amount && date && selection && (!config.hasExpenseItem || expenseItem))
+    !isSaved &&
+    !isSaving &&
+    Number.isFinite(numericAmount) &&
+    numericAmount > 0 &&
+    Boolean(date && selection && (!config.hasExpenseItem || expenseItem))
 
   useLayoutEffect(() => {
     if (activeDialog !== null) {
@@ -97,13 +125,40 @@ export function CashflowCorrectionFormScreen({
     router.push('/cashflow/corrections')
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  function getAdjustmentType(): AdjustmentType {
+    return ADJUSTMENT_TYPES[kind]
+  }
 
-    if (canSave) {
+  async function saveAdjustment() {
+    if (!canSave) return
+
+    setIsSaving(true)
+    setSaveError(false)
+
+    try {
+      await createAdjustment(
+        DEMO_BUSINESS_ID,
+        {
+          adjustmentType: getAdjustmentType(),
+          amount: numericAmount,
+          certainty: isConfirmed ? 'CONFIRMED' : 'EXPECTED',
+          expectedDate: toApiDate(date),
+          ...(memo || expenseItem ? { memo: memo || expenseItem } : {}),
+        },
+        client === undefined ? {} : { client },
+      )
       focusRestoreTargetRef.current = null
       setIsSaved(true)
+    } catch {
+      setSaveError(true)
+    } finally {
+      setIsSaving(false)
     }
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    void saveAdjustment()
   }
 
   return (
@@ -159,8 +214,10 @@ export function CashflowCorrectionFormScreen({
               className="mt-5 rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-secondary-300"
               role="status"
             >
-              <p className="typo-body-5 text-neutral-900">현재 화면에만 저장됐습니다.</p>
-              <p className="mt-1 typo-caption-3">새로고침하면 입력 내용이 초기화됩니다.</p>
+              <p className="typo-body-5 text-neutral-900">보정값이 저장되었습니다.</p>
+              <p className="mt-1 typo-caption-3">
+                재계산 실행 전까지 예측 결과에는 반영되지 않습니다.
+              </p>
               <Link
                 className="mt-3 inline-flex border-b border-primary-blue-800 typo-body-8 text-primary-blue-800 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
                 href="/cashflow/corrections"
@@ -169,8 +226,25 @@ export function CashflowCorrectionFormScreen({
               </Link>
             </div>
           ) : null}
+          {saveError ? (
+            <div className="mt-5" role="alert">
+              <p className="text-alert typo-caption-3">
+                보정값을 저장하지 못했습니다. 입력을 확인한 뒤 다시 시도해 주세요.
+              </p>
+              <Button
+                className="mt-3"
+                disabled={isSaving}
+                onClick={() => void saveAdjustment()}
+                size="sm"
+                type="button"
+                variant="outline"
+              >
+                다시 시도
+              </Button>
+            </div>
+          ) : null}
           <Button className="mt-10 w-full" disabled={!canSave} type="submit">
-            {isSaved ? '저장 완료' : '저장'}
+            {isSaved ? '저장 완료' : isSaving ? '저장 중' : '저장'}
           </Button>
         </form>
       </div>
