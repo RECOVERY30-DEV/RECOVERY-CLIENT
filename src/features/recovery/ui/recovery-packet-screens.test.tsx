@@ -52,6 +52,10 @@ describe('Recovery Packet 화면', () => {
     expect(screen.getAllByText('상환조건 조정 상담').length).toBeGreaterThan(0)
     expect(screen.getAllByText('고정비 납부일 재배치').length).toBeGreaterThan(0)
     expect(screen.getByText('다음 점검 2025-10-12')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: '30·60·90일 사후점검 보기' })).toHaveAttribute(
+      'href',
+      '/recovery/follow-up',
+    )
     expect(screen.queryByText(/재시도/)).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',
