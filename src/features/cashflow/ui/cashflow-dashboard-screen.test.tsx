@@ -1,103 +1,158 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { ReactNode } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
-import { CASHFLOW_FACTORS } from '../model/cashflow-dashboard-data'
+import { createApiClient } from '@/shared/api/api-client'
+
 import { CashflowDashboardScreen } from './cashflow-dashboard-screen'
 
+const API_BASE_URL = 'https://api.example.com'
+
+function createWrapper() {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+
+  return function Wrapper({ children }: Readonly<{ children: ReactNode }>) {
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  }
+}
+
+function createDailyView(index: number) {
+  const day = String(index + 1).padStart(2, '0')
+
+  return {
+    targetDate: `2025-07-${day}`,
+    dDay: 30 - index,
+    openingBalance: 1400000 - index * 10000,
+    confirmedInflow: index === 19 ? 520000 : 0,
+    confirmedOutflow: 0,
+    expectedInflowMin: 400000,
+    expectedInflowMax: 700000,
+    expectedOutflowMin: 180000,
+    expectedOutflowMax: 220000,
+    adjustmentNet: 0,
+    closingBalanceConservative: index === 19 ? -180000 : 400000,
+    closingBalanceExpected: index === 19 ? 220000 : 750000,
+    closingBalanceOptimistic: 900000,
+    shortfall: index === 19,
+    holiday: index === 17,
+    holidayShiftNote: index === 17 ? '공휴일 거래가 다음 영업일로 반영됩니다.' : null,
+  }
+}
+
+function renderDashboard(responsesByPath: Readonly<Record<string, unknown>>) {
+  const fetchMock = vi.fn<typeof fetch>(async (input) => {
+    const request = input instanceof Request ? input : new Request(input)
+    const path = `${new URL(request.url).pathname}${new URL(request.url).search}`
+
+    return Response.json({ success: true, data: responsesByPath[path], error: null })
+  })
+  vi.stubGlobal('fetch', fetchMock)
+
+  return render(<CashflowDashboardScreen client={createApiClient(API_BASE_URL)} />, {
+    wrapper: createWrapper(),
+  })
+}
+
 describe('현금흐름 대시보드 화면', () => {
-  it('분석 범위와 핵심 위험 지표를 제공한다', () => {
-    render(<CashflowDashboardScreen />)
-
-    expect(screen.getByRole('heading', { name: '30일 현금흐름 분석' })).toBeInTheDocument()
-    expect(screen.getByText('D-18')).toBeInTheDocument()
-    expect(screen.getByText('-128만원 ~ -54만원')).toBeInTheDocument()
-    expect(screen.getByText('위험상태')).toBeInTheDocument()
-    expect(screen.getByText('부족일까지 18일 남았습니다.')).toBeInTheDocument()
-    const riskStatusLink = screen.getByRole('link', { name: '위험상태 상세 보기' })
-
-    expect(riskStatusLink).toHaveAttribute('href', '/cashflow/status')
-    expect(riskStatusLink).toHaveClass('text-warning-700', 'focus-visible:ring-primary-blue-800')
-    expect(screen.getByText('30일 후').parentElement).toHaveClass('text-secondary-300')
-    expect(screen.getByText('−120만')).toHaveClass('text-warning-700')
-    expect(screen.getByText(/범위 전체가 0원 아래로/)).toHaveClass('text-secondary-300')
-  })
-
-  it('데이터 범위와 정보 보정 경로를 제공한다', () => {
-    render(<CashflowDashboardScreen />)
-
-    expect(screen.getByRole('link', { name: '분석 데이터 범위 확인하기' })).toHaveAttribute(
-      'href',
-      '/data-scope',
-    )
-    const correctionLink = screen.getByRole('link', { name: '누락 정보 보정하기' })
-
-    expect(correctionLink).toHaveAttribute('href', '/cashflow/corrections')
-    expect(correctionLink).toHaveClass('focus-visible:ring-primary-blue-800')
-    expect(screen.getByRole('link', { name: '현금흐름' })).toHaveAttribute('aria-current', 'page')
-  })
-
-  it('Figma Info 상태색으로 갱신 및 일정 정보를 표시한다', () => {
-    render(<CashflowDashboardScreen />)
-
-    expect(screen.getAllByText('최종 갱신 09:14')).toHaveLength(2)
-    screen
-      .getAllByText('최종 갱신 09:14')
-      .forEach((element) => expect(element).toHaveClass('text-info-500'))
-    screen
-      .getAllByText('오늘 09:14 반영')
-      .forEach((element) => expect(element).toHaveClass('text-info-500'))
-    screen
-      .getAllByText(/유입|유출|공휴일/)
-      .forEach((element) => expect(element).toHaveClass('text-info-500'))
-    expect(screen.getByRole('link', { name: '누락 정보 보정하기' })).toHaveClass(
-      'text-primary-blue-500',
-    )
-  })
-
-  it('일자별 현금흐름과 부족 원인 상위 세 항목 및 상세 경로를 제공한다', () => {
-    render(<CashflowDashboardScreen />)
-
-    expect(screen.getByText('유입 +320만 원 (카드정산)')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '11 / 10 (일) 상세 보기' })).toHaveAttribute(
-      'href',
-      '/cashflow/daily/2024-11-10',
-    )
-    expect(screen.getByRole('link', { name: '11 / 10 (일) 상세 보기' })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
-    )
-    expect(screen.getByText('유출 −185만 원 (임차료)')).toBeInTheDocument()
-    expect(screen.getByText('월말 원리금 임차료 집중')).toBeInTheDocument()
-    expect(screen.getByText('최근 4주 매출 감소')).toBeInTheDocument()
-    expect(screen.getByText('계절적 회복 지연 가능')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveAttribute(
-      'href',
-      '/cashflow/causes',
-    )
-    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass('text-primary-100')
-    expect(screen.getByRole('link', { name: '원인 상세 보기' })).toHaveClass(
-      'focus-visible:ring-primary-blue-800',
-    )
-  })
-
-  it('최근 현금흐름 다섯 건을 최신 날짜부터 제공한다', () => {
-    render(<CashflowDashboardScreen />)
-
-    const dailyLinks = screen.getAllByRole('link', {
-      name: /^\d{2} \/ \d{2} \([일월화수목금토]\) 상세 보기$/,
+  it('API의 30일 흐름을 렌더링하고 선택한 일자의 실제 경로를 제공한다', async () => {
+    const dailyViews = Array.from({ length: 30 }, (_, index) => createDailyView(index))
+    renderDashboard({
+      '/api/businesses/1/forecasts/latest': {
+        forecastRunId: 1,
+        baseDate: '2025-07-15',
+        updatedAt: '2025-07-15T00:00:00Z',
+        status: 'RISK',
+      },
+      '/api/forecasts/1/daily': dailyViews,
+      '/api/forecasts/1/narratives': [
+        { kind: 'STATUS_LABEL', seq: 1, text: '주의 필요' },
+        { kind: 'RISK_NOTE', seq: 2, text: '7월 26일 전 현금 유출을 확인해 주세요.' },
+      ],
+      '/api/forecasts/1/shortfall': {
+        forecastRunId: 1,
+        hasShortfall: true,
+        dDay: 11,
+        expectedDate: '2025-07-26',
+        horizonDays: 30,
+        shortfallAmountMin: 760000,
+        shortfallAmountMax: 1240000,
+      },
     })
 
-    expect(dailyLinks.map((link) => link.getAttribute('href'))).toEqual([
-      '/cashflow/daily/2024-11-28',
-      '/cashflow/daily/2024-11-25',
-      '/cashflow/daily/2024-11-20',
-      '/cashflow/daily/2024-11-14',
-      '/cashflow/daily/2024-11-10',
-    ])
+    await waitFor(() => expect(screen.getByText('2025년 7월 20일')).toBeInTheDocument())
+
+    expect(screen.getAllByRole('link', { name: /^2025년 .* 상세 보기$/ })).toHaveLength(30)
+    expect(screen.getByRole('link', { name: '2025년 7월 20일 상세 보기' })).toHaveAttribute(
+      'href',
+      '/cashflow/daily/2025-07-20',
+    )
+    expect(screen.getByText('주의 필요')).toBeInTheDocument()
+    expect(screen.getByText('7월 26일 전 현금 유출을 확인해 주세요.')).toBeInTheDocument()
+    expect(screen.getByText('공휴일 거래가 다음 영업일로 반영됩니다.')).toBeInTheDocument()
   })
 
-  it('부족 원인 설명을 최대 30자로 제공한다', () => {
-    expect(CASHFLOW_FACTORS.every((factor) => Array.from(factor.description).length <= 30)).toBe(
-      true,
-    )
+  it('FORECAST_404_1 shortfall 오류 때 정적 날짜 목록 대신 재시도 상태를 보여준다', async () => {
+    const fetchMock = vi.fn<typeof fetch>(async (input) => {
+      const request = input instanceof Request ? input : new Request(input)
+      const path = new URL(request.url).pathname
+
+      if (path === '/api/forecasts/999999/shortfall') {
+        return Response.json({
+          success: false,
+          data: null,
+          error: { code: 'FORECAST_404_1', message: '예측 실행을 찾을 수 없습니다.' },
+        })
+      }
+
+      const data =
+        path === '/api/businesses/1/forecasts/latest'
+          ? {
+              forecastRunId: 999999,
+              baseDate: '2025-07-15',
+              updatedAt: '2025-07-15T00:00:00Z',
+              status: 'RISK',
+            }
+          : path.endsWith('/min-balance')
+            ? {
+                forecastRunId: 999999,
+                available: true,
+                conservative: -1280000,
+                expected: 540000,
+                optimistic: 830000,
+              }
+            : path.endsWith('/safety-buffer')
+              ? { forecastRunId: 999999, amount: 830000, bufferMet: false }
+              : path.endsWith('/coverage')
+                ? []
+                : path.endsWith('/daily')
+                  ? []
+                  : []
+
+      return Response.json({ success: true, data, error: null })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    render(<CashflowDashboardScreen client={createApiClient(API_BASE_URL)} />, {
+      wrapper: createWrapper(),
+    })
+
+    await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('불러오지 못했습니다.'))
+
+    const getShortfallRequestCount = () =>
+      fetchMock.mock.calls.filter(
+        ([input]) =>
+          new URL(input instanceof Request ? input.url : input.toString()).pathname ===
+          '/api/forecasts/999999/shortfall',
+      ).length
+
+    expect(getShortfallRequestCount()).toBe(1)
+    fireEvent.click(screen.getByRole('button', { name: '다시 시도' }))
+
+    await waitFor(() => expect(getShortfallRequestCount()).toBe(2))
+
+    expect(screen.getByRole('alert')).toHaveTextContent('불러오지 못했습니다.')
+    expect(screen.queryByRole('link', { name: /^2025년 .* 상세 보기$/ })).not.toBeInTheDocument()
+    expect(screen.queryByText('2025년 7월 20일')).not.toBeInTheDocument()
   })
 })
