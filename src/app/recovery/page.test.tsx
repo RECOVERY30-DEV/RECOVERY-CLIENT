@@ -2,8 +2,12 @@ import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/features/recovery/ui/recovery-follow-up-screen', () => ({
-  RecoveryFollowUpScreen: ({ selectedOptionIds }: Readonly<{ selectedOptionIds?: readonly string[] }>) => (
-    <a href={`/recovery?plans=${selectedOptionIds?.join(',') ?? ''}`}>Recovery Packet으로 돌아가기</a>
+  RecoveryFollowUpScreen: ({
+    selectedOptionIds,
+  }: Readonly<{ selectedOptionIds?: readonly string[] }>) => (
+    <a href={`/recovery?plans=${selectedOptionIds?.join(',') ?? ''}`}>
+      Recovery Packet으로 돌아가기
+    </a>
   ),
 }))
 
