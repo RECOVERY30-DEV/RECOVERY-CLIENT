@@ -2,43 +2,76 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
+import type { KyInstance } from 'ky'
 
+import { DEMO_BUSINESS_ID } from '@/shared/config/business'
 import { BackLink, MobileScreen } from '@/shared/ui'
 
-import {
-  SUPPORT_PROGRAM_REFERENCE_DATE,
-  SUPPORT_PROGRAMS,
-  formatSupportProgramDeadline,
-  isSupportProgramApplicationOpen,
-  type SupportProgramCategory,
-} from '../model/support-program-data'
+import { useSupportProgramListQueries } from '../queries/support-program-queries'
 import { SupportProgramCard } from './support-program-card'
 import { SupportProgramFilters } from './support-program-filters'
 
-export function SupportProgramListScreen(): React.JSX.Element {
+type SupportProgramListScreenProps = Readonly<{
+  client?: KyInstance
+}>
+
+export function SupportProgramListScreen({
+  client,
+}: SupportProgramListScreenProps = {}): React.JSX.Element {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState<SupportProgramCategory>('전체')
-  const [region, setRegion] = useState('전체')
   const [isApplicationOpenOnly, setIsApplicationOpenOnly] = useState(true)
+  const queries = useSupportProgramListQueries(DEMO_BUSINESS_ID, {
+    applicableOnly: isApplicationOpenOnly,
+    ...(client === undefined ? {} : { client }),
+  })
 
   const filteredPrograms = useMemo(() => {
     const normalizedSearchTerm = searchTerm.trim().toLocaleLowerCase('ko-KR')
+    const recommendationsByCode = new Map(
+      (queries.recommendations.data ?? []).map((recommendation) => [
+        recommendation.programCode,
+        recommendation,
+      ]),
+    )
 
-    return SUPPORT_PROGRAMS.filter((program) => {
+    return (queries.programs.data ?? []).flatMap((program) => {
       const matchesSearch =
         !normalizedSearchTerm ||
-        [program.title, program.institution, program.category]
+        [program.name, program.agency, program.supportContent]
           .join(' ')
           .toLocaleLowerCase('ko-KR')
           .includes(normalizedSearchTerm)
-      const matchesCategory = selectedCategory === '전체' || program.category === selectedCategory
-      const matchesRegion = region === '전체' || program.regions.includes(region)
-      const matchesApplication =
-        !isApplicationOpenOnly || isSupportProgramApplicationOpen(program.applicationDeadline)
+      const recommendation = recommendationsByCode.get(program.programCode)
 
-      return matchesSearch && matchesCategory && matchesRegion && matchesApplication
+      return matchesSearch
+        ? [
+            {
+              program,
+              matchStatus: recommendation === undefined ? '추천 정보 없음' : '추천됨',
+              matchReason: recommendation?.matchReason ?? '예측 기반 추천 정보가 없습니다.',
+            } as const,
+          ]
+        : []
     })
-  }, [isApplicationOpenOnly, region, searchTerm, selectedCategory])
+  }, [queries.programs.data, queries.recommendations.data, searchTerm])
+
+  const queryResults = [queries.programs, queries.latestForecast, queries.recommendations]
+
+  if (queryResults.some((query) => query.isError)) {
+    return (
+      <SupportProgramListErrorScreen
+        onRetry={() => queryResults.forEach((query) => void query.refetch())}
+      />
+    )
+  }
+
+  if (
+    queries.programs.data === undefined ||
+    queries.latestForecast.data === undefined ||
+    queries.recommendations.data === undefined
+  ) {
+    return <SupportProgramListLoadingScreen />
+  }
 
   return (
     <MobileScreen aria-label="지원사업 목록 화면" className="min-h-[1280px]" mode="document">
@@ -55,12 +88,8 @@ export function SupportProgramListScreen(): React.JSX.Element {
           <SupportProgramFilters
             isApplicationOpenOnly={isApplicationOpenOnly}
             onApplicationOpenOnlyChange={setIsApplicationOpenOnly}
-            onCategoryChange={setSelectedCategory}
-            onRegionChange={setRegion}
             onSearchChange={setSearchTerm}
-            region={region}
             searchTerm={searchTerm}
-            selectedCategory={selectedCategory}
           />
         </div>
 
@@ -76,13 +105,18 @@ export function SupportProgramListScreen(): React.JSX.Element {
 
           {filteredPrograms.length > 0 ? (
             <div className="mt-[15px] space-y-[15px]">
-              {filteredPrograms.map((program) => (
-                <SupportProgramCard key={program.id} program={program} />
+              {filteredPrograms.map(({ program, matchReason, matchStatus }) => (
+                <SupportProgramCard
+                  key={program.programCode}
+                  matchReason={matchReason}
+                  matchStatus={matchStatus}
+                  program={program}
+                />
               ))}
             </div>
           ) : (
             <p className="mt-[15px] rounded-[10px] bg-neutral-100 p-[14px] typo-body-6 text-secondary-300">
-              조건에 맞는 지원사업이 없습니다.
+              표시할 지원사업이 없습니다.
             </p>
           )}
         </section>
@@ -95,9 +129,6 @@ export function SupportProgramListScreen(): React.JSX.Element {
             출처 안내
           </h2>
           <p className="mt-1 typo-caption-3 text-secondary-500">
-            마지막 갱신 {formatSupportProgramDeadline(SUPPORT_PROGRAM_REFERENCE_DATE)} 기준입니다.
-          </p>
-          <p className="mt-1 typo-caption-3 text-secondary-500">
             지원 조건과 신청 일정은 공식 출처에서 최신 정보를 확인하세요.
           </p>
         </section>
@@ -108,6 +139,35 @@ export function SupportProgramListScreen(): React.JSX.Element {
         >
           지원사업 상담 예약
         </Link>
+      </div>
+    </MobileScreen>
+  )
+}
+
+function SupportProgramListLoadingScreen(): React.JSX.Element {
+  return (
+    <MobileScreen aria-label="지원사업 목록 화면" className="min-h-[1280px]" mode="document">
+      <p className="px-6 pt-[102px] typo-body-6 text-secondary-300">
+        지원사업 정보를 불러오는 중입니다.
+      </p>
+    </MobileScreen>
+  )
+}
+
+function SupportProgramListErrorScreen({
+  onRetry,
+}: Readonly<{ onRetry: () => void }>): React.JSX.Element {
+  return (
+    <MobileScreen aria-label="지원사업 목록 화면" className="min-h-[1280px]" mode="document">
+      <div className="px-6 pt-[102px]">
+        <p className="typo-body-6 text-secondary-300">지원사업 정보를 불러오지 못했습니다.</p>
+        <button
+          className="mt-4 h-[42px] rounded-[8px] bg-secondary-700 px-5 typo-body-3 text-base-white"
+          onClick={onRetry}
+          type="button"
+        >
+          다시 시도
+        </button>
       </div>
     </MobileScreen>
   )

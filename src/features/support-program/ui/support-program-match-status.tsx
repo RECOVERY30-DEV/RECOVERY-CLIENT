@@ -3,6 +3,8 @@ import type { SupportProgramMatchStatus } from '../model/support-program-data'
 export const SUPPORT_PROGRAM_MATCH_STATUS_CLASS_NAMES: Readonly<
   Record<SupportProgramMatchStatus, string>
 > = {
+  추천됨: 'bg-primary-blue-100 text-primary-blue-800',
+  '추천 정보 없음': 'bg-neutral-300 text-secondary-500',
   '매칭 가능성 높음': 'bg-primary-blue-100 text-primary-blue-800',
   '조건 확인 필요': 'bg-neutral-300 text-secondary-500',
 }

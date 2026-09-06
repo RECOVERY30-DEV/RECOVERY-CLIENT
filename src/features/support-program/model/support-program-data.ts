@@ -1,7 +1,8 @@
 export const SUPPORT_PROGRAM_CATEGORIES = ['전체', '행정자금', '경영지원'] as const
 
 export type SupportProgramCategory = (typeof SUPPORT_PROGRAM_CATEGORIES)[number]
-export type SupportProgramMatchStatus = '매칭 가능성 높음' | '조건 확인 필요'
+export type SupportProgramMatchStatus =
+  '추천됨' | '추천 정보 없음' | '매칭 가능성 높음' | '조건 확인 필요'
 export type EligibilityStatus = '충족 가능' | '확인 필요'
 
 type EligibilityRequirement = Readonly<{
@@ -133,16 +134,18 @@ export function isSupportProgramApplicationOpen(
   return applicationDeadline >= referenceDate
 }
 
-export function formatSupportProgramDeadline(
-  applicationDeadline: SupportProgram['applicationDeadline'],
-): string {
+export function formatSupportProgramDeadline(applicationDeadline: string | null): string {
+  if (applicationDeadline === null) {
+    return '상시 또는 별도 안내'
+  }
+
   const [year, month, day] = applicationDeadline.split('-')
 
   return `${year}년 ${Number(month)}월 ${Number(day)}일`
 }
 
 export function getSupportProgramApplicationLabel(
-  applicationDeadline: SupportProgram['applicationDeadline'],
+  status: 'ACTIVE' | 'CLOSED',
 ): '신청 가능' | '신청 마감' {
-  return isSupportProgramApplicationOpen(applicationDeadline) ? '신청 가능' : '신청 마감'
+  return status === 'ACTIVE' ? '신청 가능' : '신청 마감'
 }
