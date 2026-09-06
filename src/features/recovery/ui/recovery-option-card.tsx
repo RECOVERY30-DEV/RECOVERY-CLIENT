@@ -2,28 +2,33 @@ import { useId } from 'react'
 
 import { cn } from '@/shared/lib'
 
-import { RECOVERY_OPTION_CATALOG, type RecoveryOptionId } from '../model/recovery-plan-data'
+import type { RecoveryOptionView } from '../api/recovery-option-contract'
 
 type RecoveryOptionCardProps = Readonly<{
   isSelected: boolean
   onSelect: () => void
-  optionId: RecoveryOptionId
+  option: RecoveryOptionView
 }>
+
+const RECOVERY_OPTION_TITLES: Readonly<Record<string, string>> = {
+  FIXED_COST_RESCHEDULE: '고정비 납부일 재배치',
+  REFINANCING_REVIEW: '대환 검토',
+  REPAYMENT_ADJUST: '상환조건 조정 상담',
+}
+
+export function getRecoveryOptionTitle(optionCode: string): string {
+  return RECOVERY_OPTION_TITLES[optionCode] ?? optionCode.replaceAll('_', ' ')
+}
 
 export function RecoveryOptionCard({
   isSelected,
   onSelect,
-  optionId,
+  option,
 }: RecoveryOptionCardProps): React.JSX.Element {
-  const option = RECOVERY_OPTION_CATALOG.find((item) => item.id === optionId)
   const generatedId = useId()
   const titleId = `${generatedId}-title`
   const descriptionId = `${generatedId}-description`
   const noteId = `${generatedId}-note`
-
-  if (!option) {
-    return <></>
-  }
 
   return (
     <button
@@ -41,7 +46,7 @@ export function RecoveryOptionCard({
     >
       <span className="flex items-start justify-between gap-3">
         <span className="typo-body-5 text-secondary-800" id={titleId}>
-          {option.title}
+          {getRecoveryOptionTitle(option.optionCode)}
         </span>
         <span
           aria-hidden="true"
@@ -57,19 +62,19 @@ export function RecoveryOptionCard({
       >
         <span className="flex justify-between gap-3">
           <span>예상 효과</span>
-          <strong className="text-right font-medium">{option.effect}</strong>
+          <strong className="text-right font-medium">{option.expectedEffectText}</strong>
         </span>
         <span className="flex justify-between gap-3">
           <span>월 부담 변화</span>
-          <strong className="text-right font-medium">{option.monthlyChange}</strong>
+          <strong className="text-right font-medium">{option.monthlyBurdenChangeText}</strong>
         </span>
         <span className="flex justify-between gap-3">
-          <span>상환조건</span>
-          <strong className="text-right font-medium">{option.condition}</strong>
+          <span>사전 조건</span>
+          <strong className="text-right font-medium">{option.preconditionText}</strong>
         </span>
       </span>
       <span className="mt-3 block text-[11px] leading-[13px] text-secondary-300" id={noteId}>
-        {option.description}
+        {option.disclaimer}
       </span>
     </button>
   )
