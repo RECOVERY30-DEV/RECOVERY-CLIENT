@@ -1,67 +1,154 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { render, screen } from '@testing-library/react'
+import { type ReactNode } from 'react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+import { createApiClient } from '@/shared/api/api-client'
 
 import { RecoveryFollowUpScreen } from './recovery-follow-up-screen'
 
+function apiResponse(data: unknown) {
+  return Response.json({ success: true, data, error: null })
+}
+
+function renderWithQueryClient(ui: ReactNode) {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>)
+}
+
+function followups() {
+  return [
+    {
+      id: 1,
+      checkpoint: 'D30',
+      scheduledDate: '2025-08-14',
+      status: 'DONE',
+      forecastRunId: 1,
+      packetId: null,
+      hasResult: true,
+    },
+    {
+      id: 2,
+      checkpoint: 'D60',
+      scheduledDate: '2025-09-13',
+      status: 'SCHEDULED',
+      forecastRunId: 1,
+      packetId: null,
+      hasResult: false,
+    },
+    {
+      id: 3,
+      checkpoint: 'D90',
+      scheduledDate: '2025-10-13',
+      status: 'SCHEDULED',
+      forecastRunId: 1,
+      packetId: null,
+      hasResult: false,
+    },
+  ]
+}
+
+function followupResult() {
+  return {
+    scheduleId: 1,
+    balanceRecovered: 'PARTIAL',
+    delinquency: false,
+    baselineBalance: -1280000,
+    currentBalance: 360000,
+    recoveryAmount: 1640000,
+    latestForecastRunId: 1,
+    riskStatus: 'STABLE',
+    recordedAt: '2025-08-14T09:00:00Z',
+  }
+}
+
+function executionStatuses() {
+  return [
+    {
+      id: 1,
+      recoveryOptionId: 1,
+      status: 'IN_PROGRESS',
+      blockerText: null,
+      forecastRunId: 1,
+      updatedAt: '2025-08-14T09:00:00Z',
+    },
+    {
+      id: 2,
+      recoveryOptionId: 3,
+      status: 'BLOCKED',
+      blockerText: '임대인 회신 지연',
+      forecastRunId: 1,
+      updatedAt: '2025-08-14T09:00:00Z',
+    },
+  ]
+}
+
+function stubFollowUpRequests(resultResponse: Response | null = apiResponse(followupResult())) {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn<typeof fetch>(async (input) => {
+      const path = new URL(input instanceof Request ? input.url : input.toString()).pathname
+
+      if (path.endsWith('/followups')) return apiResponse(followups())
+      if (path.endsWith('/result')) return resultResponse ?? apiResponse(followupResult())
+
+      return apiResponse(executionStatuses())
+    }),
+  )
+}
+
 describe('사후점검 화면', () => {
-  it('30·60·90일 점검 상태와 다음 점검일을 표시한다', () => {
-    render(<RecoveryFollowUpScreen />)
-
-    expect(screen.getByRole('heading', { name: '실행 상태 점검' })).toBeInTheDocument()
-    expect(screen.getByText('마지막 점검 2025년 9월 12일')).toBeInTheDocument()
-    const milestones = screen
-      .getByRole('heading', { name: '30·60·90일 점검 현황' })
-      .closest('section')
-    expect(milestones).not.toBeNull()
-    expect(within(milestones!).getByText('30일')).toBeInTheDocument()
-    expect(within(milestones!).getByText('2025-08-13')).toBeInTheDocument()
-    expect(within(milestones!).getAllByText('완료')).toHaveLength(2)
-    expect(within(milestones!).getByText('2025-09-12')).toBeInTheDocument()
-    expect(within(milestones!).getByText('90일')).toBeInTheDocument()
-    expect(within(milestones!).getByText('2025-10-12')).toBeInTheDocument()
-    expect(within(milestones!).getByText('예정')).toBeInTheDocument()
-    expect(screen.getByText('2025년 10월 12일')).toBeInTheDocument()
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
-  it('잔액 회복, 회복안 실행 상태와 최신 위험을 표시한다', () => {
-    render(<RecoveryFollowUpScreen />)
+  it('실제 D30·D60·D90 일정, 부분 회복 결과와 실행 차단 사유를 표시한다', async () => {
+    stubFollowUpRequests()
+    renderWithQueryClient(
+      <RecoveryFollowUpScreen client={createApiClient('https://api.example.com')} />,
+    )
 
-    expect(screen.getByText('회복 완료')).toBeInTheDocument()
-    expect(screen.getByText('없음')).toBeInTheDocument()
-    expect(screen.getByText('+₩2,400,000 회복')).toBeInTheDocument()
-    expect(screen.getByText('상환조건 조정 상담')).toBeInTheDocument()
-    expect(screen.getByText('고정비 납부일 재배치')).toBeInTheDocument()
+    expect(await screen.findByText('D30')).toBeInTheDocument()
+    expect(screen.getByText('2025-08-14')).toBeInTheDocument()
+    expect(screen.getByText('D60')).toBeInTheDocument()
+    expect(screen.getByText('D90')).toBeInTheDocument()
+    expect(await screen.findByText('부분 회복')).toBeInTheDocument()
+    expect(screen.getByText('+₩1,640,000 회복')).toBeInTheDocument()
     expect(screen.getByText('안정 구간')).toBeInTheDocument()
-    expect(screen.getByText('₩1,200,000')).toBeInTheDocument()
-    expect(screen.getByText('₩3,800,000')).toBeInTheDocument()
-    expect(screen.queryByText('위험 수전')).not.toBeInTheDocument()
+    expect(screen.getByText('진행 중')).toBeInTheDocument()
+    expect(screen.getByText('차단됨')).toBeInTheDocument()
+    expect(screen.getByText('임대인 회신 지연')).toBeInTheDocument()
   })
 
-  it('Packet에서 전달한 회복안의 실행 상태만 표시한다', () => {
-    render(<RecoveryFollowUpScreen selectedOptionIds={['fixed-cost-reschedule']} />)
-
-    expect(screen.getByText('고정비 납부일 재배치')).toBeInTheDocument()
-    expect(screen.queryByText('상환조건 조정 상담')).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Recovery Packet으로 돌아가기' })).toHaveAttribute(
-      'href',
-      '/recovery?plans=fixed-cost-reschedule',
+  it('결과 조회가 FOLLOWUP_404_1이어도 일정과 실행 상태는 유지하고 결과 영역만 빈 상태로 처리한다', async () => {
+    stubFollowUpRequests(
+      Response.json(
+        { success: false, data: null, error: { code: 'FOLLOWUP_404_1', message: '결과 없음' } },
+        { status: 404 },
+      ),
     )
+    renderWithQueryClient(
+      <RecoveryFollowUpScreen client={createApiClient('https://api.example.com')} />,
+    )
+
+    expect(await screen.findByText('결과가 아직 기록되지 않았습니다')).toBeInTheDocument()
+    expect(screen.getByText('D60')).toBeInTheDocument()
+    expect(screen.getByText('D90')).toBeInTheDocument()
+    expect(screen.getByText('차단됨')).toBeInTheDocument()
+    expect(screen.queryByText('부분 회복')).not.toBeInTheDocument()
   })
 
-  it('사후점검 동의를 화면 안에서 변경하고 회복안 경로를 제공한다', () => {
-    render(<RecoveryFollowUpScreen />)
-
-    const reminder = screen.getByRole('switch', { name: '30·60·90일 점검 알림' })
-    const improvement = screen.getByRole('switch', { name: '결과 개선 활용 동의' })
-    expect(reminder).toBeChecked()
-    expect(improvement).toBeChecked()
-
-    fireEvent.click(improvement)
-    expect(improvement).not.toBeChecked()
-    expect(screen.getByRole('link', { name: '회복안' })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
-      'href',
-      '/recovery/support-programs',
+  it('동의는 화면 내에서 수정하지 않고 동의 관리 화면으로 연결한다', async () => {
+    stubFollowUpRequests()
+    renderWithQueryClient(
+      <RecoveryFollowUpScreen client={createApiClient('https://api.example.com')} />,
     )
+
+    expect(await screen.findByRole('link', { name: '동의 설정 변경' })).toHaveAttribute(
+      'href',
+      '/consents',
+    )
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument()
   })
 })

@@ -1,6 +1,16 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
+vi.mock('@/features/recovery/ui/recovery-follow-up-screen', () => ({
+  RecoveryFollowUpScreen: ({
+    selectedOptionIds,
+  }: Readonly<{ selectedOptionIds?: readonly string[] }>) => (
+    <a href={`/recovery?plans=${selectedOptionIds?.join(',') ?? ''}`}>
+      Recovery Packet으로 돌아가기
+    </a>
+  ),
+}))
+
 vi.mock('@/features/recovery/ui/self-action-setup-screen', () => ({
   SelfActionSetupScreen: ({ optionId }: Readonly<{ optionId?: string }>) => (
     <section>
@@ -69,9 +79,6 @@ describe('회복 실행·추적 route adapter', () => {
       }),
     )
 
-    expect(screen.getByRole('heading', { name: '대환 검토' })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: '상환조건 조정 상담' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: '고정비 납부일 재배치' })).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Recovery Packet으로 돌아가기' })).toHaveAttribute(
       'href',
       '/recovery?plans=refinancing-review',

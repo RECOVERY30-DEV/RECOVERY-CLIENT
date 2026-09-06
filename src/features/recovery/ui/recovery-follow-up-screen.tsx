@@ -1,43 +1,92 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import type { KyInstance } from 'ky'
 
 import { ServiceBottomNavigation } from '@/features/navigation'
-import {
-  FOLLOW_UP_BALANCE_STATUS,
-  FOLLOW_UP_CONSENTS,
-  FOLLOW_UP_MILESTONES,
-  FOLLOW_UP_RISK_STATUS,
-  FOLLOW_UP_SUMMARY,
-  getFollowUpExecutionStatuses,
-  getRecoveryPacketHref,
-} from '@/features/recovery/model/recovery-execution-data'
+import type {
+  ExecutionStatusView,
+  FollowupView,
+} from '@/features/recovery/follow-up/api/follow-up-contract'
+import { useFollowUpQueries } from '@/features/recovery/follow-up/queries/follow-up-queries'
+import { getRecoveryPacketHref } from '@/features/recovery/model/recovery-execution-data'
 import {
   DEFAULT_RECOVERY_OPTION_IDS,
   type RecoveryOptionId,
 } from '@/features/recovery/model/recovery-plan-data'
-import { BackLink, MobileScreen, Switch } from '@/shared/ui'
+import { DEMO_BUSINESS_ID } from '@/shared/config/business'
+import { BackLink, MobileScreen } from '@/shared/ui'
 
 type RecoveryFollowUpScreenProps = Readonly<{
+  client?: KyInstance
   selectedOptionIds?: readonly RecoveryOptionId[]
 }>
 
-export function RecoveryFollowUpScreen({
-  selectedOptionIds = DEFAULT_RECOVERY_OPTION_IDS,
-}: RecoveryFollowUpScreenProps): React.JSX.Element {
-  const [consents, setConsents] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(FOLLOW_UP_CONSENTS.map((consent) => [consent.id, consent.isEnabled])),
-  )
+const WON_FORMATTER = new Intl.NumberFormat('ko-KR')
 
-  function handleConsentChange(id: string) {
-    setConsents((current) => ({ ...current, [id]: !current[id] }))
+function formatWon(value: number): string {
+  const sign = value > 0 ? '+' : value < 0 ? '-' : ''
+
+  return `${sign}₩${WON_FORMATTER.format(Math.abs(value))}`
+}
+
+function formatCheckpoint(checkpoint: FollowupView['checkpoint']): string {
+  return checkpoint
+}
+
+function formatScheduleStatus(status: FollowupView['status']): string {
+  return {
+    DONE: '완료',
+    SCHEDULED: '예정',
+    SKIPPED: '건너뜀',
+  }[status]
+}
+
+function formatExecutionStatus(status: ExecutionStatusView['status']): string {
+  return {
+    NOT_STARTED: '시작 전',
+    IN_PROGRESS: '진행 중',
+    DONE: '완료',
+    BLOCKED: '차단됨',
+  }[status]
+}
+
+function formatBalanceRecovered(value: 'YES' | 'PARTIAL' | 'NO' | null): string {
+  if (value === null) {
+    return '점검 중'
   }
 
-  const executionStatuses = getFollowUpExecutionStatuses(selectedOptionIds)
+  return {
+    YES: '회복 완료',
+    PARTIAL: '부분 회복',
+    NO: '회복 미달',
+  }[value]
+}
+
+function formatRiskStatus(value: 'RISK' | 'STABLE' | 'HOLD' | null): string {
+  if (value === null) {
+    return '점검 중'
+  }
+
+  return {
+    RISK: '주의 필요',
+    STABLE: '안정 구간',
+    HOLD: '추가 확인 필요',
+  }[value]
+}
+
+export function RecoveryFollowUpScreen({
+  client,
+  selectedOptionIds = DEFAULT_RECOVERY_OPTION_IDS,
+}: RecoveryFollowUpScreenProps): React.JSX.Element {
+  const { executionStatuses, followups, result } = useFollowUpQueries(
+    DEMO_BUSINESS_ID,
+    client === undefined ? {} : { client },
+  )
+  const nextFollowup = followups.data?.find((followup) => followup.status === 'SCHEDULED')
 
   return (
-    <MobileScreen aria-label="사후점검 화면" className="min-h-[1380px]" mode="document">
+    <MobileScreen aria-label="사후점검 화면" className="min-h-[1180px]" mode="document">
       <BackLink
         href={getRecoveryPacketHref(selectedOptionIds)}
         label="Recovery Packet으로 돌아가기"
@@ -47,7 +96,7 @@ export function RecoveryFollowUpScreen({
         <header>
           <h1 className="typo-sub-header-2 text-primary-200">실행 상태 점검</h1>
           <p className="mt-1 typo-body-7 text-secondary-300">
-            마지막 점검 {FOLLOW_UP_SUMMARY.lastCheckedAt}
+            회복안 실행과 사후점검 결과를 확인합니다.
           </p>
         </header>
 
@@ -56,62 +105,101 @@ export function RecoveryFollowUpScreen({
             30·60·90일 점검 현황
           </h2>
           <div className="mt-3 rounded-[10px] bg-neutral-100 p-[14px]">
-            <ol className="grid grid-cols-3 border-b border-disabled-50 pb-4">
-              {FOLLOW_UP_MILESTONES.map((milestone) => (
-                <li className="flex flex-col items-center gap-1 typo-caption-3" key={milestone.day}>
-                  <span className="flex items-center gap-2">
-                    <span
-                      aria-hidden="true"
-                      className={
-                        milestone.status === '완료'
-                          ? 'text-[24px] font-bold text-primary-blue-800'
-                          : 'text-[24px] font-bold text-secondary-300'
-                      }
+            {followups.isLoading ? (
+              <p className="typo-caption-3 text-secondary-300">점검 일정을 불러오는 중입니다.</p>
+            ) : followups.isError ? (
+              <RetryNotice
+                label="점검 일정을 불러오지 못했습니다."
+                onRetry={() => void followups.refetch()}
+              />
+            ) : followups.data?.length === 0 ? (
+              <p className="typo-caption-3 text-secondary-300">등록된 점검 일정이 없습니다.</p>
+            ) : (
+              <>
+                <ol className="grid grid-cols-3 border-b border-disabled-50 pb-4">
+                  {followups.data?.map((followup) => (
+                    <li
+                      className="flex flex-col items-center gap-1 typo-caption-3"
+                      key={followup.id}
                     >
-                      ✓
-                    </span>
-                    <span>{milestone.day}일</span>
-                    <span
-                      className={
-                        milestone.status === '완료' ? 'text-primary-blue-800' : 'text-secondary-300'
-                      }
-                    >
-                      {milestone.status}
-                    </span>
-                  </span>
-                  <time className="text-secondary-300" dateTime={milestone.date}>
-                    {milestone.date}
-                  </time>
-                </li>
-              ))}
-            </ol>
-            <dl className="mt-5 flex items-center justify-between typo-caption-3">
-              <dt>다음 점검일</dt>
-              <dd className="font-medium text-primary-blue-800">{FOLLOW_UP_SUMMARY.nextCheckAt}</dd>
-            </dl>
+                      <span className="flex items-center gap-1">
+                        <span
+                          aria-hidden="true"
+                          className={
+                            followup.status === 'DONE'
+                              ? 'text-[24px] font-bold text-primary-blue-800'
+                              : 'text-[24px] font-bold text-secondary-300'
+                          }
+                        >
+                          ✓
+                        </span>
+                        <span>{formatCheckpoint(followup.checkpoint)}</span>
+                        <span
+                          className={
+                            followup.status === 'DONE'
+                              ? 'text-primary-blue-800'
+                              : 'text-secondary-300'
+                          }
+                        >
+                          {formatScheduleStatus(followup.status)}
+                        </span>
+                      </span>
+                      <time className="text-secondary-300" dateTime={followup.scheduledDate}>
+                        {followup.scheduledDate}
+                      </time>
+                    </li>
+                  ))}
+                </ol>
+                {nextFollowup === undefined ? null : (
+                  <dl className="mt-5 flex items-center justify-between typo-caption-3">
+                    <dt>다음 점검일</dt>
+                    <dd className="font-medium text-primary-blue-800">
+                      {nextFollowup.scheduledDate}
+                    </dd>
+                  </dl>
+                )}
+              </>
+            )}
           </div>
         </section>
 
-        <section aria-labelledby="follow-up-balance-title" className="mt-7">
-          <h2 className="typo-sub-header-2 text-primary-200" id="follow-up-balance-title">
+        <section aria-labelledby="follow-up-result-title" className="mt-7">
+          <h2 className="typo-sub-header-2 text-primary-200" id="follow-up-result-title">
             잔액 회복 현황
           </h2>
-          <dl className="mt-3 space-y-3 rounded-[10px] bg-neutral-100 p-[14px] typo-caption-3">
-            <FollowUpRow
-              label="잔액 회복 여부"
-              tone="success"
-              value={FOLLOW_UP_BALANCE_STATUS.balanceStatus}
-            />
-            <FollowUpRow
-              label="연체 발생 여부"
-              value={FOLLOW_UP_BALANCE_STATUS.delinquencyStatus}
-            />
-            <FollowUpRow
-              label="기준일 잔액"
-              tone="accent"
-              value={`${FOLLOW_UP_BALANCE_STATUS.recoveredBalance} 회복`}
-            />
-          </dl>
+          <div className="mt-3 rounded-[10px] bg-neutral-100 p-[14px] typo-caption-3">
+            {result.isLoading ? (
+              <p className="text-secondary-300">점검 결과를 불러오는 중입니다.</p>
+            ) : result.isError ? (
+              <RetryNotice
+                label="결과가 아직 기록되지 않았습니다"
+                onRetry={() => void result.refetch()}
+              />
+            ) : result.data === undefined ? (
+              <p className="text-secondary-300">기록된 점검 결과가 없습니다.</p>
+            ) : (
+              <dl className="space-y-3">
+                <FollowUpRow
+                  label="잔액 회복 여부"
+                  tone={result.data.balanceRecovered === 'YES' ? 'success' : 'accent'}
+                  value={formatBalanceRecovered(result.data.balanceRecovered)}
+                />
+                <FollowUpRow
+                  label="연체 발생 여부"
+                  value={result.data.delinquency ? '있음' : '없음'}
+                />
+                <FollowUpRow
+                  label="회복액"
+                  tone="accent"
+                  value={
+                    result.data.recoveryAmount === null
+                      ? '확인 중'
+                      : `${formatWon(result.data.recoveryAmount)} 회복`
+                  }
+                />
+              </dl>
+            )}
+          </div>
         </section>
 
         <section aria-labelledby="follow-up-execution-title" className="mt-7">
@@ -119,29 +207,40 @@ export function RecoveryFollowUpScreen({
             회복안 실행 상태
           </h2>
           <div className="mt-3 space-y-3">
-            {executionStatuses.map((execution) => (
-              <article className="rounded-[10px] bg-neutral-100 p-[14px]" key={execution.optionId}>
-                <div className="flex items-center justify-between gap-3 typo-caption-3">
-                  <h3 className="font-normal text-primary-100">{execution.title}</h3>
-                  <p
-                    className={
-                      execution.status === '완료' ? 'text-success-700' : 'text-primary-blue-800'
-                    }
-                  >
-                    {execution.status}
-                  </p>
-                </div>
-                <p
-                  className={
-                    execution.status === '완료'
-                      ? 'mt-3 typo-caption-3 text-secondary-300'
-                      : 'mt-3 typo-caption-3 text-warning-700'
-                  }
-                >
-                  {execution.description}
-                </p>
-              </article>
-            ))}
+            {executionStatuses.isLoading ? (
+              <p className="typo-caption-3 text-secondary-300">실행 상태를 불러오는 중입니다.</p>
+            ) : executionStatuses.isError ? (
+              <RetryNotice
+                label="실행 상태를 불러오지 못했습니다."
+                onRetry={() => void executionStatuses.refetch()}
+              />
+            ) : executionStatuses.data?.length === 0 ? (
+              <p className="typo-caption-3 text-secondary-300">표시할 실행 상태가 없습니다.</p>
+            ) : (
+              executionStatuses.data?.map((execution) => (
+                <article className="rounded-[10px] bg-neutral-100 p-[14px]" key={execution.id}>
+                  <div className="flex items-center justify-between gap-3 typo-caption-3">
+                    <h3 className="font-normal text-primary-100">
+                      회복안 {execution.recoveryOptionId}
+                    </h3>
+                    <p
+                      className={
+                        execution.status === 'DONE'
+                          ? 'text-success-700'
+                          : execution.status === 'BLOCKED'
+                            ? 'text-warning-700'
+                            : 'text-primary-blue-800'
+                      }
+                    >
+                      {formatExecutionStatus(execution.status)}
+                    </p>
+                  </div>
+                  {execution.status === 'BLOCKED' && execution.blockerText !== null ? (
+                    <p className="mt-3 typo-caption-3 text-warning-700">{execution.blockerText}</p>
+                  ) : null}
+                </article>
+              ))
+            )}
           </div>
         </section>
 
@@ -152,34 +251,10 @@ export function RecoveryFollowUpScreen({
           <div className="mt-3 rounded-[10px] bg-neutral-100 p-[14px]">
             <dl className="flex items-center justify-between typo-caption-3">
               <dt>현재 위험 수준</dt>
-              <dd className="font-medium text-primary-blue-800">{FOLLOW_UP_RISK_STATUS.level}</dd>
+              <dd className="font-medium text-primary-blue-800">
+                {result.data === undefined ? '점검 중' : formatRiskStatus(result.data.riskStatus)}
+              </dd>
             </dl>
-            <p className="mt-3 typo-caption-3 text-secondary-300">
-              {FOLLOW_UP_RISK_STATUS.description}
-            </p>
-            <div className="relative mt-3 h-3 rounded-full bg-[linear-gradient(90deg,#ff5a55_0%,#ffd65b_45%,#73e8af_75%)]">
-              <span
-                aria-hidden="true"
-                className="absolute top-1/2 left-[55%] h-5 w-[88px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-base-white/70 bg-base-white/45 shadow-[0_0_8px_rgba(48,48,48,0.15)]"
-              />
-            </div>
-            <dl className="mt-4 grid grid-cols-3 items-end typo-caption-3 text-secondary-300">
-              <div>
-                <dt className="sr-only">최소 잔액</dt>
-                <dd>{FOLLOW_UP_RISK_STATUS.minimumBalance}</dd>
-              </div>
-              <div className="text-center">
-                <dt className="text-secondary-300">예상 최저 잔액</dt>
-                <dd className="sr-only">범위 중앙값</dd>
-              </div>
-              <div className="text-right">
-                <dt className="sr-only">최대 잔액</dt>
-                <dd>{FOLLOW_UP_RISK_STATUS.maximumBalance}</dd>
-              </div>
-            </dl>
-            <p className="mt-4 typo-caption-3 text-secondary-300">
-              {FOLLOW_UP_RISK_STATUS.disclaimer}
-            </p>
             <Link
               className="mt-3 inline-block typo-caption-3 text-secondary-300 underline"
               href="/cashflow"
@@ -194,29 +269,15 @@ export function RecoveryFollowUpScreen({
             사후점검 알림 및 추적 동의
           </h2>
           <div className="mt-3 rounded-[10px] bg-neutral-100 p-[14px]">
-            <div className="space-y-4">
-              {FOLLOW_UP_CONSENTS.map((consent) => (
-                <Switch
-                  checked={consents[consent.id]}
-                  className="w-full text-secondary-300"
-                  id={consent.id}
-                  key={consent.id}
-                  label={consent.label}
-                  onChange={() => handleConsentChange(consent.id)}
-                />
-              ))}
-            </div>
-            <div className="mt-4 border-t border-disabled-50 pt-4">
-              <p className="typo-caption-3 text-secondary-300">
-                {FOLLOW_UP_RISK_STATUS.disclaimer}
-              </p>
-              <Link
-                className="mt-3 inline-block typo-caption-3 text-secondary-300 underline"
-                href="/consents"
-              >
-                동의 설정 변경
-              </Link>
-            </div>
+            <p className="typo-caption-3 text-secondary-300">
+              동의 설정은 동의 관리 화면에서 변경할 수 있습니다.
+            </p>
+            <Link
+              className="mt-3 inline-block typo-caption-3 text-secondary-300 underline"
+              href="/consents"
+            >
+              동의 설정 변경
+            </Link>
           </div>
         </section>
 
@@ -230,6 +291,17 @@ export function RecoveryFollowUpScreen({
 
       <ServiceBottomNavigation activeItem="recovery" className="mt-[72px]" />
     </MobileScreen>
+  )
+}
+
+function RetryNotice({ label, onRetry }: Readonly<{ label: string; onRetry: () => void }>) {
+  return (
+    <div className="flex items-center justify-between gap-3 typo-caption-3">
+      <p className="text-secondary-300">{label}</p>
+      <button className="text-primary-blue-800 underline" onClick={onRetry} type="button">
+        다시 시도
+      </button>
+    </div>
   )
 }
 
