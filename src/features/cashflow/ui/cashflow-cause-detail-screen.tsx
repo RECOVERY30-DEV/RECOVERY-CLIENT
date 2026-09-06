@@ -2,10 +2,28 @@ import Link from 'next/link'
 
 import { BackLink, MobileScreen } from '@/shared/ui'
 
-import { CASHFLOW_CAUSE_DETAILS, CASHFLOW_RISK_SUMMARY } from '../model/cashflow-cause-detail-data'
+import {
+  CASHFLOW_CAUSE_DETAILS,
+  CASHFLOW_RISK_SUMMARY,
+  type CashflowCauseDetail,
+} from '../model/cashflow-cause-detail-data'
 import { CashflowCauseCard } from './cashflow-cause-card'
 
-export function CashflowCauseDetailScreen(): React.JSX.Element {
+type CashflowCauseDetailScreenProps = Readonly<{
+  baseDateLabel?: string
+  causes?: ReadonlyArray<CashflowCauseDetail>
+  summary?: Readonly<{
+    firstShortageAfter: string
+    minimumBalanceRange: string
+    shortageDate: string
+  }>
+}>
+
+export function CashflowCauseDetailScreen({
+  baseDateLabel = '예측 기준일 2025년 6월 14일 · 보수적~낙관 범위 제공',
+  causes = CASHFLOW_CAUSE_DETAILS,
+  summary = CASHFLOW_RISK_SUMMARY,
+}: CashflowCauseDetailScreenProps = {}): React.JSX.Element {
   return (
     <MobileScreen aria-label="현금부족 원인 상세 화면" className="min-h-[1547px]" mode="document">
       <BackLink href="/cashflow" label="현금흐름 대시보드로 돌아가기" />
@@ -15,9 +33,7 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
           <h1 className="text-[18px] leading-[21px] font-bold text-primary-200">
             현금부족 원인 분석
           </h1>
-          <p className="mt-[6px] text-[13px] leading-4 text-secondary-300">
-            예측 기준일 2025년 6월 14일 · 보수적~낙관 범위 제공
-          </p>
+          <p className="mt-[6px] text-[13px] leading-4 text-secondary-300">{baseDateLabel}</p>
         </header>
 
         <section
@@ -36,9 +52,9 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
                 첫 부족일까지
               </dt>
               <dd className="mt-1 flex items-baseline gap-[7px] text-[12px] leading-[14px] font-medium text-neutral-900">
-                <span>{CASHFLOW_RISK_SUMMARY.firstShortageAfter}</span>
+                <span>{summary.firstShortageAfter}</span>
                 <strong className="text-[18px] leading-[21px] font-bold text-primary-100">
-                  {CASHFLOW_RISK_SUMMARY.shortageDate}
+                  {summary.shortageDate}
                 </strong>
               </dd>
             </div>
@@ -47,7 +63,7 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
                 예상 최저 잔액
               </dt>
               <dd className="mt-1 text-[18px] leading-[21px] font-bold text-primary-100">
-                {CASHFLOW_RISK_SUMMARY.minimumBalanceRange}
+                {summary.minimumBalanceRange}
               </dd>
             </div>
           </dl>
@@ -64,9 +80,15 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
             주요 원인 TOP 3
           </h2>
           <div className="mt-5 flex flex-col gap-3">
-            {CASHFLOW_CAUSE_DETAILS.map((cause, index) => (
-              <CashflowCauseCard cause={cause} key={cause.title} rank={index + 1} />
-            ))}
+            {causes.length === 0 ? (
+              <p className="text-[12px] leading-[15px] text-secondary-300">
+                확인된 주요 원인이 없습니다.
+              </p>
+            ) : (
+              causes.map((cause, index) => (
+                <CashflowCauseCard cause={cause} key={`${index}-${cause.title}`} rank={index + 1} />
+              ))
+            )}
           </div>
         </section>
 
