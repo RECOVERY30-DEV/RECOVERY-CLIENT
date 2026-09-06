@@ -4,7 +4,7 @@ function ForecastRangeCard() {
   return (
     <section className="rounded-[10px] bg-neutral-100 p-[14px]">
       <p className="text-[12px] leading-[14px] font-semibold text-primary-blue-800">
-        예상 최저잔액
+        30일 이후 예상 최저잔액
       </p>
       <p className="mt-1 text-[18px] leading-[21px] font-bold text-neutral-900">
         −128만 원 ~ +54만 원
@@ -54,7 +54,7 @@ function ExpectedShortageCard() {
 function SafetyBalanceCard() {
   return (
     <section className="h-[150px] flex-1 rounded-[10px] bg-neutral-100 p-[14px]">
-      <p className="text-[12px] leading-[14px] font-semibold text-secondary-300">안전잔액</p>
+      <p className="text-[12px] leading-[14px] font-semibold text-secondary-300">안전 잔액</p>
       <p className="mt-1 text-[18px] leading-[21px] font-bold text-neutral-900">약 83만원</p>
       <div className="mt-[27px] h-1 rounded-full bg-disabled-50">
         <span className="block h-full w-[34.34%] rounded-full bg-primary-blue-400" />
@@ -64,7 +64,7 @@ function SafetyBalanceCard() {
         <span>안전상태</span>
       </div>
       <p className="mt-[15px] text-[12px] leading-[14px] font-semibold text-neutral-700">
-        현재 기준
+        현재 예상기준
       </p>
     </section>
   )

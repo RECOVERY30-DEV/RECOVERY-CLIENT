@@ -5,15 +5,9 @@ import { useState } from 'react'
 import { ServiceBottomNavigation } from '@/features/navigation/ui/service-bottom-navigation'
 import { BackLink, MobileScreen } from '@/shared/ui'
 
+import { CONSENT_DATA_USAGE_ITEMS } from '../model/consent-data'
 import { ConsentControls } from './consent-controls'
 import { ConsentWithdrawalDialog } from './consent-withdrawal-dialog'
-
-const DATA_USAGE_ITEMS = [
-  '분석 동의: 사업자 거래 내역, 보정값, 예측 결과',
-  '상담원 전송 동의: Recovery Packet (위험 기록, 원인, 선택안, 질문, 준비서류)',
-  '사후 점검 동의: 실행 결과, 잔액 회복 여부, 연체 발생 여부',
-  '데이터는 개인별 추천 개선과 제도 연결 성과 분석에 활용',
-] as const
 
 export function ConsentManagementScreen() {
   const [hasAnalysisConsent, setHasAnalysisConsent] = useState(true)
@@ -32,6 +26,8 @@ export function ConsentManagementScreen() {
 
   function handleConfirmWithdrawal() {
     setHasAnalysisConsent(false)
+    setHasCounselorConsent(false)
+    setHasFollowUpConsent(false)
     setIsWithdrawalOpen(false)
   }
 
@@ -68,7 +64,7 @@ export function ConsentManagementScreen() {
             데이터 활용 범위
           </h2>
           <ul className="mt-5 flex flex-col gap-1">
-            {DATA_USAGE_ITEMS.map((item) => (
+            {CONSENT_DATA_USAGE_ITEMS.map((item) => (
               <li
                 className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-[13px] leading-4 text-neutral-700"
                 key={item}
