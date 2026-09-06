@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export function CashflowStatus() {
   return (
     <section aria-labelledby="cashflow-status-title" className="h-[210px]">
@@ -10,9 +12,13 @@ export function CashflowStatus() {
 
       <div className="mt-5 h-[169px] rounded-[10px] border border-disabled-50 bg-neutral-100 px-[14px] py-5">
         <div className="flex h-[22px] items-center justify-between">
-          <strong className="inline-flex h-[22px] items-center rounded-[4px] bg-[#ffd4d5] px-[11px] text-[11px] leading-[13px] font-semibold text-error-500">
+          <Link
+            aria-label="위험상태 상세 보기"
+            className="inline-flex h-[22px] items-center rounded-[4px] bg-[#ffd4d5] px-[11px] text-[11px] leading-[13px] font-semibold text-error-500 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            href="/cashflow/status"
+          >
             위험상태
-          </strong>
+          </Link>
           <p className="text-[12px] leading-[14px] font-medium text-neutral-900">
             부족일까지 18일 남았습니다.
           </p>
@@ -22,13 +28,12 @@ export function CashflowStatus() {
           <br />
           판단 보류 상태로 전환될 수 있습니다.
         </p>
-        <button
-          className="mt-5 flex h-[42px] items-center justify-center rounded-[8px] bg-neutral-400 text-[14px] leading-[20px] font-medium text-primary-blue-800"
-          disabled
-          type="button"
+        <Link
+          className="mt-5 flex h-[42px] items-center justify-center rounded-[8px] bg-neutral-400 text-[14px] leading-[20px] font-medium text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          href="/cashflow/corrections"
         >
           누락 정보 보정하기
-        </button>
+        </Link>
       </div>
     </section>
   )

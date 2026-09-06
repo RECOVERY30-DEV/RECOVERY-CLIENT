@@ -1,6 +1,8 @@
-import { CASHFLOW_STABLE_REASONS } from '../model/cashflow-stable-status-data'
+type CashflowStableReasonsProps = Readonly<{
+  reasons: readonly string[]
+}>
 
-export function CashflowStableReasons() {
+export function CashflowStableReasons({ reasons }: CashflowStableReasonsProps) {
   return (
     <section
       aria-labelledby="cashflow-stable-reasons-title"
@@ -14,7 +16,7 @@ export function CashflowStableReasons() {
       </h2>
 
       <ul className="mt-5 flex flex-col gap-[14px]">
-        {CASHFLOW_STABLE_REASONS.map((reason) => (
+        {reasons.map((reason) => (
           <li className="text-[12px] leading-[15px] font-medium text-primary-100" key={reason}>
             {reason}
           </li>
