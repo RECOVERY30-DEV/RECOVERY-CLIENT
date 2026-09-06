@@ -107,6 +107,8 @@ describe('지원사업 상세 화면', () => {
       'href',
       '/recovery/support-programs',
     )
+    expect(screen.getByText('상담예약')).toBeInTheDocument()
+    expect(screen.getByTestId('support-eligibility-list')).toHaveClass('bg-neutral-100')
   })
 
   it.each([

@@ -7,7 +7,7 @@ import { CashflowCauseCard } from './cashflow-cause-card'
 
 export function CashflowCauseDetailScreen(): React.JSX.Element {
   return (
-    <MobileScreen aria-label="현금부족 원인 상세 화면" className="min-h-[1710px]" mode="document">
+    <MobileScreen aria-label="현금부족 원인 상세 화면" className="min-h-[1547px]" mode="document">
       <BackLink href="/cashflow" label="현금흐름 대시보드로 돌아가기" />
 
       <div className="px-6 pt-[102px] pb-[62px]">
@@ -63,11 +63,28 @@ export function CashflowCauseDetailScreen(): React.JSX.Element {
           >
             주요 원인 TOP 3
           </h2>
-          <div className="mt-5 flex flex-col gap-5">
+          <div className="mt-5 flex flex-col gap-3">
             {CASHFLOW_CAUSE_DETAILS.map((cause, index) => (
               <CashflowCauseCard cause={cause} key={cause.title} rank={index + 1} />
             ))}
           </div>
+        </section>
+
+        <section
+          aria-labelledby="cashflow-forecast-accuracy-title"
+          className="mt-5 rounded-[10px] bg-neutral-100 p-[14px]"
+          id="cashflow-forecast-accuracy"
+        >
+          <h2
+            className="text-[16px] leading-5 font-bold text-primary-200"
+            id="cashflow-forecast-accuracy-title"
+          >
+            예측 정확도 안내
+          </h2>
+          <p className="mt-3 text-[11px] leading-[16px] text-secondary-300">
+            위 원인은 연결된 사업자·카드정산·자동이체 데이터 기반 추정입니다. 현금매출이나 예정
+            자금의 반영 여부에 따라 결과가 달라질 수 있으며, 상담과 공식 출처 확인이 필요합니다.
+          </p>
         </section>
 
         <Link

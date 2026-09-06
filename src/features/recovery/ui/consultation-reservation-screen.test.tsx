@@ -124,6 +124,7 @@ describe('상담 예약 화면', () => {
     render(<ConsultationReservationScreen />)
 
     expect(screen.getAllByRole('radio', { name: '전화 상담' })).toHaveLength(1)
+    expect(screen.getByRole('radio', { name: '채팅 상담' })).toBeDisabled()
 
     const morning = screen.getByRole('radio', { name: '2025년 7월 14일 오전 10시' })
     const afternoon = screen.getByRole('radio', { name: '2025년 7월 14일 오후 2시' })
@@ -135,6 +136,17 @@ describe('상담 예약 화면', () => {
     expect(nextDay).toBeChecked()
     expect(morning).not.toBeChecked()
     expect(afternoon).not.toBeChecked()
+    expect(screen.getByText('잔여 1석')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '원하는 시간이 없어요' })).toBeInTheDocument()
+  })
+
+  it('전송 범위 안내와 예약 내용 최종 확인을 한 화면에서 제공한다', () => {
+    render(<ConsultationReservationScreen />)
+
+    expect(screen.getByRole('heading', { name: '상담원 전송 정보 범위' })).toBeInTheDocument()
+    expect(screen.getByText(/전송 동의가 없어도 예약은 완료됩니다/)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '예약 내용 최종 확인' })).toBeInTheDocument()
+    expect(screen.getByText('선택한 회복안 2건')).toBeInTheDocument()
   })
 
   it('세 전송 항목을 독립적으로 선택하고 안내 modal을 닫을 수 있다', async () => {
