@@ -1,5 +1,5 @@
-import { CashflowPendingScreen } from '@/features/cashflow/ui/cashflow-pending-screen'
+import { CashflowPendingContainer } from '@/features/cashflow/ui/cashflow-forecast-containers'
 
 export default function CashflowPendingPage() {
-  return <CashflowPendingScreen />
+  return <CashflowPendingContainer />
 }

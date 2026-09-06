@@ -1,9 +1,16 @@
 export type {
   ForecastCoverage,
   ForecastCoverageSource,
+  ForecastDetail,
   ForecastMinBalance,
+  ForecastRiskDriver,
   ForecastSafetyBuffer,
   ForecastShortfall,
   LatestForecast,
 } from './api/forecast-contract'
-export { useForecastSummaryQueries } from './queries/forecast-queries'
+export {
+  useForecastCauseQueries,
+  useForecastOverviewQueries,
+  useForecastPendingQueries,
+  useForecastSummaryQueries,
+} from './queries/forecast-queries'

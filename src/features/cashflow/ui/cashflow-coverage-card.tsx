@@ -1,6 +1,12 @@
 import { CASHFLOW_COVERAGE_ITEMS } from '../model/cashflow-correction-data'
 
-export function CashflowCoverageCard() {
+type CashflowCoverageCardProps = Readonly<{
+  items?: ReadonlyArray<Readonly<{ label: string; value: string }>>
+}>
+
+export function CashflowCoverageCard({
+  items = CASHFLOW_COVERAGE_ITEMS,
+}: CashflowCoverageCardProps) {
   return (
     <section
       aria-labelledby="cashflow-coverage-title"
@@ -13,18 +19,24 @@ export function CashflowCoverageCard() {
         데이터 반영률
       </h2>
 
-      <dl className="mt-5 flex flex-col">
-        {CASHFLOW_COVERAGE_ITEMS.map((item) => (
-          <div className="flex min-h-[30px] items-center justify-between gap-3" key={item.label}>
-            <dt className="text-[12px] leading-[14px] font-medium text-primary-100">
-              {item.label}
-            </dt>
-            <dd className="text-[12px] leading-[14px] font-semibold text-secondary-500">
-              {item.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {items.length === 0 ? (
+        <p className="mt-5 text-[12px] leading-[15px] text-secondary-300">
+          데이터 반영률을 확인할 수 없습니다.
+        </p>
+      ) : (
+        <dl className="mt-5 flex flex-col">
+          {items.map((item) => (
+            <div className="flex min-h-[30px] items-center justify-between gap-3" key={item.label}>
+              <dt className="text-[12px] leading-[14px] font-medium text-primary-100">
+                {item.label}
+              </dt>
+              <dd className="text-[12px] leading-[14px] font-semibold text-secondary-500">
+                {item.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </section>
   )
 }

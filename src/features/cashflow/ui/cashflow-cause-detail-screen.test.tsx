@@ -97,4 +97,10 @@ describe('현금부족 원인 상세 화면', () => {
       '/cashflow',
     )
   })
+
+  it('위험 원인이 비어 있으면 확인 가능한 안내를 제공한다', () => {
+    render(<CashflowCauseDetailScreen causes={[]} />)
+
+    expect(screen.getByText('확인된 주요 원인이 없습니다.')).toBeInTheDocument()
+  })
 })

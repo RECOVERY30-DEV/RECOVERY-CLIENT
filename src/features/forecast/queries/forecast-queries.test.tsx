@@ -19,6 +19,25 @@ const latestForecast = {
 }
 
 const responsesByPath: Readonly<Record<string, unknown>> = {
+  '/api/forecasts/4821': {
+    forecastRunId: 4821,
+    businessId: 1,
+    baseDate: '2025-07-15',
+    updatedAt: '2025-07-14T23:32:00Z',
+    status: 'RISK',
+    horizonDays: 30,
+    coverageOverall: 84,
+    hasShortfall: true,
+    daysToShortfall: 11,
+    firstShortfallDate: '2025-07-26',
+    shortfallAmountMin: 760000,
+    shortfallAmountMax: 1240000,
+    minBalanceAvailable: true,
+    minBalanceConservative: -1280000,
+    minBalanceExpected: 540000,
+    minBalanceOptimistic: 830000,
+    bufferMet: false,
+  },
   '/api/forecasts/4821/min-balance': {
     forecastRunId: 4821,
     available: true,
@@ -51,6 +70,8 @@ const responsesByPath: Readonly<Record<string, unknown>> = {
       metricText: null,
       contributionAmount: -1850000,
       estimating: false,
+      description: '월말 고정비가 같은 날 출금될 예정입니다.',
+      assumptionText: '최근 3개월 출금 이력 기반 반영',
     },
   ],
   '/api/forecasts/4821/coverage': [
@@ -124,10 +145,11 @@ describe('useForecastOverviewQueries', () => {
       expect(result.current.coverage.isSuccess).toBe(true)
     })
 
-    expect(requestedPaths).toHaveLength(6)
+    expect(requestedPaths).toHaveLength(7)
     expect(requestedPaths).toEqual(
       expect.arrayContaining([
         '/api/businesses/1/forecasts/latest',
+        '/api/forecasts/4821',
         '/api/forecasts/4821/min-balance',
         '/api/forecasts/4821/shortfall',
         '/api/forecasts/4821/safety-buffer',
@@ -136,6 +158,7 @@ describe('useForecastOverviewQueries', () => {
       ]),
     )
     expect(result.current.minBalance.data?.expected).toBe(540000)
+    expect(result.current.detail.data?.coverageOverall).toBe(84)
     expect(queryClient.getQueryData(forecastQueryKeys.latest(1))).toEqual(latestForecast)
     expect(queryClient.getQueryData(forecastQueryKeys.coverage(4821))).toEqual(
       responsesByPath['/api/forecasts/4821/coverage'],
@@ -196,5 +219,16 @@ describe('useForecastOverviewQueries', () => {
       ]),
     )
     expect(requestedPaths).not.toContain('/api/forecasts/4821/risk-drivers')
+  })
+})
+
+describe('forecastQueryKeys', () => {
+  it('위험 원인 조회 조건이 다르면 서로 다른 캐시를 사용한다', () => {
+    expect(forecastQueryKeys.riskDrivers(4821)).not.toEqual(
+      forecastQueryKeys.riskDrivers(4821, {
+        includeEvidence: true,
+        limit: 3,
+      }),
+    )
   })
 })

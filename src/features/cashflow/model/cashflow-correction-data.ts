@@ -44,12 +44,6 @@ export const CASHFLOW_CORRECTION_ITEMS: readonly CashflowCorrectionItem[] = [
   },
 ] as const
 
-export const CASHFLOW_MISSING_INFORMATION = [
-  '현금 매출 또는 타행 입금 내역',
-  '예정된 수입·지출 일정',
-  '반복 지출 중 미등록 항목',
-] as const
-
 export const CASHFLOW_REPEAT_PATTERN_CANDIDATES = [
   '매월 15일 현금 매출 약 120만 원',
   '매월 말 타행 입금 약 85만 원',
