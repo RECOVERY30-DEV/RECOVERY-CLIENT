@@ -5,7 +5,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { createApiClient } from '@/shared/api/api-client'
 
-import { forecastQueryKeys, useForecastOverviewQueries } from './forecast-queries'
+import {
+  forecastQueryKeys,
+  useForecastOverviewQueries,
+  useForecastSummaryQueries,
+} from './forecast-queries'
 
 const latestForecast = {
   forecastRunId: 4821,
@@ -120,18 +124,77 @@ describe('useForecastOverviewQueries', () => {
       expect(result.current.coverage.isSuccess).toBe(true)
     })
 
-    expect(requestedPaths).toEqual([
-      '/api/businesses/1/forecasts/latest',
-      '/api/forecasts/4821/min-balance',
-      '/api/forecasts/4821/shortfall',
-      '/api/forecasts/4821/safety-buffer',
-      '/api/forecasts/4821/risk-drivers',
-      '/api/forecasts/4821/coverage',
-    ])
+    expect(requestedPaths).toHaveLength(6)
+    expect(requestedPaths).toEqual(
+      expect.arrayContaining([
+        '/api/businesses/1/forecasts/latest',
+        '/api/forecasts/4821/min-balance',
+        '/api/forecasts/4821/shortfall',
+        '/api/forecasts/4821/safety-buffer',
+        '/api/forecasts/4821/risk-drivers',
+        '/api/forecasts/4821/coverage',
+      ]),
+    )
     expect(result.current.minBalance.data?.expected).toBe(540000)
     expect(queryClient.getQueryData(forecastQueryKeys.latest(1))).toEqual(latestForecast)
     expect(queryClient.getQueryData(forecastQueryKeys.coverage(4821))).toEqual(
       responsesByPath['/api/forecasts/4821/coverage'],
     )
+  })
+
+  it('홈 요약 조회에서는 화면에 사용하지 않는 위험 원인을 요청하지 않는다', async () => {
+    const requestedPaths: string[] = []
+    const fetchMock = vi.fn<typeof fetch>(async (input) => {
+      if (!(input instanceof Request)) {
+        throw new TypeError('Ky가 fetch에 Request를 전달해야 합니다.')
+      }
+
+      const path = new URL(input.url).pathname
+      requestedPaths.push(path)
+
+      if (path === '/api/businesses/1/forecasts/latest') {
+        return apiResponse(latestForecast)
+      }
+
+      if (!(path in responsesByPath)) {
+        return Response.json(
+          { code: 'NOT_FOUND', message: '테스트 응답이 없습니다.' },
+          { status: 404 },
+        )
+      }
+
+      return apiResponse(responsesByPath[path])
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    const wrapper = ({ children }: Readonly<{ children: ReactNode }>) => (
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    )
+    const { result } = renderHook(
+      () =>
+        useForecastSummaryQueries(1, {
+          client: createApiClient('https://api.example.com'),
+        }),
+      { wrapper },
+    )
+
+    await waitFor(() => {
+      expect(result.current.coverage.isSuccess).toBe(true)
+    })
+
+    expect(requestedPaths).toHaveLength(5)
+    expect(requestedPaths).toEqual(
+      expect.arrayContaining([
+        '/api/businesses/1/forecasts/latest',
+        '/api/forecasts/4821/min-balance',
+        '/api/forecasts/4821/shortfall',
+        '/api/forecasts/4821/safety-buffer',
+        '/api/forecasts/4821/coverage',
+      ]),
+    )
+    expect(requestedPaths).not.toContain('/api/forecasts/4821/risk-drivers')
   })
 })
