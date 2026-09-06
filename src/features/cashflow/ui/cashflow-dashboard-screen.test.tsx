@@ -92,7 +92,7 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByText('공휴일 거래가 다음 영업일로 반영됩니다.')).toBeInTheDocument()
   })
 
-  it('일자별 현금흐름의 날짜는 고정하고 긴 안내문은 한 줄 말줄임표로 표시한다', async () => {
+  it('일자별 현금흐름은 날짜와 설명을 같은 열에 정렬하고 긴 안내문을 한 줄 말줄임표로 표시한다', async () => {
     const dailyViews = Array.from({ length: 30 }, (_, index) => createDailyView(index))
     const holidayNote = '7월 19일(토) 주말로 원리금 상환 기준일이 7월 18일(금)로 앞당겨졌습니다.'
     dailyViews[17] = { ...dailyViews[17], holidayShiftNote: holidayNote }
@@ -120,7 +120,8 @@ describe('현금흐름 대시보드 화면', () => {
     const row = description.closest('a')
 
     expect(row).not.toBeNull()
-    expect(row?.querySelector('span')).toHaveClass('shrink-0')
+    expect(row).toHaveClass('grid', 'grid-cols-[168px_minmax(0,1fr)]', 'gap-[14px]')
+    expect(row?.querySelector('span')).toHaveClass('whitespace-nowrap')
     expect(description).toHaveClass('min-w-0', 'truncate')
   })
 

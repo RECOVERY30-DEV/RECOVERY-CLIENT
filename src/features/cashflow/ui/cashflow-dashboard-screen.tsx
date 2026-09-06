@@ -60,10 +60,10 @@ function CashflowTimeline({ dailyViews }: Readonly<{ dailyViews: ReadonlyArray<D
           <li key={day.targetDate}>
             <Link
               aria-label={`${formatDate(day.targetDate)} 상세 보기`}
-              className="flex min-h-[30px] items-center gap-4 rounded px-0.5 py-1 text-[12px] leading-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
+              className="grid min-h-[30px] grid-cols-[168px_minmax(0,1fr)] items-center gap-[14px] rounded px-0.5 py-1 text-[12px] leading-[14px] focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
               href={`/cashflow/daily/${day.targetDate}`}
             >
-              <span className="shrink-0 font-medium text-primary-100">
+              <span className="font-medium whitespace-nowrap text-primary-100">
                 {formatDate(day.targetDate)}
               </span>
               <span
