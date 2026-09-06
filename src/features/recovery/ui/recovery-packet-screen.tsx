@@ -182,7 +182,7 @@ export function RecoveryPacketScreen({
               추적 동의 범위 안에서 잔액 회복과 연체 발생 여부를 확인합니다.
             </p>
             <Link
-              className="mt-4 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-5 text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+              className="mt-4 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-neutral-400 px-[22px] py-2 typo-body-5 text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
               href={getRecoveryFollowUpHref(selectedOptionIds)}
             >
               최신 사후점검 확인

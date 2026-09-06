@@ -26,6 +26,9 @@ describe('자체 실행 저장 화면', () => {
       'href',
       '/recovery?plans=fixed-cost-reschedule',
     )
+    expect(screen.getByRole('link', { name: '실행 계획 확인' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
 
     fireEvent.click(rentSchedule)
 

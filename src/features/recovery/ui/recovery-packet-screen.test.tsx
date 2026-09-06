@@ -43,6 +43,9 @@ describe('Recovery Packet 화면', () => {
       'href',
       '/recovery/follow-up?plans=fixed-cost-reschedule',
     )
+    expect(screen.getByRole('link', { name: '최신 사후점검 확인' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: '회복안' })).toHaveAttribute('aria-current', 'page')
   })
 })

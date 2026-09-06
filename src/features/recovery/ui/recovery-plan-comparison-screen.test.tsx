@@ -61,9 +61,15 @@ describe('회복안 비교 화면', () => {
       'href',
       '/recovery/consultation?plans=fixed-cost-reschedule&plans=refinancing-review',
     )
+    expect(screen.getByRole('link', { name: '상담 예약하기' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
+    )
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',
       '/recovery/support-programs',
+    )
+    expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
     expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
     expect(screen.getByRole('button', { name: '확인 필요' })).toBeDisabled()
@@ -77,6 +83,9 @@ describe('회복안 비교 화면', () => {
     expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveAttribute(
       'href',
       '/recovery/self-action?plan=fixed-cost-reschedule',
+    )
+    expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveClass(
+      'focus-visible:ring-primary-blue-800',
     )
   })
 

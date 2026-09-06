@@ -123,7 +123,7 @@ export function SelfActionSetupScreen({
 
         {isReady ? (
           <Link
-            className="mt-[76px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-primary-100 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="mt-[76px] inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-primary-100 px-[22px] py-2 typo-body-3 text-base-white transition-colors hover:bg-secondary-400 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href={getRecoveryPacketHref([optionId])}
           >
             실행 계획 확인
