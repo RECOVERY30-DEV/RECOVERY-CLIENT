@@ -33,9 +33,9 @@ describe('일자별 현금흐름 상세 화면', () => {
     )
     expect(screen.getByText('사업자 계좌 (우리은행)')).toBeInTheDocument()
     expect(screen.getByText('카드 정산 (신한카드)')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '보정값 추가·수정하기' })).toHaveAttribute(
-      'href',
-      '/cashflow/corrections',
-    )
+    const correctionLink = screen.getByRole('link', { name: '보정값 추가·수정하기' })
+
+    expect(correctionLink).toHaveAttribute('href', '/cashflow/corrections')
+    expect(correctionLink).toHaveClass('focus-visible:ring-primary-blue-800')
   })
 })

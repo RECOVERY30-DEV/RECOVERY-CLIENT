@@ -13,10 +13,10 @@ describe('현금흐름 대시보드 화면', () => {
     expect(screen.getByText('-128만원 ~ -54만원')).toBeInTheDocument()
     expect(screen.getByText('위험상태')).toBeInTheDocument()
     expect(screen.getByText('부족일까지 18일 남았습니다.')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: '위험상태 상세 보기' })).toHaveAttribute(
-      'href',
-      '/cashflow/status',
-    )
+    const riskStatusLink = screen.getByRole('link', { name: '위험상태 상세 보기' })
+
+    expect(riskStatusLink).toHaveAttribute('href', '/cashflow/status')
+    expect(riskStatusLink).toHaveClass('text-warning-700', 'focus-visible:ring-primary-blue-800')
     expect(screen.getByText('30일 후').parentElement).toHaveClass('text-secondary-300')
     expect(screen.getByText('−120만')).toHaveClass('text-warning-700')
     expect(screen.getByText(/범위 전체가 0원 아래로/)).toHaveClass('text-secondary-300')
@@ -29,10 +29,10 @@ describe('현금흐름 대시보드 화면', () => {
       'href',
       '/data-scope',
     )
-    expect(screen.getByRole('link', { name: '누락 정보 보정하기' })).toHaveAttribute(
-      'href',
-      '/cashflow/corrections',
-    )
+    const correctionLink = screen.getByRole('link', { name: '누락 정보 보정하기' })
+
+    expect(correctionLink).toHaveAttribute('href', '/cashflow/corrections')
+    expect(correctionLink).toHaveClass('focus-visible:ring-primary-blue-800')
     expect(screen.getByRole('link', { name: '현금흐름' })).toHaveAttribute('aria-current', 'page')
   })
 

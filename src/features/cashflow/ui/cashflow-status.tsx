@@ -14,7 +14,7 @@ export function CashflowStatus() {
         <div className="flex h-[22px] items-center justify-between">
           <Link
             aria-label="위험상태 상세 보기"
-            className="inline-flex h-[22px] items-center rounded-[4px] bg-[#ffd4d5] px-[11px] text-[11px] leading-[13px] font-semibold text-error-500 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="inline-flex h-[22px] items-center rounded-[4px] bg-[#ffd4d5] px-[11px] text-[11px] leading-[13px] font-semibold text-warning-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href="/cashflow/status"
           >
             위험상태
@@ -29,7 +29,7 @@ export function CashflowStatus() {
           판단 보류 상태로 전환될 수 있습니다.
         </p>
         <Link
-          className="mt-5 flex h-[42px] items-center justify-center rounded-[8px] bg-neutral-400 text-[14px] leading-[20px] font-medium text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="mt-5 flex h-[42px] items-center justify-center rounded-[8px] bg-neutral-400 text-[14px] leading-[20px] font-medium text-primary-blue-800 transition-colors hover:text-primary-blue-700 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
           href="/cashflow/corrections"
         >
           누락 정보 보정하기

@@ -61,7 +61,9 @@ describe('분석 동의 선택 화면', () => {
     render(<ConsentSetupScreen />)
 
     expect(screen.getByRole('heading', { name: '데이터 활용 범위' })).toBeInTheDocument()
-    expect(screen.getByText('분석 동의: 사업자 거래 내역, 보정값, 예측 결과')).toBeInTheDocument()
+    expect(screen.getByText('분석 동의: 사업자 거래 내역, 보정값, 예측 결과')).toHaveClass(
+      'text-secondary-300',
+    )
     expect(
       screen.getByText(
         '상담원 전송 동의: Recovery Packet (위험 기록, 원인, 선택안, 질문, 준비서류)',

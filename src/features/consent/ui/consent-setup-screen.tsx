@@ -52,7 +52,7 @@ export function ConsentSetupScreen() {
           <ul className="mt-5 flex flex-col gap-1">
             {CONSENT_DATA_USAGE_ITEMS.map((item) => (
               <li
-                className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-[13px] leading-4 text-neutral-700"
+                className="rounded-[10px] bg-neutral-100 px-[14px] py-[10px] text-[13px] leading-4 text-secondary-300"
                 key={item}
               >
                 {item}

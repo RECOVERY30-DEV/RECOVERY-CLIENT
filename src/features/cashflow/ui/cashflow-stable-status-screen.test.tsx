@@ -38,9 +38,12 @@ describe('현금흐름 안정 상태 안내 화면', () => {
       'href',
       '/cashflow',
     )
-    expect(screen.getByRole('link', { name: '확인 필요' })).toHaveAttribute(
-      'href',
-      '/cashflow/corrections',
+    const correctionLink = screen.getByRole('link', { name: '확인 필요' })
+
+    expect(correctionLink).toHaveAttribute('href', '/cashflow/corrections')
+    expect(correctionLink).toHaveClass(
+      'text-primary-blue-800',
+      'focus-visible:ring-primary-blue-800',
     )
     expect(screen.getByRole('link', { name: '30·60·90일 사후점검 확인하기' })).toHaveAttribute(
       'href',
