@@ -64,7 +64,7 @@ describe('회복안 비교 화면', () => {
       'href',
       '/recovery/support-programs',
     )
-    expect(screen.getByRole('link', { name: '셀프 실행으로 저장' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: '자체 실행으로 저장' })).toHaveAttribute(
       'href',
       '/recovery/actions/fixed-cost-reschedule/save',
     )
@@ -76,7 +76,7 @@ describe('회복안 비교 화면', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '고정비 납부일 재배치' }))
 
-    expect(screen.getByRole('button', { name: '셀프 실행으로 저장' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '자체 실행으로 저장' })).toBeDisabled()
   })
 
   it('기준과 선택 회복안을 비교하고 상환조건으로 올바르게 표기한다', () => {

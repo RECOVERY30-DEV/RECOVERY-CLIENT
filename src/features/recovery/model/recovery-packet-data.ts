@@ -5,6 +5,12 @@ type RecoveryPacketOption = Readonly<{
   title: string
 }>
 
+type RecoveryPacketCorrection = Readonly<{
+  amount: string
+  date: string
+  title: string
+}>
+
 type RecoveryPacketFixture = Readonly<{
   action: Readonly<{
     beforeAfter: Readonly<{
@@ -29,8 +35,8 @@ type RecoveryPacketFixture = Readonly<{
     }>
   }>
   packet: Readonly<{
-    adjustments: string
     causes: readonly Readonly<{ contribution: string; title: string }>[]
+    corrections: readonly RecoveryPacketCorrection[]
     currentVersion: string
     risk: Readonly<{ label: string; minimumBalanceRange: string }>
     selectedOptions: readonly RecoveryPacketOption[]
@@ -88,11 +94,14 @@ export const RECOVERY_PACKET_FIXTURE: RecoveryPacketFixture = {
     },
   },
   packet: {
-    adjustments: '고정비 납부일 재배치 적용 시나리오',
     causes: [
       { contribution: '-180만 원', title: '최근 8주 매출 감소' },
       { contribution: '-320만 원', title: '월말 임차료·원리금 집중' },
       { contribution: '추정 중', title: '계절적 매출 회복 지연' },
+    ],
+    corrections: [
+      { amount: '+65만 원', date: '2025-07-20', title: '현금매출 추가 입력' },
+      { amount: '-120만 원', date: '2025-07-22', title: '예정 지출 (인테리어 대금)' },
     ],
     currentVersion: 'v1.0',
     risk: { label: '부족 위험', minimumBalanceRange: '-240만 원 ~ -180만 원' },

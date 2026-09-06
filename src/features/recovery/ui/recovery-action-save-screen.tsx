@@ -86,6 +86,7 @@ export function RecoveryActionSaveScreen(): React.JSX.Element {
               <Checkbox
                 checked={checkedItemIds.includes(item.id)}
                 description={item.description}
+                disabled={isSaved}
                 id={item.id}
                 key={item.id}
                 label={item.label}
@@ -93,6 +94,11 @@ export function RecoveryActionSaveScreen(): React.JSX.Element {
               />
             ))}
           </div>
+          {isSaved ? (
+            <p className="mt-2 text-[12px] leading-4 text-secondary-300">
+              저장 후에는 준비 항목을 변경할 수 없습니다.
+            </p>
+          ) : null}
         </section>
 
         <section
@@ -118,7 +124,7 @@ export function RecoveryActionSaveScreen(): React.JSX.Element {
                 저장 완료 · 실행 계획이 이 화면 안에서 저장된 상태입니다.
               </p>
               <Link
-                className="inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 text-[16px] leading-6 font-medium text-base-white focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+                className="inline-flex h-[42px] w-full items-center justify-center rounded-[8px] bg-secondary-700 px-[22px] py-2 text-[16px] leading-6 font-medium text-base-white focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
                 href="/recovery"
               >
                 Recovery Packet 확인하기

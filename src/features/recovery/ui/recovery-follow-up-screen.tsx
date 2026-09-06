@@ -95,7 +95,7 @@ export function RecoveryFollowUpScreen(): React.JSX.Element {
           >
             현재 위험 수준
           </h2>
-          <p className="mt-2 text-[14px] leading-5 font-semibold text-warning-500">
+          <p className="mt-2 text-[14px] leading-5 font-semibold text-primary-blue-800">
             {followUp.latestRisk}
           </p>
         </section>
@@ -125,19 +125,19 @@ export function RecoveryFollowUpScreen(): React.JSX.Element {
 
         <nav aria-label="사후점검 관련 링크" className="mt-5 grid gap-3">
           <Link
-            className="rounded-[8px] border border-primary-blue-900 px-3.5 py-2.5 text-center text-[14px] leading-5 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="rounded-[8px] border border-primary-blue-900 px-3.5 py-2.5 text-center text-[14px] leading-5 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href="/cashflow"
           >
             현금흐름 보기
           </Link>
           <Link
-            className="rounded-[8px] border border-primary-blue-900 px-3.5 py-2.5 text-center text-[14px] leading-5 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="rounded-[8px] border border-primary-blue-900 px-3.5 py-2.5 text-center text-[14px] leading-5 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href="/consents"
           >
             동의 관리
           </Link>
           <Link
-            className="rounded-[8px] border border-primary-blue-900 px-3.5 py-2.5 text-center text-[14px] leading-5 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="rounded-[8px] border border-primary-blue-900 px-3.5 py-2.5 text-center text-[14px] leading-5 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
             href="/recovery/support-programs"
           >
             지원사업 확인

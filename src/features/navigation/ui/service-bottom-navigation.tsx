@@ -41,8 +41,8 @@ export function ServiceBottomNavigation({ activeItem, className }: ServiceBottom
               <Link
                 aria-current={isActive ? 'page' : undefined}
                 className={cn(
-                  'flex size-12 flex-col items-center justify-center gap-[3px] text-[10px] leading-3 tracking-[-0.3px]',
-                  isActive ? 'text-primary-blue-500' : 'text-[#656f7b]',
+                  'flex size-12 flex-col items-center justify-center gap-[3px] text-[10px] leading-3 tracking-[-0.3px] focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none',
+                  isActive ? 'text-primary-blue-800' : 'text-[#656f7b]',
                 )}
                 href={item.href}
               >

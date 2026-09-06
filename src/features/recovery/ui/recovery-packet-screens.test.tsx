@@ -22,6 +22,8 @@ describe('자체 실행 저장 화면', () => {
     fireEvent.click(saveButton)
 
     expect(screen.getByRole('status')).toHaveTextContent('저장 완료')
+    expect(screen.getByRole('checkbox', { name: '임대인에게 납부일 조정 요청하기' })).toBeDisabled()
+    expect(screen.getByText('저장 후에는 준비 항목을 변경할 수 없습니다.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Recovery Packet 확인하기' })).toHaveAttribute(
       'href',
       '/recovery',
@@ -50,13 +52,22 @@ describe('Recovery Packet 화면', () => {
     expect(screen.getAllByText('상환조건 조정 상담').length).toBeGreaterThan(0)
     expect(screen.getAllByText('고정비 납부일 재배치').length).toBeGreaterThan(0)
     expect(screen.getByText('다음 점검 2025-10-12')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /재시도/ })).not.toBeInTheDocument()
+    expect(screen.queryByText(/재시도/)).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',
       '/recovery/support-programs',
     )
     expect(screen.getByRole('navigation', { name: '주요 메뉴' })).toHaveTextContent('회복안')
     expect(screen.getByRole('link', { name: '회복안' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByText('현금매출 추가 입력')).toBeInTheDocument()
+    expect(screen.getByText('+65만 원')).toBeInTheDocument()
+    expect(screen.getByText('2025-07-20')).toBeInTheDocument()
+    expect(screen.getByText('예정 지출 (인테리어 대금)')).toBeInTheDocument()
+    expect(screen.getByText('-120만 원')).toBeInTheDocument()
+    expect(screen.getByText('2025-07-22')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '보정값' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '원인 TOP 3' })).toBeInTheDocument()
+    expect(screen.getByText('부족 위험')).toHaveClass('text-primary-blue-800')
   })
 })
 
@@ -78,6 +89,10 @@ describe('Recovery Packet 사후점검 화면', () => {
     expect(screen.getByRole('link', { name: '지원사업 확인' })).toHaveAttribute(
       'href',
       '/recovery/support-programs',
+    )
+    expect(screen.getByRole('link', { name: '회복안' })).toHaveAttribute('aria-current', 'page')
+    expect(screen.getByText('부족 위험 완화 · 다음 30일 관찰 필요')).toHaveClass(
+      'text-primary-blue-800',
     )
   })
 

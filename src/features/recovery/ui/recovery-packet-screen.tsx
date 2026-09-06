@@ -35,7 +35,7 @@ export function RecoveryPacketScreen(): React.JSX.Element {
               <dt className="text-[12px] leading-[14px] font-semibold text-secondary-300">
                 현재 상태
               </dt>
-              <dd className="mt-1 text-[14px] leading-5 font-bold text-warning-500">
+              <dd className="mt-1 text-[14px] leading-5 font-bold text-primary-blue-800">
                 {packet.risk.label}
               </dd>
             </div>
@@ -50,14 +50,35 @@ export function RecoveryPacketScreen(): React.JSX.Element {
           </dl>
         </section>
 
+        <section aria-labelledby="packet-corrections-title" className="mt-5">
+          <h2
+            className="text-[18px] leading-[21px] font-bold text-primary-200"
+            id="packet-corrections-title"
+          >
+            보정값
+          </h2>
+          <ul className="mt-3 space-y-2">
+            {packet.corrections.map((correction) => (
+              <li className="rounded-[10px] bg-neutral-100 p-[14px]" key={correction.title}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[13px] leading-5 text-primary-100">{correction.title}</span>
+                  <strong className="shrink-0 text-[13px] leading-5 font-semibold text-primary-blue-800">
+                    {correction.amount}
+                  </strong>
+                </div>
+                <p className="mt-1 text-[12px] leading-4 text-secondary-300">{correction.date}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
         <section aria-labelledby="packet-causes-title" className="mt-5">
           <h2
             className="text-[18px] leading-[21px] font-bold text-primary-200"
             id="packet-causes-title"
           >
-            보정값·원인 TOP 3
+            원인 TOP 3
           </h2>
-          <p className="mt-1 text-[13px] leading-4 text-secondary-300">{packet.adjustments}</p>
           <ol className="mt-3 space-y-2">
             {packet.causes.map((cause, index) => (
               <li
@@ -133,7 +154,7 @@ export function RecoveryPacketScreen(): React.JSX.Element {
             다음 점검 {followUp.schedule.nextReview}
           </p>
           <Link
-            className="mt-3 inline-flex text-[14px] leading-5 font-semibold text-primary-blue-800 underline underline-offset-2 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:outline-none"
+            className="mt-3 inline-flex text-[14px] leading-5 font-semibold text-primary-blue-800 underline underline-offset-2 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:outline-none"
             href="/recovery/follow-up"
           >
             30·60·90일 사후점검 보기
@@ -141,7 +162,7 @@ export function RecoveryPacketScreen(): React.JSX.Element {
         </section>
 
         <Link
-          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] border border-primary-blue-900 px-[22px] py-2 text-[16px] leading-6 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-500 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="mt-5 inline-flex h-[42px] w-full items-center justify-center rounded-[8px] border border-primary-blue-900 px-[22px] py-2 text-[16px] leading-6 font-medium text-primary-blue-900 focus-visible:ring-2 focus-visible:ring-primary-blue-800 focus-visible:ring-offset-2 focus-visible:outline-none"
           href="/recovery/support-programs"
         >
           지원사업 확인
